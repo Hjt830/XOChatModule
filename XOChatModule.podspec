@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'XOChatModule'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of XOChatModule.'
+  s.version          = '0.0.1'
+  s.summary          = 'XXOOGO项目的聊天模块'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,17 +18,17 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+  XXOOGO项目采用cocoapods做组件化架构，将不同的模块使用pod私有仓库管理，只需要在主项目中使用 pod 'XOChatModule' 即可导入模块使用
                        DESC
 
-  s.homepage         = 'https://github.com/kenter/XOChatModule'
+  s.homepage         = 'http://192.168.1.119/xxoogo_livechat/XOChatModule'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'kenter' => 'Hjt_830@163.com' }
-  s.source           = { :git => 'https://github.com/kenter/XOChatModule.git', :tag => s.version.to_s }
+  s.source           = { :git => 'http://192.168.1.119/xxoogo_livechat/XOChatModule.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
 
   s.source_files = 'XOChatModule/Classes/**/*'
   
@@ -37,6 +37,8 @@ TODO: Add long description of the pod here.
   # }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.frameworks = 'UIKit', 'Foundation'
+  s.dependency 'TXIMSDK_iOS', '~> 4.4.627'
+  s.dependency 'AFNetworking', '~> 3.2.1'
+  
 end

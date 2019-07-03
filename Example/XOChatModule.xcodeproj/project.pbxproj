@@ -40,7 +40,7 @@
 		176C77FD5BDD0A33D08C6C51 /* Pods-XOChatModule_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XOChatModule_Example.debug.xcconfig"; path = "Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		1C08E6A3A635C8FB9731D3A0 /* Pods-XOChatModule_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XOChatModule_Example.release.xcconfig"; path = "Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example.release.xcconfig"; sourceTree = "<group>"; };
 		2E6607D7A3689FF2CCDFC079 /* Pods_XOChatModule_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XOChatModule_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		32AB2CC07E3638844E4EF99D /* XOChatModule.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = XOChatModule.podspec; path = ../XOChatModule.podspec; sourceTree = "<group>"; };
+		32AB2CC07E3638844E4EF99D /* XOChatModule.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = XOChatModule.podspec; path = ../XOChatModule.podspec; sourceTree = "<group>"; };
 		5F5E934AFF24DDDD4E38B285 /* Pods_XOChatModule_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XOChatModule_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58A195388D20070C39A /* XOChatModule_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XOChatModule_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -63,8 +63,8 @@
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		8BBCCE88E59FBCD8D9C640C6 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		93F68F5B8C7B3169C5F2469B /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		8BBCCE88E59FBCD8D9C640C6 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		93F68F5B8C7B3169C5F2469B /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		A3D0A1316B54DE35B9ED0E3D /* Pods-XOChatModule_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XOChatModule_Tests.release.xcconfig"; path = "Target Support Files/Pods-XOChatModule_Tests/Pods-XOChatModule_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		F8010FC422B093908EAD0C34 /* Pods-XOChatModule_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XOChatModule_Tests.debug.xcconfig"; path = "Target Support Files/Pods-XOChatModule_Tests/Pods-XOChatModule_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -103,7 +103,6 @@
 				F8010FC422B093908EAD0C34 /* Pods-XOChatModule_Tests.debug.xcconfig */,
 				A3D0A1316B54DE35B9ED0E3D /* Pods-XOChatModule_Tests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -258,6 +257,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);

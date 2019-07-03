@@ -1,0 +1,6 @@
+framework module XOChatModule {
+  umbrella header "XOChatModule-umbrella.h"
+
+  export *
+  module * { export * }
+}

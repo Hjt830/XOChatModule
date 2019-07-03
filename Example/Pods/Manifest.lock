@@ -1,0 +1,16 @@
+PODS:
+  - XOChatModule (0.1.0)
+
+DEPENDENCIES:
+  - XOChatModule (from `../`)
+
+EXTERNAL SOURCES:
+  XOChatModule:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  XOChatModule: 75dc4c2bf6c14caf65cfec6500942828834854f2
+
+PODFILE CHECKSUM: 48c2cc56f341dd15eff40e2569afb35393dcc7c6
+
+COCOAPODS: 1.7.3
