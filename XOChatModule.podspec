@@ -40,5 +40,6 @@ Pod::Spec.new do |s|
   s.frameworks = 'UIKit', 'Foundation'
   s.dependency 'TXIMSDK_iOS', '~> 4.4.627'
   s.dependency 'AFNetworking', '~> 3.2.1'
+  s.dependency 'GTMBase64', '~> 1.0.1'
   
 end

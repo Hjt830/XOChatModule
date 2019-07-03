@@ -11,6 +11,7 @@
 #endif
 
 #import "NSString+XOExtenstion.h"
+#import "XOMacro.h"
 
 FOUNDATION_EXPORT double XOChatModuleVersionNumber;
 FOUNDATION_EXPORT const unsigned char XOChatModuleVersionString[];

@@ -9,6 +9,7 @@
 #import "NSString+XOExtenstion.h"
 #import <CommonCrypto/CommonCrypto.h>
 #import <GTMBase64/GTMBase64.h>
+#import "XOMacro.h"
 
 @implementation NSString (Extension)
     

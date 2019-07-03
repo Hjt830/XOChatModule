@@ -6,27 +6,118 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		37C8B4CA3E62FB44CD14CEEF054EDAC2 /* TXIMSDK_iOS */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 2EA7CD85B583385538824685F1F8DC1A /* Build configuration list for PBXAggregateTarget "TXIMSDK_iOS" */;
+			buildPhases = (
+			);
+			dependencies = (
+			);
+			name = TXIMSDK_iOS;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
-		0446FA597402E78DE25BAC0D958D8B34 /* Pods-XOChatModule_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A3146F0B5DD92777F3A061D9D3893C /* Pods-XOChatModule_Example-dummy.m */; };
-		0C5F5260690F31C5F01B0F5EB393DFC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */; };
-		2BE6C4FCC44947EE4187216A3B68C952 /* NSString+XOExtenstion.m in Sources */ = {isa = PBXBuildFile; fileRef = 122617C481B2E144E028ACA014D424DC /* NSString+XOExtenstion.m */; };
+		0254EABA2D0AACFBFA5E2BAD753C5E2D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6F16E89575F845B26BDB424F134A611 /* Foundation.framework */; };
+		0939D87903C1EBA9B551707000157264 /* XOChatModule-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BCC92C09DC180852D0E4A83B3CB91887 /* XOChatModule-dummy.m */; };
+		09E2F57C3C2B897ACC8AF5C49F1E9592 /* UIImage+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A2DC9226F597A194793F0959DE749B6 /* UIImage+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		09E785555B549DE5974C744DB8324B91 /* UIRefreshControl+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 49E18712C802CDD7C59C1C5D5A9E428B /* UIRefreshControl+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0C5F5260690F31C5F01B0F5EB393DFC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6F16E89575F845B26BDB424F134A611 /* Foundation.framework */; };
+		0D40EE6956924384435BBBD4B718DEC8 /* AFImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 7404220E360BACC12335EAFEFC0BEAE4 /* AFImageDownloader.m */; };
+		169B3FC2BD33B8FBC2D4C35A1C1DC6BF /* AFHTTPSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 328426491C2E2FFA46FACC736540EFFE /* AFHTTPSessionManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		17D6A066C5F987FEFF8B89D7EFDFD375 /* AFURLRequestSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = A05AB20DF5984DF16A9474C6ABB88E83 /* AFURLRequestSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1AC36159DEDD4452C304D5B1FFB688D1 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDBBB578BBD66475D6D5AA9370920519 /* MobileCoreServices.framework */; };
+		23359F08E3448F2864BF3BEDC9D81F81 /* GTMBase64-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E31FBE7512CAC4921EFB52D51EC65B7 /* GTMBase64-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2AE1F29F045D02727E815DBBAC8C7B4F /* AFNetworkActivityIndicatorManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 20CD634D48EE68B9D0D7311931A37D8E /* AFNetworkActivityIndicatorManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2EA496FC037713E9F711256A9FE962A4 /* Pods-XOChatModule_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DA838A966B3D59AF4EC0224723E23E4 /* Pods-XOChatModule_Tests-dummy.m */; };
-		62F9F7A127ADB21C36280143704F63B5 /* XOChatModule-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 205AC456A24910F6D8F172EF34D15E09 /* XOChatModule-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3033C2DE9CB2085ECBB95717CFB6425A /* AFAutoPurgingImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CC7E7ECA837BF911B7AE6D784A0A80F3 /* AFAutoPurgingImageCache.m */; };
+		34A7C5747B4C0825465453E196E57FAA /* UIButton+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CAA7EF32CAF1480E96FD36D1954515D /* UIButton+AFNetworking.m */; };
+		3A186F3A7711FAAB8C60562D63FF0D9F /* UIProgressView+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 383148E40E9F364D1C97993F0B3AA33F /* UIProgressView+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3BDC8FBDB7922AA1ABA2C90DBA2DBB35 /* AFNetworking-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 729E85A9529A96C3FAEF3E500D4A3A5F /* AFNetworking-dummy.m */; };
+		3E112DA53DD725C9A3185A54EB342EAF /* AFSecurityPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = FA03FF470D89E1AB937ACEBAC23233A0 /* AFSecurityPolicy.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		45AD6149EEB2883EAC09063B5FDD6F5B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A80653D8CCE604DD7BBA20A878939214 /* CoreGraphics.framework */; };
+		469AC6FFC61DAD7BABAFD53508ED5853 /* Pods-XOChatModule_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = F28EE939F3DDF57693A13A5ABF019D84 /* Pods-XOChatModule_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		47FF1D17418AB1144FDE0E46427F4877 /* AFURLResponseSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 73C3A6F0752EA39B08E89BD837DD40EA /* AFURLResponseSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5036C1D6D87D4DA731C972A410C17ABC /* AFNetworking-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E7FCDC1B1E77B34D8B766135C600EC2 /* AFNetworking-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5B2DBF92BA521F8817ED02A8E9D8F386 /* Pods-XOChatModule_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A3146F0B5DD92777F3A061D9D3893C /* Pods-XOChatModule_Example-dummy.m */; };
+		626B39E4D476758CD613021647AB45BC /* GTMDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 31B04C693EAA877F099727364E6145ED /* GTMDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6DDC6FEFF88B67F4833A6E9784325C2E /* XOChatModule-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 2F8AC0E080C6A03F42C652EAC8E876A3 /* XOChatModule-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6E4C66ABA27A0F4EFDAA3E8B21A9384F /* AFNetworkActivityIndicatorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DE6F07531950414A82D03DC5E1B4200 /* AFNetworkActivityIndicatorManager.m */; };
+		6F6C4414DE96E08267712DA4C17C3CBB /* UIImageView+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 2536377C62175002980D3BD9AEEC307E /* UIImageView+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7695C94E04288986CE772C293ED80CC8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6F16E89575F845B26BDB424F134A611 /* Foundation.framework */; };
+		769B6260247C5624A11411541C0AA4E2 /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = FDF2111D418F552D3EE5F665DEDD057C /* AFSecurityPolicy.m */; };
+		77876997CA63145CC72A2D6FB5758513 /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 84D06B8E3B9D55D3149D8E7BC4CA389E /* AFHTTPSessionManager.m */; };
+		7F372985CE80B69B5524CC3277E1C1AF /* AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = F509412B75C2B13EBA1D29976B312122 /* AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		856B571FA3AE9D65E81FACB19E3557F4 /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DBA092262264FBAFD517744C49658AFB /* AFURLSessionManager.m */; };
+		870044029B3BA449A0932AAE3A495DE9 /* AFAutoPurgingImageCache.h in Headers */ = {isa = PBXBuildFile; fileRef = FBFFB9A2C7502A5BA12D4BDE3D53CF72 /* AFAutoPurgingImageCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		87A62E397E45BF1DB09B0489CB6DAD31 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6F16E89575F845B26BDB424F134A611 /* Foundation.framework */; };
+		88C91529A871EEC538B301F67FA77AED /* NSString+XOExtenstion.h in Headers */ = {isa = PBXBuildFile; fileRef = F14E1423E780B40AE88035D4D1ABEBCB /* NSString+XOExtenstion.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8F96E82F250EE718FA3F08AC9AB58423 /* UIActivityIndicatorView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 0563BCFE0A6412729BB0B35D002FEBEE /* UIActivityIndicatorView+AFNetworking.m */; };
+		8FB3881CCAB9550F1C8427236A9A3258 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6F16E89575F845B26BDB424F134A611 /* Foundation.framework */; };
+		95DAE5AD46A86973A77907D38716F694 /* AFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 897E3A8254665684110702FA5AEF021A /* AFNetworkReachabilityManager.m */; };
+		98114570DFFDF5BD81B7724B4810501D /* UIProgressView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = BC1F0FBD20BAC5260787325067687DC2 /* UIProgressView+AFNetworking.m */; };
 		988AAE030794F582C964D12E86B878BD /* Pods-XOChatModule_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 84C2F0FC49AB8DAB9EE5C7A7AFBF582C /* Pods-XOChatModule_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9FDC9B4DA14D3B2398055A3524AE15E5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */; };
-		C14872AC8622C9153701674B83DF1706 /* NSString+XOExtenstion.h in Headers */ = {isa = PBXBuildFile; fileRef = EE068522AEBE198467E2F77519A9C307 /* NSString+XOExtenstion.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CD29E9AF2F2CBFEEA9CFDC61DE52C9A2 /* XOChatModule-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 16C1B00617C18C4714956C8C9682D954 /* XOChatModule-dummy.m */; };
-		E2B65F8FF44778BDB94538C2FED0CD5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */; };
-		EAE04DFB5364A5F8BDE9FB051150E88A /* Pods-XOChatModule_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = F28EE939F3DDF57693A13A5ABF019D84 /* Pods-XOChatModule_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9B41316D2DE09092FA0143B33A74B769 /* UIKit+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = CED4A309EDF241D3D3F84474EF61961C /* UIKit+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A5D86CC71480778ECD0EE81138D48C91 /* AFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1FB45431C32EE801C37AC064EDFB2E /* AFURLResponseSerialization.m */; };
+		A6D090FB1C368A800489124E5A734EC6 /* GTMBase64-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7152E126722F087DD979727989359055 /* GTMBase64-dummy.m */; };
+		A93BD560DD062BA5B515267570761CBE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 991D526A55D6E6681FF717C5CC103D2A /* Security.framework */; };
+		A9E429ECAF059D9D471F3AE5C1BAC2B0 /* AFNetworkReachabilityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A212178A12C1D187E8F6E66A2A5D3D1F /* AFNetworkReachabilityManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		ABBB199286D73567D919E6FC6C8928F7 /* GTMBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F0AC61941D3FC5314758BF46E7BABD2 /* GTMBase64.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AEA4CF8EE7E08C13B4A71A634F9F3B5B /* UIButton+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 14A7BAD7C517065F71096B36F149E106 /* UIButton+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AECB9FD1C271F734476CBF6E84BBFC51 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 77FACDE7D868906BD69B92C0A5A4774F /* UIImageView+AFNetworking.m */; };
+		B26EDD2D9A9BC8CDDEADEA8DBEC606A7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCB5DFCB79B9D988823E9C0519FECC9 /* SystemConfiguration.framework */; };
+		B2FFFD99E63BEEF5955FC4BCE6D15B4E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E84B83EA8CD165DB5A2B1B5263F6070 /* UIKit.framework */; };
+		B5AD0B8F0F9304975A01978B2908B62F /* UIActivityIndicatorView+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = EC3E2B640749A7CB85C75799A731974C /* UIActivityIndicatorView+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D29F2AD07AF58334781F008905C30C35 /* UIRefreshControl+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F57AD48D56C39F000EF64E78B140E19A /* UIRefreshControl+AFNetworking.m */; };
+		D59E2A517A48D101120EB57F90F140A5 /* AFURLSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 499C9F6072E0A38F17D0D73C65A222C1 /* AFURLSessionManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DC2186197E507C0C73DFB0600D54867A /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD3F270BE3A8B07DD8610D52A602440 /* UIWebView+AFNetworking.m */; };
+		E04E3DAFC33B4D9494A625F99CC821E2 /* NSString+XOExtenstion.m in Sources */ = {isa = PBXBuildFile; fileRef = BEF9886441009F21F9CB2CCB5017683F /* NSString+XOExtenstion.m */; };
+		E17973BC9CEAE4ED0A7492450F95ACEF /* AFURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D5B59027F3E0531723DD0B8B8F0DF6B /* AFURLRequestSerialization.m */; };
+		E261B82A0EEFE0EA897EA1A36C69C1CE /* AFImageDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = DD54502C8F46BC34074EB2D9E99112D4 /* AFImageDownloader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E75BF2085F1B64F7378E0C6428835944 /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A9D7D3093A251CFB1F1FC1CE6638306 /* AFNetworking.framework */; };
+		E8D570C17703416C7E4ECD81F636CFF8 /* XOMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B13B2151C5D82084F1474057045DE18 /* XOMacro.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F407B4E0B40A8AA4CA7443563F105E40 /* AFCompatibilityMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = E15C37E814D64AA0240D70FAE2AD9BE7 /* AFCompatibilityMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4FED6C37367BC46B92BB3FE18D233B8 /* UIWebView+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 74A628595C5D8396164CECE46FD862B1 /* UIWebView+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F505CEE173C430C74132F4339E931F23 /* GTMBase64.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45C8CDB9C96B4D3CF45F08DCFCF0FF85 /* GTMBase64.framework */; };
+		FF4B8D47A4795F2BB66EFEF0DDA8F73F /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D92F8B5071A34CE12E5DEC4FFE2A9A7 /* GTMBase64.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		29E3BF24461BBBF10CEF966D140CD8EE /* PBXContainerItemProxy */ = {
+		1933E32F402F8C78CC15FFAFA25AC894 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 49F81DEB6688E736DE87532B341FC72B;
 			remoteInfo = XOChatModule;
+		};
+		4D415571BC2C006316740E78514CE4F8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ABD0BEB997F424C11EE21A4E091425E4;
+			remoteInfo = GTMBase64;
+		};
+		614B291330FA4C6FCB123C035F31B5F7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 37C8B4CA3E62FB44CD14CEEF054EDAC2;
+			remoteInfo = TXIMSDK_iOS;
+		};
+		7CF264AA74BFF7DD77104B1A5B58A57A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ABD0BEB997F424C11EE21A4E091425E4;
+			remoteInfo = GTMBase64;
+		};
+		7F11933AE71ECE749399E241466BFB28 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0130B3724283586C0E9D2A112D4F2AA1;
+			remoteInfo = AFNetworking;
 		};
 		D4CFFBB535A6D6CB174F203AEFAD278F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -35,45 +126,170 @@
 			remoteGlobalIDString = B7A22E9A9C6CFA017D8BAE1B018E3BAE;
 			remoteInfo = "Pods-XOChatModule_Example";
 		};
+		DFFA8E7201C3722D34ACDE463212C733 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 37C8B4CA3E62FB44CD14CEEF054EDAC2;
+			remoteInfo = TXIMSDK_iOS;
+		};
+		FAC8D461457DB2FC697CF1119C89DA71 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0130B3724283586C0E9D2A112D4F2AA1;
+			remoteInfo = AFNetworking;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		035BCFB7E007FDDF6ADFA991BD04CD4B /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		02813DA98BE04F99BF3ED1D651EFC0DA /* TIMFriendshipManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TIMFriendshipManager.h; path = iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMFriendshipManager.h; sourceTree = "<group>"; };
+		0563BCFE0A6412729BB0B35D002FEBEE /* UIActivityIndicatorView+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIActivityIndicatorView+AFNetworking.m"; path = "UIKit+AFNetworking/UIActivityIndicatorView+AFNetworking.m"; sourceTree = "<group>"; };
+		08EA1E2535F98D4207CC0ED1D881BD92 /* XOChatModule.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = XOChatModule.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		0A9A9213934B831875AFD0A49859E95B /* Pods-XOChatModule_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-XOChatModule_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		122617C481B2E144E028ACA014D424DC /* NSString+XOExtenstion.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSString+XOExtenstion.m"; path = "XOChatModule/Classes/NSString+XOExtenstion.m"; sourceTree = "<group>"; };
-		16C1B00617C18C4714956C8C9682D954 /* XOChatModule-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "XOChatModule-dummy.m"; sourceTree = "<group>"; };
-		205AC456A24910F6D8F172EF34D15E09 /* XOChatModule-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "XOChatModule-umbrella.h"; sourceTree = "<group>"; };
-		3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		40E3ADDFD1FCB9C6507935B320F8A021 /* XOChatModule-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "XOChatModule-Info.plist"; sourceTree = "<group>"; };
-		4B064839E71ADA74148303B5B58A0186 /* XOChatModule.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = XOChatModule.xcconfig; sourceTree = "<group>"; };
-		4CA18DB798BEA60273B1A9028AC745B8 /* XOChatModule.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = XOChatModule.modulemap; sourceTree = "<group>"; };
+		0AC21C4C82848A1ACC745F83659295E8 /* IMMessageExt.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IMMessageExt.h; path = iOS/ImSDK/Framework/ImSDK.framework/Headers/IMMessageExt.h; sourceTree = "<group>"; };
+		0CAA7EF32CAF1480E96FD36D1954515D /* UIButton+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIButton+AFNetworking.m"; path = "UIKit+AFNetworking/UIButton+AFNetworking.m"; sourceTree = "<group>"; };
+		0D5B59027F3E0531723DD0B8B8F0DF6B /* AFURLRequestSerialization.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFURLRequestSerialization.m; path = AFNetworking/AFURLRequestSerialization.m; sourceTree = "<group>"; };
+		1183B3B160F19F17848C01BBA70C0A38 /* TIMMessage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TIMMessage.h; path = iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMMessage.h; sourceTree = "<group>"; };
+		14A7BAD7C517065F71096B36F149E106 /* UIButton+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIButton+AFNetworking.h"; path = "UIKit+AFNetworking/UIButton+AFNetworking.h"; sourceTree = "<group>"; };
+		1B2196CAACFFF7EEDDA12B7012830DAE /* TXIMSDK_iOS.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = TXIMSDK_iOS.xcconfig; sourceTree = "<group>"; };
+		1BD28B28EDF978B8530408698692EEE6 /* TIMConversation+MsgExt.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "TIMConversation+MsgExt.h"; path = "iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMConversation+MsgExt.h"; sourceTree = "<group>"; };
+		20CD634D48EE68B9D0D7311931A37D8E /* AFNetworkActivityIndicatorManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFNetworkActivityIndicatorManager.h; path = "UIKit+AFNetworking/AFNetworkActivityIndicatorManager.h"; sourceTree = "<group>"; };
+		246C8631CB54B0267C91604346E090A3 /* TIMErrorCode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TIMErrorCode.h; path = iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMErrorCode.h; sourceTree = "<group>"; };
+		2536377C62175002980D3BD9AEEC307E /* UIImageView+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImageView+AFNetworking.h"; path = "UIKit+AFNetworking/UIImageView+AFNetworking.h"; sourceTree = "<group>"; };
+		26319199CE154B57F718062BF2118809 /* IMSdkComm.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IMSdkComm.h; path = iOS/ImSDK/Framework/ImSDK.framework/Headers/IMSdkComm.h; sourceTree = "<group>"; };
+		2A1FB45431C32EE801C37AC064EDFB2E /* AFURLResponseSerialization.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFURLResponseSerialization.m; path = AFNetworking/AFURLResponseSerialization.m; sourceTree = "<group>"; };
+		2A81A8548D9B988555252A0C063E2BE9 /* TIMGroupManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TIMGroupManager.h; path = iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMGroupManager.h; sourceTree = "<group>"; };
+		2D16E163047D3A6E6E5853F69B02C2BF /* TIMConversation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TIMConversation.h; path = iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMConversation.h; sourceTree = "<group>"; };
+		2E31FBE7512CAC4921EFB52D51EC65B7 /* GTMBase64-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "GTMBase64-umbrella.h"; sourceTree = "<group>"; };
+		2F8AC0E080C6A03F42C652EAC8E876A3 /* XOChatModule-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "XOChatModule-umbrella.h"; sourceTree = "<group>"; };
+		31B04C693EAA877F099727364E6145ED /* GTMDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTMDefines.h; path = GTMBase64/GTMDefines.h; sourceTree = "<group>"; };
+		328426491C2E2FFA46FACC736540EFFE /* AFHTTPSessionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFHTTPSessionManager.h; path = AFNetworking/AFHTTPSessionManager.h; sourceTree = "<group>"; };
+		383148E40E9F364D1C97993F0B3AA33F /* UIProgressView+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIProgressView+AFNetworking.h"; path = "UIKit+AFNetworking/UIProgressView+AFNetworking.h"; sourceTree = "<group>"; };
+		3AB99A0C20EDF795AC6D474173627E2A /* TIMComm+Group.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "TIMComm+Group.h"; path = "iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMComm+Group.h"; sourceTree = "<group>"; };
+		3D3A13CB90A318D06589DC6F92BEF514 /* AFNetworking.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AFNetworking.xcconfig; sourceTree = "<group>"; };
+		3DB29A1C881553E50144523D78A29DA1 /* ImSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImSDK.framework; path = iOS/ImSDK/Framework/ImSDK.framework; sourceTree = "<group>"; };
+		3E8A3867468E33DB4119622223FCD9B3 /* GTMBase64-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "GTMBase64-Info.plist"; sourceTree = "<group>"; };
+		45C8CDB9C96B4D3CF45F08DCFCF0FF85 /* GTMBase64.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GTMBase64.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		47A30A7DA78C80FF6C233870CD31BE20 /* TIMGroupManager+Ext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "TIMGroupManager+Ext.h"; path = "iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMGroupManager+Ext.h"; sourceTree = "<group>"; };
+		499C9F6072E0A38F17D0D73C65A222C1 /* AFURLSessionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFURLSessionManager.h; path = AFNetworking/AFURLSessionManager.h; sourceTree = "<group>"; };
+		49E18712C802CDD7C59C1C5D5A9E428B /* UIRefreshControl+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIRefreshControl+AFNetworking.h"; path = "UIKit+AFNetworking/UIRefreshControl+AFNetworking.h"; sourceTree = "<group>"; };
+		4A096DED07E6963676A500F7C0EDAFB7 /* AFNetworking-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "AFNetworking-Info.plist"; sourceTree = "<group>"; };
+		4CCB5DFCB79B9D988823E9C0519FECC9 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		4DA838A966B3D59AF4EC0224723E23E4 /* Pods-XOChatModule_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-XOChatModule_Tests-dummy.m"; sourceTree = "<group>"; };
+		4E7FCDC1B1E77B34D8B766135C600EC2 /* AFNetworking-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AFNetworking-umbrella.h"; sourceTree = "<group>"; };
+		52ED573B47028B5BC8EEEA86D2B18D97 /* IMGroupExt.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IMGroupExt.h; path = iOS/ImSDK/Framework/ImSDK.framework/Headers/IMGroupExt.h; sourceTree = "<group>"; };
 		53466B6CD372F4FE1E0AC9FB3BAA8ABE /* Pods-XOChatModule_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-XOChatModule_Example-frameworks.sh"; sourceTree = "<group>"; };
-		5EB605C211D10E3B29C14AF5A8257BC9 /* Pods_XOChatModule_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XOChatModule_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		53BDD6746F7FE114E8CC636F235C4DFF /* ImSDK.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ImSDK.h; path = iOS/ImSDK/Framework/ImSDK.framework/Headers/ImSDK.h; sourceTree = "<group>"; };
+		5A9D7D3093A251CFB1F1FC1CE6638306 /* AFNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AFNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5EB605C211D10E3B29C14AF5A8257BC9 /* Pods_XOChatModule_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_XOChatModule_Example.framework; path = "Pods-XOChatModule_Example.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F0AC61941D3FC5314758BF46E7BABD2 /* GTMBase64.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTMBase64.h; path = GTMBase64/GTMBase64.h; sourceTree = "<group>"; };
+		61B5D540AE8BAE5BA793550CD0AAD632 /* TIMComm+MsgExt.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "TIMComm+MsgExt.h"; path = "iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMComm+MsgExt.h"; sourceTree = "<group>"; };
 		67BECDC157DD2029BBF02B5A997267CB /* Pods-XOChatModule_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-XOChatModule_Tests.modulemap"; sourceTree = "<group>"; };
-		7757CA884D995B36163A35BE16A75ADC /* XOChatModule.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = XOChatModule.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		80274F0051809DEFD45132056885AF52 /* XOChatModule-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "XOChatModule-prefix.pch"; sourceTree = "<group>"; };
+		7152E126722F087DD979727989359055 /* GTMBase64-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "GTMBase64-dummy.m"; sourceTree = "<group>"; };
+		729E85A9529A96C3FAEF3E500D4A3A5F /* AFNetworking-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AFNetworking-dummy.m"; sourceTree = "<group>"; };
+		73C3A6F0752EA39B08E89BD837DD40EA /* AFURLResponseSerialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFURLResponseSerialization.h; path = AFNetworking/AFURLResponseSerialization.h; sourceTree = "<group>"; };
+		7404220E360BACC12335EAFEFC0BEAE4 /* AFImageDownloader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFImageDownloader.m; path = "UIKit+AFNetworking/AFImageDownloader.m"; sourceTree = "<group>"; };
+		74A628595C5D8396164CECE46FD862B1 /* UIWebView+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIWebView+AFNetworking.h"; path = "UIKit+AFNetworking/UIWebView+AFNetworking.h"; sourceTree = "<group>"; };
+		7757CA884D995B36163A35BE16A75ADC /* XOChatModule.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = XOChatModule.framework; path = XOChatModule.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		77FACDE7D868906BD69B92C0A5A4774F /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImageView+AFNetworking.m"; path = "UIKit+AFNetworking/UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
+		7B13B2151C5D82084F1474057045DE18 /* XOMacro.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = XOMacro.h; path = XOChatModule/Classes/XOMacro.h; sourceTree = "<group>"; };
+		7D92F8B5071A34CE12E5DEC4FFE2A9A7 /* GTMBase64.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTMBase64.m; path = GTMBase64/GTMBase64.m; sourceTree = "<group>"; };
+		7DE6F07531950414A82D03DC5E1B4200 /* AFNetworkActivityIndicatorManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFNetworkActivityIndicatorManager.m; path = "UIKit+AFNetworking/AFNetworkActivityIndicatorManager.m"; sourceTree = "<group>"; };
+		8291753C7260E67D75C4ED928F3FCF77 /* TIMManager+MsgExt.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "TIMManager+MsgExt.h"; path = "iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMManager+MsgExt.h"; sourceTree = "<group>"; };
 		84C2F0FC49AB8DAB9EE5C7A7AFBF582C /* Pods-XOChatModule_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-XOChatModule_Tests-umbrella.h"; sourceTree = "<group>"; };
+		84D06B8E3B9D55D3149D8E7BC4CA389E /* AFHTTPSessionManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFHTTPSessionManager.m; path = AFNetworking/AFHTTPSessionManager.m; sourceTree = "<group>"; };
+		897E3A8254665684110702FA5AEF021A /* AFNetworkReachabilityManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFNetworkReachabilityManager.m; path = AFNetworking/AFNetworkReachabilityManager.m; sourceTree = "<group>"; };
 		89A3146F0B5DD92777F3A061D9D3893C /* Pods-XOChatModule_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-XOChatModule_Example-dummy.m"; sourceTree = "<group>"; };
+		8DC955BB45A5A3B27BB620BE8953AA07 /* XOChatModule-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "XOChatModule-prefix.pch"; sourceTree = "<group>"; };
 		8E088A7E3373B942F5C13FABD790DA03 /* Pods-XOChatModule_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-XOChatModule_Example.modulemap"; sourceTree = "<group>"; };
+		8E8358EE448FD07A846FD883A5892410 /* XOChatModule-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "XOChatModule-Info.plist"; sourceTree = "<group>"; };
+		8E84B83EA8CD165DB5A2B1B5263F6070 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		90255DB53CD883DE7490F540E3BC9777 /* Pods-XOChatModule_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-XOChatModule_Example-acknowledgements.plist"; sourceTree = "<group>"; };
+		90EE325E1A4DBEBC16709FA40591AC27 /* TIMCallback.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TIMCallback.h; path = iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMCallback.h; sourceTree = "<group>"; };
+		91FD61FB9521D00EF5B50F3CB4FC3CD0 /* GTMBase64.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GTMBase64.framework; path = GTMBase64.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		938D209E562990C5E0FD761A295C773A /* Pods-XOChatModule_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-XOChatModule_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		950BA8D891FF09ED59B8493B550F823B /* Pods-XOChatModule_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-XOChatModule_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		9B60A7009D4FF328547157D0FE78609D /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		991D526A55D6E6681FF717C5CC103D2A /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
+		9A2DC9226F597A194793F0959DE749B6 /* UIImage+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+AFNetworking.h"; path = "UIKit+AFNetworking/UIImage+AFNetworking.h"; sourceTree = "<group>"; };
+		9A2FB8DEAAA21ECFB45BCCE2EEB94E88 /* XOChatModule.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = XOChatModule.modulemap; sourceTree = "<group>"; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9E59F4040B790A99F3C8A29F0EA28535 /* Pods-XOChatModule_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-XOChatModule_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
+		A05AB20DF5984DF16A9474C6ABB88E83 /* AFURLRequestSerialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFURLRequestSerialization.h; path = AFNetworking/AFURLRequestSerialization.h; sourceTree = "<group>"; };
+		A212178A12C1D187E8F6E66A2A5D3D1F /* AFNetworkReachabilityManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFNetworkReachabilityManager.h; path = AFNetworking/AFNetworkReachabilityManager.h; sourceTree = "<group>"; };
+		A4FA15D44DF6BAC7550EDEED10862AA3 /* AFNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AFNetworking.framework; path = AFNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A80653D8CCE604DD7BBA20A878939214 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
 		B6E83AE2BE2A734804EB19110D810E4C /* Pods-XOChatModule_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-XOChatModule_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		BC1F0FBD20BAC5260787325067687DC2 /* UIProgressView+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIProgressView+AFNetworking.m"; path = "UIKit+AFNetworking/UIProgressView+AFNetworking.m"; sourceTree = "<group>"; };
+		BCC92C09DC180852D0E4A83B3CB91887 /* XOChatModule-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "XOChatModule-dummy.m"; sourceTree = "<group>"; };
 		BEF350F82D591CFC0D0E4E60614A0702 /* Pods-XOChatModule_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-XOChatModule_Tests-Info.plist"; sourceTree = "<group>"; };
+		BEF9886441009F21F9CB2CCB5017683F /* NSString+XOExtenstion.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSString+XOExtenstion.m"; path = "XOChatModule/Classes/NSString+XOExtenstion.m"; sourceTree = "<group>"; };
+		C42F174B78ED0E78AC61730F283FA420 /* XOChatModule.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = XOChatModule.xcconfig; sourceTree = "<group>"; };
+		C6F16E89575F845B26BDB424F134A611 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		C7B876D9EF3B0359518AA284EAF8AB3D /* Pods-XOChatModule_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-XOChatModule_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
+		C990C7707C3E79247D48590D98C5A640 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		CC7E7ECA837BF911B7AE6D784A0A80F3 /* AFAutoPurgingImageCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFAutoPurgingImageCache.m; path = "UIKit+AFNetworking/AFAutoPurgingImageCache.m"; sourceTree = "<group>"; };
+		CCBA83D309F5CD956F05DB50611886AF /* TIMComm.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TIMComm.h; path = iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMComm.h; sourceTree = "<group>"; };
+		CDBBB578BBD66475D6D5AA9370920519 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = DEVELOPER_DIR; };
+		CED4A309EDF241D3D3F84474EF61961C /* UIKit+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIKit+AFNetworking.h"; path = "UIKit+AFNetworking/UIKit+AFNetworking.h"; sourceTree = "<group>"; };
 		CFA746E16241985666CC886758C83072 /* Pods-XOChatModule_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-XOChatModule_Example.release.xcconfig"; sourceTree = "<group>"; };
-		DF451ABA96585DD83852CD15A400E8B8 /* XOChatModule.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = XOChatModule.podspec; sourceTree = "<group>"; tabWidth = 2; };
-		EE068522AEBE198467E2F77519A9C307 /* NSString+XOExtenstion.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSString+XOExtenstion.h"; path = "XOChatModule/Classes/NSString+XOExtenstion.h"; sourceTree = "<group>"; };
-		F196E16BA4152BA03DEC8D7B44C4EF68 /* Pods_XOChatModule_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XOChatModule_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D61D7611579B67DBCE57C59FC99C0237 /* TIMMessage+MsgExt.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "TIMMessage+MsgExt.h"; path = "iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMMessage+MsgExt.h"; sourceTree = "<group>"; };
+		DB03E4BC69105D44F57BAE8DC6668B58 /* AFNetworking.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = AFNetworking.modulemap; sourceTree = "<group>"; };
+		DBA092262264FBAFD517744C49658AFB /* AFURLSessionManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFURLSessionManager.m; path = AFNetworking/AFURLSessionManager.m; sourceTree = "<group>"; };
+		DD54502C8F46BC34074EB2D9E99112D4 /* AFImageDownloader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFImageDownloader.h; path = "UIKit+AFNetworking/AFImageDownloader.h"; sourceTree = "<group>"; };
+		DE5DA7064A5001773AF2E38D1EAA47AE /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		DE5FD1D1E1576332B4A4A1AE49644B0B /* GTMBase64.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GTMBase64.xcconfig; sourceTree = "<group>"; };
+		E15C37E814D64AA0240D70FAE2AD9BE7 /* AFCompatibilityMacros.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFCompatibilityMacros.h; path = AFNetworking/AFCompatibilityMacros.h; sourceTree = "<group>"; };
+		E2863A54EC5511B191CBF792D4BE72A2 /* TIMFriendshipDefine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TIMFriendshipDefine.h; path = iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMFriendshipDefine.h; sourceTree = "<group>"; };
+		E6D6EB48D6B0EA29347056BE6CAF5C07 /* AFNetworking-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AFNetworking-prefix.pch"; sourceTree = "<group>"; };
+		E9887DCBAB9181F8C070603D664F61C3 /* GTMBase64-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "GTMBase64-prefix.pch"; sourceTree = "<group>"; };
+		EAD3F270BE3A8B07DD8610D52A602440 /* UIWebView+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIWebView+AFNetworking.m"; path = "UIKit+AFNetworking/UIWebView+AFNetworking.m"; sourceTree = "<group>"; };
+		EC3E2B640749A7CB85C75799A731974C /* UIActivityIndicatorView+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIActivityIndicatorView+AFNetworking.h"; path = "UIKit+AFNetworking/UIActivityIndicatorView+AFNetworking.h"; sourceTree = "<group>"; };
+		EE5DF6FA5668D821B3259C8BE8C0FC7A /* GTMBase64.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = GTMBase64.modulemap; sourceTree = "<group>"; };
+		F14E1423E780B40AE88035D4D1ABEBCB /* NSString+XOExtenstion.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSString+XOExtenstion.h"; path = "XOChatModule/Classes/NSString+XOExtenstion.h"; sourceTree = "<group>"; };
+		F196E16BA4152BA03DEC8D7B44C4EF68 /* Pods_XOChatModule_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_XOChatModule_Tests.framework; path = "Pods-XOChatModule_Tests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F28EE939F3DDF57693A13A5ABF019D84 /* Pods-XOChatModule_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-XOChatModule_Example-umbrella.h"; sourceTree = "<group>"; };
+		F466A8B31B0B24F93560E031FF60A1C8 /* TIMManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TIMManager.h; path = iOS/ImSDK/Framework/ImSDK.framework/Headers/TIMManager.h; sourceTree = "<group>"; };
+		F509412B75C2B13EBA1D29976B312122 /* AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFNetworking.h; path = AFNetworking/AFNetworking.h; sourceTree = "<group>"; };
+		F57AD48D56C39F000EF64E78B140E19A /* UIRefreshControl+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIRefreshControl+AFNetworking.m"; path = "UIKit+AFNetworking/UIRefreshControl+AFNetworking.m"; sourceTree = "<group>"; };
 		F645EF82492B6FBABE81ED285CDCEC03 /* Pods-XOChatModule_Example-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-XOChatModule_Example-Info.plist"; sourceTree = "<group>"; };
+		FA03FF470D89E1AB937ACEBAC23233A0 /* AFSecurityPolicy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFSecurityPolicy.h; path = AFNetworking/AFSecurityPolicy.h; sourceTree = "<group>"; };
+		FBFFB9A2C7502A5BA12D4BDE3D53CF72 /* AFAutoPurgingImageCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFAutoPurgingImageCache.h; path = "UIKit+AFNetworking/AFAutoPurgingImageCache.h"; sourceTree = "<group>"; };
+		FDF2111D418F552D3EE5F665DEDD057C /* AFSecurityPolicy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFSecurityPolicy.m; path = AFNetworking/AFSecurityPolicy.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2CDD8BE2FE88408FBBC55ED6E783F1B9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				87A62E397E45BF1DB09B0489CB6DAD31 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8808416ADAB6A125F4EABB3561EC555E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E75BF2085F1B64F7378E0C6428835944 /* AFNetworking.framework in Frameworks */,
+				7695C94E04288986CE772C293ED80CC8 /* Foundation.framework in Frameworks */,
+				F505CEE173C430C74132F4339E931F23 /* GTMBase64.framework in Frameworks */,
+				B2FFFD99E63BEEF5955FC4BCE6D15B4E /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		99296CB2AAE82C49C9B4A74A8F4D8341 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				45AD6149EEB2883EAC09063B5FDD6F5B /* CoreGraphics.framework in Frameworks */,
+				0254EABA2D0AACFBFA5E2BAD753C5E2D /* Foundation.framework in Frameworks */,
+				1AC36159DEDD4452C304D5B1FFB688D1 /* MobileCoreServices.framework in Frameworks */,
+				A93BD560DD062BA5B515267570761CBE /* Security.framework in Frameworks */,
+				B26EDD2D9A9BC8CDDEADEA8DBEC606A7 /* SystemConfiguration.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A341BCD50583B76D4BA971CADE48F4E2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -82,35 +298,66 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D8948F26BCCD347525DB4B159368DFFF /* Frameworks */ = {
+		BA9B94903FCBB42A5700C7128FAD142E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2B65F8FF44778BDB94538C2FED0CD5E /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F1CE36E52D9FAAC064270D12ED6F8820 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				9FDC9B4DA14D3B2398055A3524AE15E5 /* Foundation.framework in Frameworks */,
+				8FB3881CCAB9550F1C8427236A9A3258 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		4046449C4F4D35563C978B04CD7F93A7 /* XOChatModule */ = {
+		0F60C2AA0F78D87CC891876BB2D1483A /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				EE068522AEBE198467E2F77519A9C307 /* NSString+XOExtenstion.h */,
-				122617C481B2E144E028ACA014D424DC /* NSString+XOExtenstion.m */,
-				F973728CA817FD38887CB771940CEB75 /* Pod */,
-				90840441E2679D968EE1A923F093A497 /* Support Files */,
+				2EDA1337E103F6F8BEA58A3F0F9FA518 /* AFNetworking */,
+				4618BBC679A7B20CC860BF741DA89A2F /* GTMBase64 */,
+				50E8EF231494B873C7B7B34776DC0B30 /* TXIMSDK_iOS */,
 			);
-			name = XOChatModule;
-			path = ../..;
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		2EDA1337E103F6F8BEA58A3F0F9FA518 /* AFNetworking */ = {
+			isa = PBXGroup;
+			children = (
+				F509412B75C2B13EBA1D29976B312122 /* AFNetworking.h */,
+				539FACD13968ABACA3A5D63E95E9CC6D /* NSURLSession */,
+				A1FB6A7812C18D03C52C7B760037D286 /* Reachability */,
+				FE7FCB48152B8BC7AEAF28782BAC0B60 /* Security */,
+				7C4A67EDF5E190A5074AD35FC84B2173 /* Serialization */,
+				34E2358F37C38692B4C1B06CA08E882F /* Support Files */,
+				6FC5CC79C3CDCB420888D465E2EF1BE1 /* UIKit */,
+			);
+			name = AFNetworking;
+			path = AFNetworking;
+			sourceTree = "<group>";
+		};
+		34E2358F37C38692B4C1B06CA08E882F /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				DB03E4BC69105D44F57BAE8DC6668B58 /* AFNetworking.modulemap */,
+				3D3A13CB90A318D06589DC6F92BEF514 /* AFNetworking.xcconfig */,
+				729E85A9529A96C3FAEF3E500D4A3A5F /* AFNetworking-dummy.m */,
+				4A096DED07E6963676A500F7C0EDAFB7 /* AFNetworking-Info.plist */,
+				E6D6EB48D6B0EA29347056BE6CAF5C07 /* AFNetworking-prefix.pch */,
+				4E7FCDC1B1E77B34D8B766135C600EC2 /* AFNetworking-umbrella.h */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/AFNetworking";
+			sourceTree = "<group>";
+		};
+		4618BBC679A7B20CC860BF741DA89A2F /* GTMBase64 */ = {
+			isa = PBXGroup;
+			children = (
+				5F0AC61941D3FC5314758BF46E7BABD2 /* GTMBase64.h */,
+				7D92F8B5071A34CE12E5DEC4FFE2A9A7 /* GTMBase64.m */,
+				31B04C693EAA877F099727364E6145ED /* GTMDefines.h */,
+				C0D166EB7BE0CFF96D26DC86B162BE6B /* Support Files */,
+			);
+			name = GTMBase64;
+			path = GTMBase64;
 			sourceTree = "<group>";
 		};
 		47498D2C2B2AF45C36A132349E097BEC /* Pods-XOChatModule_Example */ = {
@@ -139,63 +386,171 @@
 			name = "Targets Support Files";
 			sourceTree = "<group>";
 		};
-		82328E18C61EE70F282847739DC4615D /* Development Pods */ = {
+		50E8EF231494B873C7B7B34776DC0B30 /* TXIMSDK_iOS */ = {
 			isa = PBXGroup;
 			children = (
-				4046449C4F4D35563C978B04CD7F93A7 /* XOChatModule */,
+				52ED573B47028B5BC8EEEA86D2B18D97 /* IMGroupExt.h */,
+				0AC21C4C82848A1ACC745F83659295E8 /* IMMessageExt.h */,
+				53BDD6746F7FE114E8CC636F235C4DFF /* ImSDK.h */,
+				26319199CE154B57F718062BF2118809 /* IMSdkComm.h */,
+				90EE325E1A4DBEBC16709FA40591AC27 /* TIMCallback.h */,
+				CCBA83D309F5CD956F05DB50611886AF /* TIMComm.h */,
+				3AB99A0C20EDF795AC6D474173627E2A /* TIMComm+Group.h */,
+				61B5D540AE8BAE5BA793550CD0AAD632 /* TIMComm+MsgExt.h */,
+				2D16E163047D3A6E6E5853F69B02C2BF /* TIMConversation.h */,
+				1BD28B28EDF978B8530408698692EEE6 /* TIMConversation+MsgExt.h */,
+				246C8631CB54B0267C91604346E090A3 /* TIMErrorCode.h */,
+				E2863A54EC5511B191CBF792D4BE72A2 /* TIMFriendshipDefine.h */,
+				02813DA98BE04F99BF3ED1D651EFC0DA /* TIMFriendshipManager.h */,
+				2A81A8548D9B988555252A0C063E2BE9 /* TIMGroupManager.h */,
+				47A30A7DA78C80FF6C233870CD31BE20 /* TIMGroupManager+Ext.h */,
+				F466A8B31B0B24F93560E031FF60A1C8 /* TIMManager.h */,
+				8291753C7260E67D75C4ED928F3FCF77 /* TIMManager+MsgExt.h */,
+				1183B3B160F19F17848C01BBA70C0A38 /* TIMMessage.h */,
+				D61D7611579B67DBCE57C59FC99C0237 /* TIMMessage+MsgExt.h */,
+				E20B714022F6E32BE16868A802C66AF9 /* Frameworks */,
+				A7216EC732B0FB2E430EA209D8B2E331 /* Support Files */,
+			);
+			name = TXIMSDK_iOS;
+			path = TXIMSDK_iOS;
+			sourceTree = "<group>";
+		};
+		539FACD13968ABACA3A5D63E95E9CC6D /* NSURLSession */ = {
+			isa = PBXGroup;
+			children = (
+				E15C37E814D64AA0240D70FAE2AD9BE7 /* AFCompatibilityMacros.h */,
+				328426491C2E2FFA46FACC736540EFFE /* AFHTTPSessionManager.h */,
+				84D06B8E3B9D55D3149D8E7BC4CA389E /* AFHTTPSessionManager.m */,
+				499C9F6072E0A38F17D0D73C65A222C1 /* AFURLSessionManager.h */,
+				DBA092262264FBAFD517744C49658AFB /* AFURLSessionManager.m */,
+			);
+			name = NSURLSession;
+			sourceTree = "<group>";
+		};
+		6FC5CC79C3CDCB420888D465E2EF1BE1 /* UIKit */ = {
+			isa = PBXGroup;
+			children = (
+				FBFFB9A2C7502A5BA12D4BDE3D53CF72 /* AFAutoPurgingImageCache.h */,
+				CC7E7ECA837BF911B7AE6D784A0A80F3 /* AFAutoPurgingImageCache.m */,
+				DD54502C8F46BC34074EB2D9E99112D4 /* AFImageDownloader.h */,
+				7404220E360BACC12335EAFEFC0BEAE4 /* AFImageDownloader.m */,
+				20CD634D48EE68B9D0D7311931A37D8E /* AFNetworkActivityIndicatorManager.h */,
+				7DE6F07531950414A82D03DC5E1B4200 /* AFNetworkActivityIndicatorManager.m */,
+				EC3E2B640749A7CB85C75799A731974C /* UIActivityIndicatorView+AFNetworking.h */,
+				0563BCFE0A6412729BB0B35D002FEBEE /* UIActivityIndicatorView+AFNetworking.m */,
+				14A7BAD7C517065F71096B36F149E106 /* UIButton+AFNetworking.h */,
+				0CAA7EF32CAF1480E96FD36D1954515D /* UIButton+AFNetworking.m */,
+				9A2DC9226F597A194793F0959DE749B6 /* UIImage+AFNetworking.h */,
+				2536377C62175002980D3BD9AEEC307E /* UIImageView+AFNetworking.h */,
+				77FACDE7D868906BD69B92C0A5A4774F /* UIImageView+AFNetworking.m */,
+				CED4A309EDF241D3D3F84474EF61961C /* UIKit+AFNetworking.h */,
+				383148E40E9F364D1C97993F0B3AA33F /* UIProgressView+AFNetworking.h */,
+				BC1F0FBD20BAC5260787325067687DC2 /* UIProgressView+AFNetworking.m */,
+				49E18712C802CDD7C59C1C5D5A9E428B /* UIRefreshControl+AFNetworking.h */,
+				F57AD48D56C39F000EF64E78B140E19A /* UIRefreshControl+AFNetworking.m */,
+				74A628595C5D8396164CECE46FD862B1 /* UIWebView+AFNetworking.h */,
+				EAD3F270BE3A8B07DD8610D52A602440 /* UIWebView+AFNetworking.m */,
+			);
+			name = UIKit;
+			sourceTree = "<group>";
+		};
+		7C4A67EDF5E190A5074AD35FC84B2173 /* Serialization */ = {
+			isa = PBXGroup;
+			children = (
+				A05AB20DF5984DF16A9474C6ABB88E83 /* AFURLRequestSerialization.h */,
+				0D5B59027F3E0531723DD0B8B8F0DF6B /* AFURLRequestSerialization.m */,
+				73C3A6F0752EA39B08E89BD837DD40EA /* AFURLResponseSerialization.h */,
+				2A1FB45431C32EE801C37AC064EDFB2E /* AFURLResponseSerialization.m */,
+			);
+			name = Serialization;
+			sourceTree = "<group>";
+		};
+		862E32ED7D38903BE0D9DB0638CC6802 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				C990C7707C3E79247D48590D98C5A640 /* LICENSE */,
+				DE5DA7064A5001773AF2E38D1EAA47AE /* README.md */,
+				08EA1E2535F98D4207CC0ED1D881BD92 /* XOChatModule.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		A1FB6A7812C18D03C52C7B760037D286 /* Reachability */ = {
+			isa = PBXGroup;
+			children = (
+				A212178A12C1D187E8F6E66A2A5D3D1F /* AFNetworkReachabilityManager.h */,
+				897E3A8254665684110702FA5AEF021A /* AFNetworkReachabilityManager.m */,
+			);
+			name = Reachability;
+			sourceTree = "<group>";
+		};
+		A7216EC732B0FB2E430EA209D8B2E331 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				1B2196CAACFFF7EEDDA12B7012830DAE /* TXIMSDK_iOS.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/TXIMSDK_iOS";
+			sourceTree = "<group>";
+		};
+		A84A581425E05C92642811CC7252D181 /* Development Pods */ = {
+			isa = PBXGroup;
+			children = (
+				D34E1D2CF172D3ECF059598D4EDC0240 /* XOChatModule */,
 			);
 			name = "Development Pods";
 			sourceTree = "<group>";
 		};
-		90840441E2679D968EE1A923F093A497 /* Support Files */ = {
+		C0D166EB7BE0CFF96D26DC86B162BE6B /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				4CA18DB798BEA60273B1A9028AC745B8 /* XOChatModule.modulemap */,
-				4B064839E71ADA74148303B5B58A0186 /* XOChatModule.xcconfig */,
-				16C1B00617C18C4714956C8C9682D954 /* XOChatModule-dummy.m */,
-				40E3ADDFD1FCB9C6507935B320F8A021 /* XOChatModule-Info.plist */,
-				80274F0051809DEFD45132056885AF52 /* XOChatModule-prefix.pch */,
-				205AC456A24910F6D8F172EF34D15E09 /* XOChatModule-umbrella.h */,
+				EE5DF6FA5668D821B3259C8BE8C0FC7A /* GTMBase64.modulemap */,
+				DE5FD1D1E1576332B4A4A1AE49644B0B /* GTMBase64.xcconfig */,
+				7152E126722F087DD979727989359055 /* GTMBase64-dummy.m */,
+				3E8A3867468E33DB4119622223FCD9B3 /* GTMBase64-Info.plist */,
+				E9887DCBAB9181F8C070603D664F61C3 /* GTMBase64-prefix.pch */,
+				2E31FBE7512CAC4921EFB52D51EC65B7 /* GTMBase64-umbrella.h */,
 			);
 			name = "Support Files";
-			path = "Example/Pods/Target Support Files/XOChatModule";
-			sourceTree = "<group>";
-		};
-		B32A1BA9D76DA0B4017D6C453D689F40 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				5EB605C211D10E3B29C14AF5A8257BC9 /* Pods_XOChatModule_Example.framework */,
-				F196E16BA4152BA03DEC8D7B44C4EF68 /* Pods_XOChatModule_Tests.framework */,
-				7757CA884D995B36163A35BE16A75ADC /* XOChatModule.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		C0834CEBB1379A84116EF29F93051C60 /* iOS */ = {
-			isa = PBXGroup;
-			children = (
-				3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */,
-			);
-			name = iOS;
+			path = "../Target Support Files/GTMBase64";
 			sourceTree = "<group>";
 		};
 		CF1408CF629C7361332E53B88F7BD30C = {
 			isa = PBXGroup;
 			children = (
 				9D940727FF8FB9C785EB98E56350EF41 /* Podfile */,
-				82328E18C61EE70F282847739DC4615D /* Development Pods */,
-				D210D550F4EA176C3123ED886F8F87F5 /* Frameworks */,
-				B32A1BA9D76DA0B4017D6C453D689F40 /* Products */,
+				A84A581425E05C92642811CC7252D181 /* Development Pods */,
+				E9A5CAD460DF1EFF7095CC56527E7C04 /* Frameworks */,
+				0F60C2AA0F78D87CC891876BB2D1483A /* Pods */,
+				E938B40EFEA6ADEF9034D2B7CC1E6602 /* Products */,
 				49360F97230987098696E816231E3928 /* Targets Support Files */,
 			);
 			sourceTree = "<group>";
 		};
-		D210D550F4EA176C3123ED886F8F87F5 /* Frameworks */ = {
+		D27A733F05F5C0662B5B0F5348757478 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				C0834CEBB1379A84116EF29F93051C60 /* iOS */,
+				A80653D8CCE604DD7BBA20A878939214 /* CoreGraphics.framework */,
+				C6F16E89575F845B26BDB424F134A611 /* Foundation.framework */,
+				CDBBB578BBD66475D6D5AA9370920519 /* MobileCoreServices.framework */,
+				991D526A55D6E6681FF717C5CC103D2A /* Security.framework */,
+				4CCB5DFCB79B9D988823E9C0519FECC9 /* SystemConfiguration.framework */,
+				8E84B83EA8CD165DB5A2B1B5263F6070 /* UIKit.framework */,
 			);
-			name = Frameworks;
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		D34E1D2CF172D3ECF059598D4EDC0240 /* XOChatModule */ = {
+			isa = PBXGroup;
+			children = (
+				F14E1423E780B40AE88035D4D1ABEBCB /* NSString+XOExtenstion.h */,
+				BEF9886441009F21F9CB2CCB5017683F /* NSString+XOExtenstion.m */,
+				7B13B2151C5D82084F1474057045DE18 /* XOMacro.h */,
+				862E32ED7D38903BE0D9DB0638CC6802 /* Pod */,
+				EDAB681E8007E5885ED8106ABABD918B /* Support Files */,
+			);
+			name = XOChatModule;
+			path = ../..;
 			sourceTree = "<group>";
 		};
 		E0B137A648F04204949B45E75E447FCF /* Pods-XOChatModule_Tests */ = {
@@ -214,33 +569,87 @@
 			path = "Target Support Files/Pods-XOChatModule_Tests";
 			sourceTree = "<group>";
 		};
-		F973728CA817FD38887CB771940CEB75 /* Pod */ = {
+		E20B714022F6E32BE16868A802C66AF9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				9B60A7009D4FF328547157D0FE78609D /* LICENSE */,
-				035BCFB7E007FDDF6ADFA991BD04CD4B /* README.md */,
-				DF451ABA96585DD83852CD15A400E8B8 /* XOChatModule.podspec */,
+				3DB29A1C881553E50144523D78A29DA1 /* ImSDK.framework */,
 			);
-			name = Pod;
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E938B40EFEA6ADEF9034D2B7CC1E6602 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A4FA15D44DF6BAC7550EDEED10862AA3 /* AFNetworking.framework */,
+				91FD61FB9521D00EF5B50F3CB4FC3CD0 /* GTMBase64.framework */,
+				5EB605C211D10E3B29C14AF5A8257BC9 /* Pods_XOChatModule_Example.framework */,
+				F196E16BA4152BA03DEC8D7B44C4EF68 /* Pods_XOChatModule_Tests.framework */,
+				7757CA884D995B36163A35BE16A75ADC /* XOChatModule.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E9A5CAD460DF1EFF7095CC56527E7C04 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5A9D7D3093A251CFB1F1FC1CE6638306 /* AFNetworking.framework */,
+				45C8CDB9C96B4D3CF45F08DCFCF0FF85 /* GTMBase64.framework */,
+				D27A733F05F5C0662B5B0F5348757478 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		EDAB681E8007E5885ED8106ABABD918B /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				9A2FB8DEAAA21ECFB45BCCE2EEB94E88 /* XOChatModule.modulemap */,
+				C42F174B78ED0E78AC61730F283FA420 /* XOChatModule.xcconfig */,
+				BCC92C09DC180852D0E4A83B3CB91887 /* XOChatModule-dummy.m */,
+				8E8358EE448FD07A846FD883A5892410 /* XOChatModule-Info.plist */,
+				8DC955BB45A5A3B27BB620BE8953AA07 /* XOChatModule-prefix.pch */,
+				2F8AC0E080C6A03F42C652EAC8E876A3 /* XOChatModule-umbrella.h */,
+			);
+			name = "Support Files";
+			path = "Example/Pods/Target Support Files/XOChatModule";
+			sourceTree = "<group>";
+		};
+		FE7FCB48152B8BC7AEAF28782BAC0B60 /* Security */ = {
+			isa = PBXGroup;
+			children = (
+				FA03FF470D89E1AB937ACEBAC23233A0 /* AFSecurityPolicy.h */,
+				FDF2111D418F552D3EE5F665DEDD057C /* AFSecurityPolicy.m */,
+			);
+			name = Security;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		28AF320D697E45A76620EE04219D6E89 /* Headers */ = {
+		0136EF7B44E971BCA11416C1860A9662 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EAE04DFB5364A5F8BDE9FB051150E88A /* Pods-XOChatModule_Example-umbrella.h in Headers */,
+				469AC6FFC61DAD7BABAFD53508ED5853 /* Pods-XOChatModule_Example-umbrella.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		9A393784428AB509C4BCC56B885447FC /* Headers */ = {
+		4A733768109F2A25BB5F809F4C286465 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C14872AC8622C9153701674B83DF1706 /* NSString+XOExtenstion.h in Headers */,
-				62F9F7A127ADB21C36280143704F63B5 /* XOChatModule-umbrella.h in Headers */,
+				88C91529A871EEC538B301F67FA77AED /* NSString+XOExtenstion.h in Headers */,
+				6DDC6FEFF88B67F4833A6E9784325C2E /* XOChatModule-umbrella.h in Headers */,
+				E8D570C17703416C7E4ECD81F636CFF8 /* XOMacro.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B78D315891916709B3A7C9F818280975 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				23359F08E3448F2864BF3BEDC9D81F81 /* GTMBase64-umbrella.h in Headers */,
+				ABBB199286D73567D919E6FC6C8928F7 /* GTMBase64.h in Headers */,
+				626B39E4D476758CD613021647AB45BC /* GTMDefines.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,9 +661,54 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F5F3954755BD8248E767F716DA24E14F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				870044029B3BA449A0932AAE3A495DE9 /* AFAutoPurgingImageCache.h in Headers */,
+				F407B4E0B40A8AA4CA7443563F105E40 /* AFCompatibilityMacros.h in Headers */,
+				169B3FC2BD33B8FBC2D4C35A1C1DC6BF /* AFHTTPSessionManager.h in Headers */,
+				E261B82A0EEFE0EA897EA1A36C69C1CE /* AFImageDownloader.h in Headers */,
+				2AE1F29F045D02727E815DBBAC8C7B4F /* AFNetworkActivityIndicatorManager.h in Headers */,
+				5036C1D6D87D4DA731C972A410C17ABC /* AFNetworking-umbrella.h in Headers */,
+				7F372985CE80B69B5524CC3277E1C1AF /* AFNetworking.h in Headers */,
+				A9E429ECAF059D9D471F3AE5C1BAC2B0 /* AFNetworkReachabilityManager.h in Headers */,
+				3E112DA53DD725C9A3185A54EB342EAF /* AFSecurityPolicy.h in Headers */,
+				17D6A066C5F987FEFF8B89D7EFDFD375 /* AFURLRequestSerialization.h in Headers */,
+				47FF1D17418AB1144FDE0E46427F4877 /* AFURLResponseSerialization.h in Headers */,
+				D59E2A517A48D101120EB57F90F140A5 /* AFURLSessionManager.h in Headers */,
+				B5AD0B8F0F9304975A01978B2908B62F /* UIActivityIndicatorView+AFNetworking.h in Headers */,
+				AEA4CF8EE7E08C13B4A71A634F9F3B5B /* UIButton+AFNetworking.h in Headers */,
+				09E2F57C3C2B897ACC8AF5C49F1E9592 /* UIImage+AFNetworking.h in Headers */,
+				6F6C4414DE96E08267712DA4C17C3CBB /* UIImageView+AFNetworking.h in Headers */,
+				9B41316D2DE09092FA0143B33A74B769 /* UIKit+AFNetworking.h in Headers */,
+				3A186F3A7711FAAB8C60562D63FF0D9F /* UIProgressView+AFNetworking.h in Headers */,
+				09E785555B549DE5974C744DB8324B91 /* UIRefreshControl+AFNetworking.h in Headers */,
+				F4FED6C37367BC46B92BB3FE18D233B8 /* UIWebView+AFNetworking.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		0130B3724283586C0E9D2A112D4F2AA1 /* AFNetworking */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 41D6DFBE997E173748D09E9A11D890A3 /* Build configuration list for PBXNativeTarget "AFNetworking" */;
+			buildPhases = (
+				F5F3954755BD8248E767F716DA24E14F /* Headers */,
+				E16D45883ACDDBE532CC4EABBA7C6196 /* Sources */,
+				99296CB2AAE82C49C9B4A74A8F4D8341 /* Frameworks */,
+				51B338009A28492821105E82A3A3C869 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AFNetworking;
+			productName = AFNetworking;
+			productReference = A4FA15D44DF6BAC7550EDEED10862AA3 /* AFNetworking.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		46C2765E44B62CD15E3AD6E9D25A967A /* Pods-XOChatModule_Tests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6E4032A4B9FAC3B764A675A0C1C925F6 /* Build configuration list for PBXNativeTarget "Pods-XOChatModule_Tests" */;
@@ -276,35 +730,59 @@
 		};
 		49F81DEB6688E736DE87532B341FC72B /* XOChatModule */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9CC7EB1CE18260CE9135A8EC0DFA3793 /* Build configuration list for PBXNativeTarget "XOChatModule" */;
+			buildConfigurationList = 1BD6E8079CF0EBB7ADA4A34C73BBC992 /* Build configuration list for PBXNativeTarget "XOChatModule" */;
 			buildPhases = (
-				9A393784428AB509C4BCC56B885447FC /* Headers */,
-				A0C2F8E081F9CF84B65AC9C181623A19 /* Sources */,
-				D8948F26BCCD347525DB4B159368DFFF /* Frameworks */,
-				9680EB440363FBD7228ACF55EF5EB9D0 /* Resources */,
+				4A733768109F2A25BB5F809F4C286465 /* Headers */,
+				543D6D6AFDB12AEDCAD6CB3D368B0D6B /* Sources */,
+				8808416ADAB6A125F4EABB3561EC555E /* Frameworks */,
+				3A8F2B9427D1A21BF2BBA90EA4CF68B7 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				8C55B68D395527FAC65CF900C11AF0D5 /* PBXTargetDependency */,
+				1F0838DA3E9A4708EAB81E728562F0EA /* PBXTargetDependency */,
+				7134B2A079B4FF128A919ACC03B66A8D /* PBXTargetDependency */,
 			);
 			name = XOChatModule;
 			productName = XOChatModule;
 			productReference = 7757CA884D995B36163A35BE16A75ADC /* XOChatModule.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		B7A22E9A9C6CFA017D8BAE1B018E3BAE /* Pods-XOChatModule_Example */ = {
+		ABD0BEB997F424C11EE21A4E091425E4 /* GTMBase64 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9E14A232E3BEBE20EA8E6E1B2CA8F2F1 /* Build configuration list for PBXNativeTarget "Pods-XOChatModule_Example" */;
+			buildConfigurationList = 089F31C173FB376193C61E5CD2680312 /* Build configuration list for PBXNativeTarget "GTMBase64" */;
 			buildPhases = (
-				28AF320D697E45A76620EE04219D6E89 /* Headers */,
-				2CADEE16FFF33B62F38F4C96DC7227CE /* Sources */,
-				F1CE36E52D9FAAC064270D12ED6F8820 /* Frameworks */,
-				C6DBC5BBBBD95675A1813BA2B2971742 /* Resources */,
+				B78D315891916709B3A7C9F818280975 /* Headers */,
+				487000E838D038FD898BE37DF9F58231 /* Sources */,
+				2CDD8BE2FE88408FBBC55ED6E783F1B9 /* Frameworks */,
+				8A8486D7828699A7D762FF062ECD9643 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				3D556D62EEEA6DF2623294C476B54068 /* PBXTargetDependency */,
+			);
+			name = GTMBase64;
+			productName = GTMBase64;
+			productReference = 91FD61FB9521D00EF5B50F3CB4FC3CD0 /* GTMBase64.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		B7A22E9A9C6CFA017D8BAE1B018E3BAE /* Pods-XOChatModule_Example */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1B09D560B765B614BA7B900011E190D1 /* Build configuration list for PBXNativeTarget "Pods-XOChatModule_Example" */;
+			buildPhases = (
+				0136EF7B44E971BCA11416C1860A9662 /* Headers */,
+				87243E7E5C941345367206D83D431F11 /* Sources */,
+				BA9B94903FCBB42A5700C7128FAD142E /* Frameworks */,
+				52B32A2D1BCDF9D8C0C7D37BD1BA0D79 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				418736B42A15A84F65A6A0F5CD1B6560 /* PBXTargetDependency */,
+				18F63B2454906B0E45B59ED55F9DFB1E /* PBXTargetDependency */,
+				A978C0512478A5F7F986F3666551C150 /* PBXTargetDependency */,
+				C9D9C1D8BC96BDB70E48342E2900B883 /* PBXTargetDependency */,
 			);
 			name = "Pods-XOChatModule_Example";
 			productName = "Pods-XOChatModule_Example";
@@ -328,12 +806,15 @@
 				en,
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
-			productRefGroup = B32A1BA9D76DA0B4017D6C453D689F40 /* Products */;
+			productRefGroup = E938B40EFEA6ADEF9034D2B7CC1E6602 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				0130B3724283586C0E9D2A112D4F2AA1 /* AFNetworking */,
+				ABD0BEB997F424C11EE21A4E091425E4 /* GTMBase64 */,
 				B7A22E9A9C6CFA017D8BAE1B018E3BAE /* Pods-XOChatModule_Example */,
 				46C2765E44B62CD15E3AD6E9D25A967A /* Pods-XOChatModule_Tests */,
+				37C8B4CA3E62FB44CD14CEEF054EDAC2 /* TXIMSDK_iOS */,
 				49F81DEB6688E736DE87532B341FC72B /* XOChatModule */,
 			);
 		};
@@ -347,14 +828,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		9680EB440363FBD7228ACF55EF5EB9D0 /* Resources */ = {
+		3A8F2B9427D1A21BF2BBA90EA4CF68B7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C6DBC5BBBBD95675A1813BA2B2971742 /* Resources */ = {
+		51B338009A28492821105E82A3A3C869 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52B32A2D1BCDF9D8C0C7D37BD1BA0D79 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8A8486D7828699A7D762FF062ECD9643 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -364,20 +859,29 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		2CADEE16FFF33B62F38F4C96DC7227CE /* Sources */ = {
+		487000E838D038FD898BE37DF9F58231 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0446FA597402E78DE25BAC0D958D8B34 /* Pods-XOChatModule_Example-dummy.m in Sources */,
+				A6D090FB1C368A800489124E5A734EC6 /* GTMBase64-dummy.m in Sources */,
+				FF4B8D47A4795F2BB66EFEF0DDA8F73F /* GTMBase64.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A0C2F8E081F9CF84B65AC9C181623A19 /* Sources */ = {
+		543D6D6AFDB12AEDCAD6CB3D368B0D6B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2BE6C4FCC44947EE4187216A3B68C952 /* NSString+XOExtenstion.m in Sources */,
-				CD29E9AF2F2CBFEEA9CFDC61DE52C9A2 /* XOChatModule-dummy.m in Sources */,
+				E04E3DAFC33B4D9494A625F99CC821E2 /* NSString+XOExtenstion.m in Sources */,
+				0939D87903C1EBA9B551707000157264 /* XOChatModule-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		87243E7E5C941345367206D83D431F11 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B2DBF92BA521F8817ED02A8E9D8F386 /* Pods-XOChatModule_Example-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,24 +893,148 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E16D45883ACDDBE532CC4EABBA7C6196 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3033C2DE9CB2085ECBB95717CFB6425A /* AFAutoPurgingImageCache.m in Sources */,
+				77876997CA63145CC72A2D6FB5758513 /* AFHTTPSessionManager.m in Sources */,
+				0D40EE6956924384435BBBD4B718DEC8 /* AFImageDownloader.m in Sources */,
+				6E4C66ABA27A0F4EFDAA3E8B21A9384F /* AFNetworkActivityIndicatorManager.m in Sources */,
+				3BDC8FBDB7922AA1ABA2C90DBA2DBB35 /* AFNetworking-dummy.m in Sources */,
+				95DAE5AD46A86973A77907D38716F694 /* AFNetworkReachabilityManager.m in Sources */,
+				769B6260247C5624A11411541C0AA4E2 /* AFSecurityPolicy.m in Sources */,
+				E17973BC9CEAE4ED0A7492450F95ACEF /* AFURLRequestSerialization.m in Sources */,
+				A5D86CC71480778ECD0EE81138D48C91 /* AFURLResponseSerialization.m in Sources */,
+				856B571FA3AE9D65E81FACB19E3557F4 /* AFURLSessionManager.m in Sources */,
+				8F96E82F250EE718FA3F08AC9AB58423 /* UIActivityIndicatorView+AFNetworking.m in Sources */,
+				34A7C5747B4C0825465453E196E57FAA /* UIButton+AFNetworking.m in Sources */,
+				AECB9FD1C271F734476CBF6E84BBFC51 /* UIImageView+AFNetworking.m in Sources */,
+				98114570DFFDF5BD81B7724B4810501D /* UIProgressView+AFNetworking.m in Sources */,
+				D29F2AD07AF58334781F008905C30C35 /* UIRefreshControl+AFNetworking.m in Sources */,
+				DC2186197E507C0C73DFB0600D54867A /* UIWebView+AFNetworking.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		18F63B2454906B0E45B59ED55F9DFB1E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GTMBase64;
+			target = ABD0BEB997F424C11EE21A4E091425E4 /* GTMBase64 */;
+			targetProxy = 4D415571BC2C006316740E78514CE4F8 /* PBXContainerItemProxy */;
+		};
+		1F0838DA3E9A4708EAB81E728562F0EA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GTMBase64;
+			target = ABD0BEB997F424C11EE21A4E091425E4 /* GTMBase64 */;
+			targetProxy = 7CF264AA74BFF7DD77104B1A5B58A57A /* PBXContainerItemProxy */;
+		};
 		24A8677CB5E346984DFD6B479BB0CCA8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Pods-XOChatModule_Example";
 			target = B7A22E9A9C6CFA017D8BAE1B018E3BAE /* Pods-XOChatModule_Example */;
 			targetProxy = D4CFFBB535A6D6CB174F203AEFAD278F /* PBXContainerItemProxy */;
 		};
-		3D556D62EEEA6DF2623294C476B54068 /* PBXTargetDependency */ = {
+		418736B42A15A84F65A6A0F5CD1B6560 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AFNetworking;
+			target = 0130B3724283586C0E9D2A112D4F2AA1 /* AFNetworking */;
+			targetProxy = 7F11933AE71ECE749399E241466BFB28 /* PBXContainerItemProxy */;
+		};
+		7134B2A079B4FF128A919ACC03B66A8D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TXIMSDK_iOS;
+			target = 37C8B4CA3E62FB44CD14CEEF054EDAC2 /* TXIMSDK_iOS */;
+			targetProxy = DFFA8E7201C3722D34ACDE463212C733 /* PBXContainerItemProxy */;
+		};
+		8C55B68D395527FAC65CF900C11AF0D5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AFNetworking;
+			target = 0130B3724283586C0E9D2A112D4F2AA1 /* AFNetworking */;
+			targetProxy = FAC8D461457DB2FC697CF1119C89DA71 /* PBXContainerItemProxy */;
+		};
+		A978C0512478A5F7F986F3666551C150 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TXIMSDK_iOS;
+			target = 37C8B4CA3E62FB44CD14CEEF054EDAC2 /* TXIMSDK_iOS */;
+			targetProxy = 614B291330FA4C6FCB123C035F31B5F7 /* PBXContainerItemProxy */;
+		};
+		C9D9C1D8BC96BDB70E48342E2900B883 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = XOChatModule;
 			target = 49F81DEB6688E736DE87532B341FC72B /* XOChatModule */;
-			targetProxy = 29E3BF24461BBBF10CEF966D140CD8EE /* PBXContainerItemProxy */;
+			targetProxy = 1933E32F402F8C78CC15FFAFA25AC894 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0018C09CB7BE523752CF5DFE12DD6FBF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 950BA8D891FF09ED59B8493B550F823B /* Pods-XOChatModule_Example.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		0107E4E0B3295ADE635322A9461EF105 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C42F174B78ED0E78AC61730F283FA420 /* XOChatModule.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/XOChatModule/XOChatModule-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/XOChatModule/XOChatModule-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/XOChatModule/XOChatModule.modulemap";
+				PRODUCT_MODULE_NAME = XOChatModule;
+				PRODUCT_NAME = XOChatModule;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		04EDC6335520C8CC0E0743D95E55393A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0A9A9213934B831875AFD0A49859E95B /* Pods-XOChatModule_Tests.debug.xcconfig */;
@@ -440,41 +1068,22 @@
 			};
 			name = Debug;
 		};
-		0D68E4E278E7785980DB3BB1DEB2481F /* Release */ = {
+		11B33795317D1ACF5BE2A187BFBF41CC /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4B064839E71ADA74148303B5B58A0186 /* XOChatModule.xcconfig */;
+			baseConfigurationReference = 1B2196CAACFFF7EEDDA12B7012830DAE /* TXIMSDK_iOS.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/XOChatModule/XOChatModule-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/XOChatModule/XOChatModule-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/XOChatModule/XOChatModule.modulemap";
-				PRODUCT_MODULE_NAME = XOChatModule;
-				PRODUCT_NAME = XOChatModule;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
 			};
-			name = Release;
+			name = Debug;
 		};
-		155A90E913A7A40427D2FED7200B78E2 /* Debug */ = {
+		3965FF71C1C0B151A20DF3EDAAC91AD1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4B064839E71ADA74148303B5B58A0186 /* XOChatModule.xcconfig */;
+			baseConfigurationReference = 3D3A13CB90A318D06589DC6F92BEF514 /* AFNetworking.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -485,14 +1094,14 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/XOChatModule/XOChatModule-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/XOChatModule/XOChatModule-Info.plist";
+				GCC_PREFIX_HEADER = "Target Support Files/AFNetworking/AFNetworking-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/AFNetworking/AFNetworking-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/XOChatModule/XOChatModule.modulemap";
-				PRODUCT_MODULE_NAME = XOChatModule;
-				PRODUCT_NAME = XOChatModule;
+				MODULEMAP_FILE = "Target Support Files/AFNetworking/AFNetworking.modulemap";
+				PRODUCT_MODULE_NAME = AFNetworking;
+				PRODUCT_NAME = AFNetworking;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
@@ -556,17 +1165,31 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;
 		};
-		6971D63D3CE8D87E5197E988D3CED815 /* Debug */ = {
+		589D8B3484C56FC0BF25E4911077719C /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 950BA8D891FF09ED59B8493B550F823B /* Pods-XOChatModule_Example.debug.xcconfig */;
+			baseConfigurationReference = 1B2196CAACFFF7EEDDA12B7012830DAE /* TXIMSDK_iOS.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		607A3133EEDCA9911103515E22C30EBC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DE5FD1D1E1576332B4A4A1AE49644B0B /* GTMBase64.xcconfig */;
+			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -576,30 +1199,29 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example-Info.plist";
+				GCC_PREFIX_HEADER = "Target Support Files/GTMBase64/GTMBase64-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/GTMBase64/GTMBase64-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example.modulemap";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				MODULEMAP_FILE = "Target Support Files/GTMBase64/GTMBase64.modulemap";
+				PRODUCT_MODULE_NAME = GTMBase64;
+				PRODUCT_NAME = GTMBase64;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
-			name = Debug;
+			name = Release;
 		};
-		7A79D193564E9BEC506696E5E0FE55BD /* Release */ = {
+		7711C4021E19F02E4BA0F6C2093958FC /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CFA746E16241985666CC886758C83072 /* Pods-XOChatModule_Example.release.xcconfig */;
+			baseConfigurationReference = 3D3A13CB90A318D06589DC6F92BEF514 /* AFNetworking.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -609,19 +1231,18 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example-Info.plist";
+				GCC_PREFIX_HEADER = "Target Support Files/AFNetworking/AFNetworking-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/AFNetworking/AFNetworking-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example.modulemap";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				MODULEMAP_FILE = "Target Support Files/AFNetworking/AFNetworking.modulemap";
+				PRODUCT_MODULE_NAME = AFNetworking;
+				PRODUCT_NAME = AFNetworking;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -693,6 +1314,40 @@
 			};
 			name = Debug;
 		};
+		80B53C744AA0E3368B219AB430DD5C4D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CFA746E16241985666CC886758C83072 /* Pods-XOChatModule_Example.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		B73DBC6046307041AB27BF94A2EA4E7E /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B6E83AE2BE2A734804EB19110D810E4C /* Pods-XOChatModule_Tests.release.xcconfig */;
@@ -727,9 +1382,116 @@
 			};
 			name = Release;
 		};
+		C44A71925F1FDDADECC7942A0BAAE352 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C42F174B78ED0E78AC61730F283FA420 /* XOChatModule.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/XOChatModule/XOChatModule-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/XOChatModule/XOChatModule-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/XOChatModule/XOChatModule.modulemap";
+				PRODUCT_MODULE_NAME = XOChatModule;
+				PRODUCT_NAME = XOChatModule;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		CC240AC7C1C766BA3EF227AB182CF3D5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DE5FD1D1E1576332B4A4A1AE49644B0B /* GTMBase64.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/GTMBase64/GTMBase64-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/GTMBase64/GTMBase64-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/GTMBase64/GTMBase64.modulemap";
+				PRODUCT_MODULE_NAME = GTMBase64;
+				PRODUCT_NAME = GTMBase64;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		089F31C173FB376193C61E5CD2680312 /* Build configuration list for PBXNativeTarget "GTMBase64" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC240AC7C1C766BA3EF227AB182CF3D5 /* Debug */,
+				607A3133EEDCA9911103515E22C30EBC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1B09D560B765B614BA7B900011E190D1 /* Build configuration list for PBXNativeTarget "Pods-XOChatModule_Example" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0018C09CB7BE523752CF5DFE12DD6FBF /* Debug */,
+				80B53C744AA0E3368B219AB430DD5C4D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1BD6E8079CF0EBB7ADA4A34C73BBC992 /* Build configuration list for PBXNativeTarget "XOChatModule" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C44A71925F1FDDADECC7942A0BAAE352 /* Debug */,
+				0107E4E0B3295ADE635322A9461EF105 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2EA7CD85B583385538824685F1F8DC1A /* Build configuration list for PBXAggregateTarget "TXIMSDK_iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				11B33795317D1ACF5BE2A187BFBF41CC /* Debug */,
+				589D8B3484C56FC0BF25E4911077719C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		41D6DFBE997E173748D09E9A11D890A3 /* Build configuration list for PBXNativeTarget "AFNetworking" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3965FF71C1C0B151A20DF3EDAAC91AD1 /* Debug */,
+				7711C4021E19F02E4BA0F6C2093958FC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -744,24 +1506,6 @@
 			buildConfigurations = (
 				04EDC6335520C8CC0E0743D95E55393A /* Debug */,
 				B73DBC6046307041AB27BF94A2EA4E7E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		9CC7EB1CE18260CE9135A8EC0DFA3793 /* Build configuration list for PBXNativeTarget "XOChatModule" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				155A90E913A7A40427D2FED7200B78E2 /* Debug */,
-				0D68E4E278E7785980DB3BB1DEB2481F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		9E14A232E3BEBE20EA8E6E1B2CA8F2F1 /* Build configuration list for PBXNativeTarget "Pods-XOChatModule_Example" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				6971D63D3CE8D87E5197E988D3CED815 /* Debug */,
-				7A79D193564E9BEC506696E5E0FE55BD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
