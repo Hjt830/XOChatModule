@@ -1,0 +1,13 @@
+use_frameworks!
+
+platform :ios, '8.0'
+
+target 'XOChatModule_Example' do
+  pod 'XOChatModule', :path => '../'
+
+  target 'XOChatModule_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
