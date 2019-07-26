@@ -7,6 +7,7 @@
 //
 
 #import "XOChatAppDelegate.h"
+#import "XOConversationListController.h"
 
 #import <JTBaseLib/JTBaseLib.h>
 #import "XOChatClient.h"
@@ -26,12 +27,12 @@
     // 1、初始化腾讯云通信
     [[XOChatClient shareClient] initSDKWithAppId:[TXTIMAppID intValue] logFun:^(TIMLogLevel lvl, NSString *msg) {
         
-        NSLog(@"=================================");
-        NSLog(@"=========== 云通信日志 ============");
-        NSLog(@"=================================");
-        NSLog(@"=========== TIM msg: %@", msg);
-        NSLog(@"=================================");
-        NSLog(@"=================================\n");
+//        NSLog(@"=================================");
+//        NSLog(@"=========== 云通信日志 ============");
+//        NSLog(@"=================================");
+//        NSLog(@"=========== TIM msg: %@", msg);
+//        NSLog(@"=================================");
+//        NSLog(@"=================================\n");
         
     }];
     
@@ -48,7 +49,7 @@
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
-    XOChatListViewController *chatListVC = [[XOChatListViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    XOConversationListController *chatListVC = [[XOConversationListController alloc] init];
     JTBaseNavigationController *nav = [[JTBaseNavigationController alloc] initWithRootViewController:chatListVC];
     
     self.window.rootViewController = nav;

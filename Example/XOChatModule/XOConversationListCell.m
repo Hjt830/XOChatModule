@@ -114,13 +114,6 @@
     }
 }
 
-// 通用设置发生改变
-- (void)refreshGenralSetting
-{
-    _nameLabel.font = [UIFont boldSystemFontOfSize:[JTSettingManager defaultManager].fontSize];
-    _messageLabel.font = [UIFont systemFontOfSize:([JTSettingManager defaultManager].fontSize - 2.0)];
-}
-
 - (void)setConversation:(TIMConversation *)conversation
 {
     _conversation = conversation;
@@ -163,6 +156,9 @@
     // 时间
     NSString *time = [lastMsg.timestamp formattedDateDescription];
     _timeLabel.text = time;
+    
+    _nameLabel.font = [UIFont boldSystemFontOfSize:[JTSettingManager defaultManager].fontSize];
+    _messageLabel.font = [UIFont systemFontOfSize:([JTSettingManager defaultManager].fontSize - 2.0)];
 }
 
 

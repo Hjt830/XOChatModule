@@ -50,6 +50,7 @@ static XOContactManager * __contactManager = nil;
     // 获取好友列表
     [[TIMManager sharedInstance].friendshipManager getFriendList:^(NSArray<TIMFriend *> *friends) {
         NSLog(@"好友列表: %@", friends);
+        
     } fail:^(int code, NSString *msg) {
         NSLog(@"查询好友列表失败: code:%d  msg:%@", code, msg);
     }];
@@ -61,6 +62,7 @@ static XOContactManager * __contactManager = nil;
     // 获取群列表
     [[TIMManager sharedInstance].groupManager getGroupList:^(NSArray<TIMGroupInfo *> *arr) {
         NSLog(@"查询群列表: %@", arr);
+        
     } fail:^(int code, NSString *msg) {
         NSLog(@"查询群列表失败: code:%d  msg:%@", code, msg);
     }];

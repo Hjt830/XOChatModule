@@ -16,9 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL                  shouldTopShow;  // 是否需要显示置顶效果, 默认不需要
 @property (nonatomic, strong) TIMConversation       *conversation;
 
-// 通用设置发生改变
-- (void)refreshGenralSetting;
-
 @end
 
 NS_ASSUME_NONNULL_END
