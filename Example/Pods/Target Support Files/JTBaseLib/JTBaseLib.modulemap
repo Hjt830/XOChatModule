@@ -1,0 +1,6 @@
+framework module JTBaseLib {
+  umbrella header "JTBaseLib-umbrella.h"
+
+  export *
+  module * { export * }
+}

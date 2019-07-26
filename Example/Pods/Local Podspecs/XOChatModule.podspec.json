@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "summary": "XXOOGO项目的聊天模块",
   "description": "XXOOGO项目采用cocoapods做组件化架构，将不同的模块使用pod私有仓库管理，只需要在主项目中使用 pod 'XOChatModule' 即可导入模块使用",
-  "homepage": "http://192.168.1.119/xxoogo_livechat/XOChatModule",
+  "homepage": "http://192.168.1.119/xxoogo_livechat/xochatmodule",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
@@ -12,7 +12,7 @@
     "kenter": "Hjt_830@163.com"
   },
   "source": {
-    "git": "http://192.168.1.119/xxoogo_livechat/XOChatModule.git",
+    "git": "http://192.168.1.119/xxoogo_livechat/xochatmodule.git",
     "tag": "0.0.1"
   },
   "platforms": {
@@ -27,11 +27,17 @@
     "TXIMSDK_iOS": [
       "~> 4.4.627"
     ],
-    "AFNetworking": [
-      "~> 3.2.1"
+    "JTBaseLib": [
+      "~> 0.1.2"
     ],
-    "GTMBase64": [
-      "~> 1.0.1"
+    "CTMediator": [
+      "~> 25"
+    ],
+    "ReactiveObjC": [
+      "~> 3.1.1"
+    ],
+    "GCDMulticastDelegate": [
+      "1.0.0"
     ]
   }
 }

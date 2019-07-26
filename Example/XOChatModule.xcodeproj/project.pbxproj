@@ -9,13 +9,21 @@
 /* Begin PBXBuildFile section */
 		1A1E6143B592723DE2A0CBCA /* Pods_XOChatModule_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E6607D7A3689FF2CCDFC079 /* Pods_XOChatModule_Tests.framework */; };
 		40E501F311986D08A630E78E /* Pods_XOChatModule_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F5E934AFF24DDDD4E38B285 /* Pods_XOChatModule_Example.framework */; };
+		551085D522D4756C0060622C /* XOConversationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D422D4756C0060622C /* XOConversationManager.m */; };
+		551085D722D475840060622C /* XOConversationListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D622D475840060622C /* XOConversationListCell.m */; };
+		551085DA22D478620060622C /* XOMessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D922D478620060622C /* XOMessageManager.m */; };
+		551085DD22D47E250060622C /* XOContactManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085DC22D47E250060622C /* XOContactManager.m */; };
+		553B4C3622D438C800524382 /* XOConversationListViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 553B4C3522D438C800524382 /* XOConversationListViewModel.m */; };
+		557D9F8C22CF262F00846F0D /* XOChatListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 557D9F8B22CF262F00846F0D /* XOChatListViewController.m */; };
+		557D9F8F22CF278500846F0D /* XOChatClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 557D9F8E22CF278500846F0D /* XOChatClient.m */; };
+		557D9F9222CF4A2B00846F0D /* XOConversationListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 557D9F9122CF4A2B00846F0D /* XOConversationListCell.m */; };
+		557D9F9B22CF504900846F0D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 557D9F9D22CF504900846F0D /* Localizable.strings */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
 		6003F598195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F596195388D20070C39A /* InfoPlist.strings */; };
 		6003F59A195388D20070C39A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F599195388D20070C39A /* main.m */; };
 		6003F59E195388D20070C39A /* XOChatAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F59D195388D20070C39A /* XOChatAppDelegate.m */; };
-		6003F5A7195388D20070C39A /* XOChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5A6195388D20070C39A /* XOChatViewController.m */; };
 		6003F5A9195388D20070C39A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5A8195388D20070C39A /* Images.xcassets */; };
 		6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F5AF195388D20070C39A /* XCTest.framework */; };
 		6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
@@ -40,7 +48,31 @@
 		176C77FD5BDD0A33D08C6C51 /* Pods-XOChatModule_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XOChatModule_Example.debug.xcconfig"; path = "Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		1C08E6A3A635C8FB9731D3A0 /* Pods-XOChatModule_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XOChatModule_Example.release.xcconfig"; path = "Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example.release.xcconfig"; sourceTree = "<group>"; };
 		2E6607D7A3689FF2CCDFC079 /* Pods_XOChatModule_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XOChatModule_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		32AB2CC07E3638844E4EF99D /* XOChatModule.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = XOChatModule.podspec; path = ../XOChatModule.podspec; sourceTree = "<group>"; };
+		32AB2CC07E3638844E4EF99D /* XOChatModule.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = XOChatModule.podspec; path = ../XOChatModule.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		551085D322D4756C0060622C /* XOConversationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOConversationManager.h; sourceTree = "<group>"; };
+		551085D422D4756C0060622C /* XOConversationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOConversationManager.m; sourceTree = "<group>"; };
+		551085D622D475840060622C /* XOConversationListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XOConversationListCell.m; sourceTree = "<group>"; };
+		551085D822D478620060622C /* XOMessageManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOMessageManager.h; sourceTree = "<group>"; };
+		551085D922D478620060622C /* XOMessageManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOMessageManager.m; sourceTree = "<group>"; };
+		551085DB22D47E250060622C /* XOContactManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOContactManager.h; sourceTree = "<group>"; };
+		551085DC22D47E250060622C /* XOContactManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOContactManager.m; sourceTree = "<group>"; };
+		553B4C3422D438C800524382 /* XOConversationListViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOConversationListViewModel.h; sourceTree = "<group>"; };
+		553B4C3522D438C800524382 /* XOConversationListViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOConversationListViewModel.m; sourceTree = "<group>"; };
+		557D9F8A22CF262F00846F0D /* XOChatListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatListViewController.h; sourceTree = "<group>"; };
+		557D9F8B22CF262F00846F0D /* XOChatListViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOChatListViewController.m; sourceTree = "<group>"; };
+		557D9F8D22CF278500846F0D /* XOChatClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatClient.h; sourceTree = "<group>"; };
+		557D9F8E22CF278500846F0D /* XOChatClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOChatClient.m; sourceTree = "<group>"; };
+		557D9F9022CF4A2B00846F0D /* XOConversationListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOConversationListCell.h; sourceTree = "<group>"; };
+		557D9F9122CF4A2B00846F0D /* XOConversationListCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOConversationListCell.m; sourceTree = "<group>"; };
+		557D9F9322CF501B00846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		557D9F9422CF501B00846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		557D9F9522CF501C00846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		557D9F9622CF502000846F0D /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		557D9F9722CF502100846F0D /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		557D9F9822CF502100846F0D /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		557D9F9C22CF504900846F0D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		557D9F9E22CF505500846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		557D9F9F22CF505900846F0D /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		5F5E934AFF24DDDD4E38B285 /* Pods_XOChatModule_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XOChatModule_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58A195388D20070C39A /* XOChatModule_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XOChatModule_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -52,8 +84,6 @@
 		6003F59B195388D20070C39A /* XOChatModule-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XOChatModule-Prefix.pch"; sourceTree = "<group>"; };
 		6003F59C195388D20070C39A /* XOChatAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatAppDelegate.h; sourceTree = "<group>"; };
 		6003F59D195388D20070C39A /* XOChatAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOChatAppDelegate.m; sourceTree = "<group>"; };
-		6003F5A5195388D20070C39A /* XOChatViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatViewController.h; sourceTree = "<group>"; };
-		6003F5A6195388D20070C39A /* XOChatViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOChatViewController.m; sourceTree = "<group>"; };
 		6003F5A8195388D20070C39A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		6003F5AE195388D20070C39A /* XOChatModule_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XOChatModule_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F5AF195388D20070C39A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -146,11 +176,24 @@
 				6003F59C195388D20070C39A /* XOChatAppDelegate.h */,
 				6003F59D195388D20070C39A /* XOChatAppDelegate.m */,
 				873B8AEA1B1F5CCA007FD442 /* Main.storyboard */,
-				6003F5A5195388D20070C39A /* XOChatViewController.h */,
-				6003F5A6195388D20070C39A /* XOChatViewController.m */,
+				557D9F8A22CF262F00846F0D /* XOChatListViewController.h */,
+				557D9F8B22CF262F00846F0D /* XOChatListViewController.m */,
+				553B4C3422D438C800524382 /* XOConversationListViewModel.h */,
+				553B4C3522D438C800524382 /* XOConversationListViewModel.m */,
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
+				557D9F8D22CF278500846F0D /* XOChatClient.h */,
+				557D9F8E22CF278500846F0D /* XOChatClient.m */,
+				551085D322D4756C0060622C /* XOConversationManager.h */,
+				551085D422D4756C0060622C /* XOConversationManager.m */,
+				551085D822D478620060622C /* XOMessageManager.h */,
+				551085D922D478620060622C /* XOMessageManager.m */,
+				551085DB22D47E250060622C /* XOContactManager.h */,
+				551085DC22D47E250060622C /* XOContactManager.m */,
+				557D9F9122CF4A2B00846F0D /* XOConversationListCell.m */,
+				551085D622D475840060622C /* XOConversationListCell.m */,
+				557D9F9D22CF504900846F0D /* Localizable.strings */,
 			);
 			name = "Example for XOChatModule";
 			path = XOChatModule;
@@ -159,6 +202,7 @@
 		6003F594195388D20070C39A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				557D9F9022CF4A2B00846F0D /* XOConversationListCell.h */,
 				6003F595195388D20070C39A /* XOChatModule-Info.plist */,
 				6003F596195388D20070C39A /* InfoPlist.strings */,
 				6003F599195388D20070C39A /* main.m */,
@@ -247,6 +291,13 @@
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = kenter;
 				TargetAttributes = {
+					6003F589195388D20070C39A = {
+						SystemCapabilities = {
+							com.apple.Maps.iOS = {
+								enabled = 0;
+							};
+						};
+					};
 					6003F5AD195388D20070C39A = {
 						TestTargetID = 6003F589195388D20070C39A;
 					};
@@ -260,6 +311,8 @@
 				English,
 				en,
 				Base,
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = 6003F581195388D10070C39A;
 			productRefGroup = 6003F58B195388D20070C39A /* Products */;
@@ -277,6 +330,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				557D9F9B22CF504900846F0D /* Localizable.strings in Resources */,
 				873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */,
 				71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
@@ -347,16 +401,30 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
+				"${BUILT_PRODUCTS_DIR}/CTMediator/CTMediator.framework",
+				"${BUILT_PRODUCTS_DIR}/GCDMulticastDelegate/GCDMulticastDelegate.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMBase64/GTMBase64.framework",
+				"${BUILT_PRODUCTS_DIR}/JTBaseLib/JTBaseLib.framework",
+				"${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework",
+				"${BUILT_PRODUCTS_DIR}/ReactiveObjC/ReactiveObjC.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
 				"${PODS_ROOT}/TXIMSDK_iOS/iOS/ImSDK/Framework/ImSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/XOChatModule/XOChatModule.framework",
+				"${BUILT_PRODUCTS_DIR}/YYModel/YYModel.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CTMediator.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GCDMulticastDelegate.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMBase64.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JTBaseLib.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MJRefresh.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactiveObjC.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ImSDK.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/XOChatModule.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYModel.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -370,9 +438,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				557D9F8F22CF278500846F0D /* XOChatClient.m in Sources */,
+				551085D722D475840060622C /* XOConversationListCell.m in Sources */,
+				557D9F9222CF4A2B00846F0D /* XOConversationListCell.m in Sources */,
+				553B4C3622D438C800524382 /* XOConversationListViewModel.m in Sources */,
+				551085D522D4756C0060622C /* XOConversationManager.m in Sources */,
 				6003F59E195388D20070C39A /* XOChatAppDelegate.m in Sources */,
-				6003F5A7195388D20070C39A /* XOChatViewController.m in Sources */,
+				551085DA22D478620060622C /* XOMessageManager.m in Sources */,
+				551085DD22D47E250060622C /* XOContactManager.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
+				557D9F8C22CF262F00846F0D /* XOChatListViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -395,10 +470,22 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		557D9F9D22CF504900846F0D /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				557D9F9C22CF504900846F0D /* en */,
+				557D9F9E22CF505500846F0D /* zh-Hans */,
+				557D9F9F22CF505900846F0D /* zh-Hant */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		6003F596195388D20070C39A /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
 				6003F597195388D20070C39A /* en */,
+				557D9F9422CF501B00846F0D /* zh-Hans */,
+				557D9F9722CF502100846F0D /* zh-Hant */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -407,6 +494,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				6003F5B9195388D20070C39A /* en */,
+				557D9F9522CF501C00846F0D /* zh-Hans */,
+				557D9F9822CF502100846F0D /* zh-Hant */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -415,6 +504,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				71719F9E1E33DC2100824A3D /* Base */,
+				557D9F9322CF501B00846F0D /* zh-Hans */,
+				557D9F9622CF502000846F0D /* zh-Hant */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -500,6 +591,10 @@
 			baseConfigurationReference = 176C77FD5BDD0A33D08C6C51 /* Pods-XOChatModule_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/XOChatModule",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "XOChatModule/XOChatModule-Prefix.pch";
 				INFOPLIST_FILE = "XOChatModule/XOChatModule-Info.plist";
@@ -516,6 +611,10 @@
 			baseConfigurationReference = 1C08E6A3A635C8FB9731D3A0 /* Pods-XOChatModule_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/XOChatModule",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "XOChatModule/XOChatModule-Prefix.pch";
 				INFOPLIST_FILE = "XOChatModule/XOChatModule-Info.plist";

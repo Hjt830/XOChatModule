@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
   XXOOGO项目采用cocoapods做组件化架构，将不同的模块使用pod私有仓库管理，只需要在主项目中使用 pod 'XOChatModule' 即可导入模块使用
                        DESC
 
-  s.homepage         = 'http://192.168.1.119/xxoogo_livechat/XOChatModule'
+  s.homepage         = 'http://192.168.1.119/xxoogo_livechat/xochatmodule'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'kenter' => 'Hjt_830@163.com' }
@@ -39,7 +39,9 @@ Pod::Spec.new do |s|
   # s.public_header_files = 'Pod/Classes/**/*.h'
   s.frameworks = 'UIKit', 'Foundation'
   s.dependency 'TXIMSDK_iOS', '~> 4.4.627'
-  s.dependency 'AFNetworking', '~> 3.2.1'
-  s.dependency 'GTMBase64', '~> 1.0.1'
+  s.dependency 'JTBaseLib', '~> 0.1.2'
+  s.dependency 'CTMediator', '~> 25'
+  s.dependency 'ReactiveObjC', '~> 3.1.1'
+  s.dependency 'GCDMulticastDelegate', '1.0.0'
   
 end

@@ -1,13 +1,19 @@
 use_frameworks!
 
+# 远程私有仓库 JTRepo
+source 'https://gitee.com/JT_iOS/JTSpec.git'
+
+# 远程公有仓库
+source 'https://github.com/CocoaPods/Specs.git'
+
 platform :ios, '8.0'
 
 target 'XOChatModule_Example' do
   pod 'XOChatModule', :path => '../'
-
+  
   target 'XOChatModule_Tests' do
     inherit! :search_paths
-
+    
     
   end
 end
