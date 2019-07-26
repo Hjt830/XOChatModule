@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol XOMessageDelegate;
 
-@interface XOMessageManager : NSObject <TIMMessageReceiptListener, TIMMessageUpdateListener, TIMMessageRevokeListener>
+@interface XOMessageManager : NSObject <TIMMessageReceiptListener, TIMMessageUpdateListener, TIMMessageRevokeListener, TIMGroupEventListener>
 
 + (instancetype)defaultManager;
 
@@ -30,26 +30,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol XOMessageDelegate <NSObject>
 
+@optional
 /**
  *  收到了已读回执
  *
  *  @param receipts 已读回执（TIMMessageReceipt*）列表
  */
-- (void) onRecvMessageReceipts:(NSArray*)receipts;
+- (void)xoOnRecvMessageReceipts:(NSArray*)receipts;
 
 /**
  *  消息修改通知
  *
  *  @param msgs 修改的消息列表，TIMMessage 类型数组
  */
-- (void)onMessageUpdate:(NSArray*)msgs;
+- (void)xoOnMessageUpdate:(NSArray*)msgs;
 
 /**
  *  消息撤回通知
  *
  *  @param locator 被撤回消息的标识
  */
-- (void)onRevokeMessage:(TIMMessageLocator*)locator;
+- (void)xoOnRevokeMessage:(TIMMessageLocator*)locator;
+
+/**
+ *  群tips回调
+ *
+ *  @param elem  群tips消息
+ */
+- (void)xoOnGroupTipsEvent:(TIMGroupTipsElem*)elem;
 
 @end
 

@@ -18,15 +18,16 @@
 		};
 		49F81DEB6688E736DE87532B341FC72B /* XOChatModule */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = A5C6B671A12E71BD2035029C51B11419 /* Build configuration list for PBXAggregateTarget "XOChatModule" */;
+			buildConfigurationList = C20565159A498CF87A80960EE033898C /* Build configuration list for PBXAggregateTarget "XOChatModule" */;
 			buildPhases = (
 			);
 			dependencies = (
-				2A2341532DC1AD093306518FA6EE0D5E /* PBXTargetDependency */,
-				D817FBD3E938C488542AD519081C7D41 /* PBXTargetDependency */,
-				AAB219473606DA9B43A860BB9A70FBBD /* PBXTargetDependency */,
-				B74ABD18FDF8755B7DB047A160730E4A /* PBXTargetDependency */,
-				5BD91FBE8F0CFCF4183C3ED209CD6A04 /* PBXTargetDependency */,
+				7254520EF99A7A936816F5E999746E39 /* PBXTargetDependency */,
+				BDDA931401111E5E51B8BB0799994D0F /* PBXTargetDependency */,
+				44BBCF7ABD8F0966AF44938AEB60358C /* PBXTargetDependency */,
+				8156BD5BB13632DF4272A736656911D0 /* PBXTargetDependency */,
+				5561EBE8A1B06AF0F5CB89AFE335D166 /* PBXTargetDependency */,
+				1BB93B0549DCAAAA2BA953E040EBAA26 /* PBXTargetDependency */,
 			);
 			name = XOChatModule;
 		};
@@ -528,7 +529,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		146F9C8E454B7436F84BD0F8058385B3 /* PBXContainerItemProxy */ = {
+		26E2654775EF23491E5EBA0AC2A0AABA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
@@ -556,12 +557,12 @@
 			remoteGlobalIDString = 49F81DEB6688E736DE87532B341FC72B;
 			remoteInfo = XOChatModule;
 		};
-		53559801E88526D0CE0CEEA24718634E /* PBXContainerItemProxy */ = {
+		4EB321BC3669F25771C49A4E43F7FFEC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 6A222DBB9D71B481EE8F2DACD77F8A61;
-			remoteInfo = CTMediator;
+			remoteGlobalIDString = 438B238ACC7DF1178D1BCE1A31983146;
+			remoteInfo = ReactiveObjC;
 		};
 		5D6071431756E7958F87928E2085D26B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -570,13 +571,6 @@
 			remoteGlobalIDString = 0130B3724283586C0E9D2A112D4F2AA1;
 			remoteInfo = AFNetworking;
 		};
-		66CA6D4BD689954661DB59674915467F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4DAA7BE7D48EEB875B3FA2B16A6F6160;
-			remoteInfo = GCDMulticastDelegate;
-		};
 		73868128BF24919F2BAB925A0AE6CB59 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
@@ -584,12 +578,19 @@
 			remoteGlobalIDString = 3847153A6E5EEFB86565BA840768F429;
 			remoteInfo = SDWebImage;
 		};
-		75FAD81AE154BF3A814A91B327DA5240 /* PBXContainerItemProxy */ = {
+		73DE934E31FC10F50A92DA15297ECFDB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = A0DCC628A5072B65BE9A2190D6447B2D;
 			remoteInfo = JTBaseLib;
+		};
+		78E217D23F661ED8E7F7D3830B049361 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4DAA7BE7D48EEB875B3FA2B16A6F6160;
+			remoteInfo = GCDMulticastDelegate;
 		};
 		7A9DB3DB1A2393F9538C39F5D3316F2B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -618,13 +619,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = EBC4835403D96A8B93838D2D60867433;
 			remoteInfo = "JTBaseLib-JTBaseLib";
-		};
-		B0E0407B6609B866045A12FB76A3D118 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 438B238ACC7DF1178D1BCE1A31983146;
-			remoteInfo = ReactiveObjC;
 		};
 		B2EB7A4FFA9EA6088A3838964E006F78 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -661,6 +655,13 @@
 			remoteGlobalIDString = 84B44807A12996D487A4A591A481D6A0;
 			remoteInfo = YYModel;
 		};
+		D287F48A381F485DC0FC0A0326BB13DC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6A222DBB9D71B481EE8F2DACD77F8A61;
+			remoteInfo = CTMediator;
+		};
 		D4CFFBB535A6D6CB174F203AEFAD278F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
@@ -674,6 +675,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = ABD0BEB997F424C11EE21A4E091425E4;
 			remoteInfo = GTMBase64;
+		};
+		EB07607887517A645A66BDC67230A483 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1C8D67D8B72D6BA42CCEDB648537A340;
+			remoteInfo = SVProgressHUD;
 		};
 		EB366F304D134D153F1F87156C6C882B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3433,6 +3441,12 @@
 			target = 1C8D67D8B72D6BA42CCEDB648537A340 /* SVProgressHUD */;
 			targetProxy = 9885C4F7257F705021BA5F29F7C2FEDD /* PBXContainerItemProxy */;
 		};
+		1BB93B0549DCAAAA2BA953E040EBAA26 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TXIMSDK_iOS;
+			target = 37C8B4CA3E62FB44CD14CEEF054EDAC2 /* TXIMSDK_iOS */;
+			targetProxy = 26E2654775EF23491E5EBA0AC2A0AABA /* PBXContainerItemProxy */;
+		};
 		1E15B36650E627ADAF64A29DA28657AC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AFNetworking;
@@ -3445,17 +3459,23 @@
 			target = B7A22E9A9C6CFA017D8BAE1B018E3BAE /* Pods-XOChatModule_Example */;
 			targetProxy = D4CFFBB535A6D6CB174F203AEFAD278F /* PBXContainerItemProxy */;
 		};
-		2A2341532DC1AD093306518FA6EE0D5E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = CTMediator;
-			target = 6A222DBB9D71B481EE8F2DACD77F8A61 /* CTMediator */;
-			targetProxy = 53559801E88526D0CE0CEEA24718634E /* PBXContainerItemProxy */;
-		};
 		43B0FA179EC10462F94CA34BB4B676BF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = XOChatModule;
 			target = 49F81DEB6688E736DE87532B341FC72B /* XOChatModule */;
 			targetProxy = 3C20CBDFE4C49370763466DFAA65F02C /* PBXContainerItemProxy */;
+		};
+		44BBCF7ABD8F0966AF44938AEB60358C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = JTBaseLib;
+			target = A0DCC628A5072B65BE9A2190D6447B2D /* JTBaseLib */;
+			targetProxy = 73DE934E31FC10F50A92DA15297ECFDB /* PBXContainerItemProxy */;
+		};
+		5561EBE8A1B06AF0F5CB89AFE335D166 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SVProgressHUD;
+			target = 1C8D67D8B72D6BA42CCEDB648537A340 /* SVProgressHUD */;
+			targetProxy = EB07607887517A645A66BDC67230A483 /* PBXContainerItemProxy */;
 		};
 		562913851996C655F60202984D37395A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3481,11 +3501,11 @@
 			target = ABD0BEB997F424C11EE21A4E091425E4 /* GTMBase64 */;
 			targetProxy = 8CA3C9243D66073223694334E581FF85 /* PBXContainerItemProxy */;
 		};
-		5BD91FBE8F0CFCF4183C3ED209CD6A04 /* PBXTargetDependency */ = {
+		7254520EF99A7A936816F5E999746E39 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = TXIMSDK_iOS;
-			target = 37C8B4CA3E62FB44CD14CEEF054EDAC2 /* TXIMSDK_iOS */;
-			targetProxy = 146F9C8E454B7436F84BD0F8058385B3 /* PBXContainerItemProxy */;
+			name = CTMediator;
+			target = 6A222DBB9D71B481EE8F2DACD77F8A61 /* CTMediator */;
+			targetProxy = D287F48A381F485DC0FC0A0326BB13DC /* PBXContainerItemProxy */;
 		};
 		7BBFC1DED6D6B7F9F24633999C1757B5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3498,6 +3518,12 @@
 			name = TXIMSDK_iOS;
 			target = 37C8B4CA3E62FB44CD14CEEF054EDAC2 /* TXIMSDK_iOS */;
 			targetProxy = C563A0F8C6EB0344FE6A5E82713D8E55 /* PBXContainerItemProxy */;
+		};
+		8156BD5BB13632DF4272A736656911D0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ReactiveObjC;
+			target = 438B238ACC7DF1178D1BCE1A31983146 /* ReactiveObjC */;
+			targetProxy = 4EB321BC3669F25771C49A4E43F7FFEC /* PBXContainerItemProxy */;
 		};
 		8881482CF3033C98B461D64A333E3200 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3517,12 +3543,6 @@
 			target = 1C8D67D8B72D6BA42CCEDB648537A340 /* SVProgressHUD */;
 			targetProxy = B2EB7A4FFA9EA6088A3838964E006F78 /* PBXContainerItemProxy */;
 		};
-		AAB219473606DA9B43A860BB9A70FBBD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = JTBaseLib;
-			target = A0DCC628A5072B65BE9A2190D6447B2D /* JTBaseLib */;
-			targetProxy = 75FAD81AE154BF3A814A91B327DA5240 /* PBXContainerItemProxy */;
-		};
 		AC2DD42D6FF0C6FC06F1BC227100BCF0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = MJRefresh;
@@ -3541,12 +3561,6 @@
 			target = 6868056D761E163D10FDAF8CF1C4D9B8 /* MJRefresh */;
 			targetProxy = EB366F304D134D153F1F87156C6C882B /* PBXContainerItemProxy */;
 		};
-		B74ABD18FDF8755B7DB047A160730E4A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ReactiveObjC;
-			target = 438B238ACC7DF1178D1BCE1A31983146 /* ReactiveObjC */;
-			targetProxy = B0E0407B6609B866045A12FB76A3D118 /* PBXContainerItemProxy */;
-		};
 		BC5BA77B66BBCF2F3146A64D934D6587 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AFNetworking;
@@ -3559,17 +3573,17 @@
 			target = 6A222DBB9D71B481EE8F2DACD77F8A61 /* CTMediator */;
 			targetProxy = F3DD27DF3A406737A0303F1BD1AAB750 /* PBXContainerItemProxy */;
 		};
+		BDDA931401111E5E51B8BB0799994D0F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GCDMulticastDelegate;
+			target = 4DAA7BE7D48EEB875B3FA2B16A6F6160 /* GCDMulticastDelegate */;
+			targetProxy = 78E217D23F661ED8E7F7D3830B049361 /* PBXContainerItemProxy */;
+		};
 		D12F0F7EE9B5B2A332E3D3280FF99EA0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SDWebImage;
 			target = 3847153A6E5EEFB86565BA840768F429 /* SDWebImage */;
 			targetProxy = 73868128BF24919F2BAB925A0AE6CB59 /* PBXContainerItemProxy */;
-		};
-		D817FBD3E938C488542AD519081C7D41 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GCDMulticastDelegate;
-			target = 4DAA7BE7D48EEB875B3FA2B16A6F6160 /* GCDMulticastDelegate */;
-			targetProxy = 66CA6D4BD689954661DB59674915467F /* PBXContainerItemProxy */;
 		};
 		E5BB852EC7E9A0EC349CB8C9A032287E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3660,19 +3674,6 @@
 			};
 			name = Debug;
 		};
-		0D7C08021D341C37D3C93AA7445F6B7B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E8E745A783FFC36BBE8ED9EC619DCE21 /* XOChatModule.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		11B33795317D1ACF5BE2A187BFBF41CC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 15BD714B01D792B324F520E5B5BC68CE /* TXIMSDK_iOS.xcconfig */;
@@ -3685,20 +3686,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		128C6EE1CEC74F1561A8317F1F623018 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E8E745A783FFC36BBE8ED9EC619DCE21 /* XOChatModule.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		19CBBDA48886022B38F2D391D94DD602 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -3747,6 +3734,19 @@
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;
+		};
+		222338CFBA4CDEE50608F3105E714B8B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8E745A783FFC36BBE8ED9EC619DCE21 /* XOChatModule.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		3965FF71C1C0B151A20DF3EDAAC91AD1 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -3899,6 +3899,20 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		5414BFD3AAC7EF65A69F236091C6E5AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8E745A783FFC36BBE8ED9EC619DCE21 /* XOChatModule.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -4665,15 +4679,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A5C6B671A12E71BD2035029C51B11419 /* Build configuration list for PBXAggregateTarget "XOChatModule" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0D7C08021D341C37D3C93AA7445F6B7B /* Debug */,
-				128C6EE1CEC74F1561A8317F1F623018 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		A7AD7EB44D48DDB88B3666421644603F /* Build configuration list for PBXNativeTarget "SDWebImage" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -4688,6 +4693,15 @@
 			buildConfigurations = (
 				0A22C22B921A50C8CFBB7F847C9F9E8F /* Debug */,
 				220BD661A812B3A109D0E86C1B1BCD85 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C20565159A498CF87A80960EE033898C /* Build configuration list for PBXAggregateTarget "XOChatModule" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				222338CFBA4CDEE50608F3105E714B8B /* Debug */,
+				5414BFD3AAC7EF65A69F236091C6E5AE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

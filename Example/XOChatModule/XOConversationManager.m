@@ -37,6 +37,23 @@ static XOConversationManager *__conversationManager = nil;
     return self;
 }
 
+- (void)dealloc
+{
+    [_multiDelegate removeAllDelegates];
+}
+
+#pragma mark ========================= 会话相关 =========================
+
+- (NSUInteger)ConversationCount
+{
+    return [[TIMManager sharedInstance] conversationCount];
+}
+
+- (NSArray<TIMConversation *> *)getAllConversations
+{
+    return [[TIMManager sharedInstance] getConversationList];
+}
+
 #pragma mark ========================= TIMRefreshListener =========================
 /**
  *  刷新会话
@@ -44,8 +61,8 @@ static XOConversationManager *__conversationManager = nil;
 - (void)onRefresh
 {
     NSLog(@"刷新会话");
-    if ([_multiDelegate hasDelegateThatRespondsToSelector:@selector(onRefresh)]) {
-        [_multiDelegate onRefresh];
+    if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnRefresh)]) {
+        [_multiDelegate xoOnRefresh];
     }
 }
 /**
@@ -56,8 +73,8 @@ static XOConversationManager *__conversationManager = nil;
 - (void)onRefreshConversations:(NSArray*)conversations
 {
     NSLog(@"刷新部分会话（包括多终端已读上报同步）: %@", conversations);
-    if ([_multiDelegate hasDelegateThatRespondsToSelector:@selector(onRefreshConversations:)]) {
-        [_multiDelegate onRefreshConversations:conversations];
+    if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnRefreshConversations:)]) {
+        [_multiDelegate xoOnRefreshConversations:conversations];
     }
 }
 
@@ -65,9 +82,19 @@ static XOConversationManager *__conversationManager = nil;
 
 - (void)addDelegate:(id <XOConversationDelegate>)delegate delegateQueue:(dispatch_queue_t)delegateQueue
 {
-    // 判断是否已经添加同一个类的对象作为代理
-    if ([_multiDelegate countOfClass:[delegate class]] == 0) {
-        [_multiDelegate addDelegate:delegate delegateQueue:delegateQueue];
+    if (delegate != nil) {
+        // 判断是否已经添加同一个类的对象作为代理
+        if (delegateQueue == nil || delegateQueue == NULL) {
+            if ([_multiDelegate countOfClass:[delegate class]] > 0) {
+                [_multiDelegate removeDelegate:delegate];
+            }
+            [_multiDelegate addDelegate:delegate delegateQueue:dispatch_get_main_queue()];
+        } else{
+            if ([_multiDelegate countOfClass:[delegate class]] > 0) {
+                [_multiDelegate removeDelegate:delegate];
+            }
+            [_multiDelegate addDelegate:delegate delegateQueue:delegateQueue];
+        }
     }
 }
 - (void)removeDelegate:(id <XOConversationDelegate>)delegate delegateQueue:(dispatch_queue_t)delegateQueue

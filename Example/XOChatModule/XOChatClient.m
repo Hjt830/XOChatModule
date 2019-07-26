@@ -8,8 +8,10 @@
 
 #import "XOChatClient.h"
 #import <GCDMulticastDelegate/GCDMulticastDelegate.h>
+#import <JTBaseLib/JTBaseLib.h>
+#import "XOContactManager.h"
 
-@interface XOChatClient () <TIMUserStatusListener, TIMUploadProgressListener, TIMGroupEventListener, TIMFriendshipListener>
+@interface XOChatClient () <TIMMessageListener, TIMUserStatusListener, TIMUploadProgressListener, TIMGroupEventListener, TIMFriendshipListener>
 {
     GCDMulticastDelegate    <XOChatClientProtocol> *_multiDelegate;
 }
@@ -45,6 +47,7 @@ static XOChatClient *__chatClient = nil;
     if (_multiDelegate) {
         [_multiDelegate removeAllDelegates];
     }
+    [[TIMManager sharedInstance] removeMessageListener:self];
 }
 
 #pragma mark ========================= SDK init & login =========================
@@ -54,11 +57,11 @@ static XOChatClient *__chatClient = nil;
  *  @param 云通信的日志回调函数, 仅在DEBUG时会回调
  *  @param 云通讯的长连接网络状态状态
  */
-- (void)initSDKWithAppId:(int)AppID logFun:(TIMLogFunc _Nullable)logFunc connListener:(id <TIMConnListener> _Nullable)connListener
+- (void)initSDKWithAppId:(int)AppID logFun:(TIMLogFunc _Nullable)logFunc
 {
     TIMSdkConfig *config = [[TIMSdkConfig alloc] init];
     config.sdkAppId = AppID;
-    config.connListener = connListener;
+    config.connListener = self;
 #if DEBUG
     config.disableLogPrint = NO;
     config.logLevel = TIM_LOG_WARN;
@@ -82,10 +85,12 @@ static XOChatClient *__chatClient = nil;
     userConfig.messageUpdateListener = _messageManager;
     userConfig.messageRevokeListener = _messageManager;
     userConfig.uploadProgressListener = self;
-    userConfig.groupEventListener = self;
-    userConfig.friendshipListener = self;
+    userConfig.groupEventListener = _messageManager;
+    userConfig.friendshipListener = _contactManager;
     
     [[TIMManager sharedInstance] setUserConfig:userConfig];
+    
+    [[TIMManager sharedInstance] addMessageListener:self];
 }
 
 /** @brief 登录腾讯云IM
@@ -103,14 +108,10 @@ static XOChatClient *__chatClient = nil;
         if (success) {success();}
         
         // 获取好友列表
-        NSArray <TIMFriend *>* friendList = [[TIMManager sharedInstance].friendshipManager queryFriendList];
-        NSLog(@"好友列表: %@", friendList);
+        [[XOContactManager defaultManager] asyncFriendList];
+        
         // 获取群列表
-        [[TIMManager sharedInstance].groupManager getGroupList:^(NSArray<TIMGroupInfo *> *arr) {
-            NSLog(@"查询群列表: %@", arr);
-        } fail:^(int code, NSString *msg) {
-            NSLog(@"查询群列表失败: code:%d  msg:%@", code, msg);
-        }];
+        [[XOContactManager defaultManager] asyncGroupList];
         
     } fail:^(int code, NSString *msg) {
         
@@ -119,7 +120,32 @@ static XOChatClient *__chatClient = nil;
         NSLog(@"=================================\n");
         
         if (fail) {fail(code, msg);}
+        
+        
+        // 初始化存储 仅查看历史消息时使用
+        [[TIMManager sharedInstance] initStorage:param succ:^{
+            
+            NSLog(@"初始化存储, 可查看历史消息");
+            
+        } fail:^(int code, NSString *msg) {
+            
+            NSLog(@"初始化存储失败, 不可查看历史消息");
+        }];
     }];
+}
+
+#pragma mark ========================= TIMMessageListener =========================
+/**
+ *  新消息回调通知
+ *
+ *  @param msgs 新消息列表，TIMMessage 类型数组
+ */
+- (void)onNewMessage:(NSArray *)msgs
+{
+    JTLog(@"=================================\n=================================\n收到新消息条数: %lu \n收到新消息: %@\n=================================\n=================================", msgs.count, msgs);
+    if ([_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnForceOffline)]) {
+        [_multiDelegate xoOnForceOffline];
+    }
 }
 
 #pragma mark ========================= TIMUserStatusListener =========================
@@ -128,9 +154,9 @@ static XOChatClient *__chatClient = nil;
  */
 - (void)onForceOffline
 {
-    NSLog(@"被踢下线");
-    if ([_multiDelegate hasDelegateThatRespondsToSelector:@selector(onForceOffline)]) {
-        [_multiDelegate onForceOffline];
+    JTLog(@"被踢下线");
+    if ([_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnForceOffline)]) {
+        [_multiDelegate xoOnForceOffline];
     }
 }
 /**
@@ -138,9 +164,9 @@ static XOChatClient *__chatClient = nil;
  */
 - (void)onReConnFailed:(int)code err:(NSString*)err
 {
-    NSLog(@"断线重连失败");
-    if ([_multiDelegate hasDelegateThatRespondsToSelector:@selector(onReConnFailed:err:)]) {
-        [_multiDelegate onReConnFailed:code err:err];
+    JTLog(@"断线重连失败");
+    if ([_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnReConnFailed:err:)]) {
+        [_multiDelegate xoOnReConnFailed:code err:err];
     }
 }
 /**
@@ -148,31 +174,60 @@ static XOChatClient *__chatClient = nil;
  */
 - (void)onUserSigExpired
 {
-    NSLog(@"登录过期");
-    if ([_multiDelegate hasDelegateThatRespondsToSelector:@selector(onUserSigExpired)]) {
-        [_multiDelegate onUserSigExpired];
+    JTLog(@"登录过期");
+    if ([_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnUserSigExpired)]) {
+        [_multiDelegate xoOnUserSigExpired];
     }
 }
 
-#pragma mark ========================= 代理 =========================
+#pragma mark ========================= TIMConnListener =========================
+/**
+ *  网络连接成功
+ */
+- (void)onConnSucc
+{
+    JTLog(@"\n=======************======= TIM 网络连接成功");
+    if ([_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnConnSucc)]) {
+        [_multiDelegate xoOnConnSucc];
+    }
+}
 
-- (void)addDelegate:(id <XOChatClientProtocol>)delegate delegateQueue:(dispatch_queue_t)delegateQueue
+/**
+ *  网络连接失败
+ *
+ *  @param code 错误码
+ *  @param err  错误描述
+ */
+- (void)onConnFailed:(int)code err:(NSString*)err
 {
-    // 判断是否已经添加同一个类的对象作为代理
-    if (_multiDelegate && [_multiDelegate countOfClass:[delegate class]] == 0) {
-        [_multiDelegate addDelegate:delegate delegateQueue:delegateQueue];
+    JTLog(@"\n=======************======= TIM 网络连接失败 code: %d err:%@", code, err);
+    if ([_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnConnFailed:err:)]) {
+        [_multiDelegate xoOnConnFailed:code err:err];
     }
 }
-- (void)removeDelegate:(id <XOChatClientProtocol>)delegate delegateQueue:(dispatch_queue_t)delegateQueue
+
+/**
+ *  网络连接断开（断线只是通知用户，不需要重新登陆，重连以后会自动上线）
+ *
+ *  @param code 错误码
+ *  @param err  错误描述
+ */
+- (void)onDisconnect:(int)code err:(NSString*)err
 {
-    if (_multiDelegate && [_multiDelegate countOfClass:[delegate class]] > 0) {
-        [_multiDelegate removeDelegate:delegateQueue delegateQueue:delegateQueue];
+    JTLog(@"\n=======************======= TIM 网络连接断开 code: %d err:%@", code, err);
+    if ([_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnDisconnect:err:)]) {
+        [_multiDelegate xoOnDisconnect:code err:err];
     }
 }
-- (void)removeDelegate:(id <XOChatClientProtocol>)delegate
+
+/**
+ *  连接中
+ */
+- (void)onConnecting
 {
-    if (_multiDelegate && [_multiDelegate countOfClass:[delegate class]] > 0) {
-        [_multiDelegate removeDelegate:delegate delegateQueue:NULL];
+    JTLog(@"\n=======************======= TIM 正在连接...");
+    if ([_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnConnecting)]) {
+        [_multiDelegate xoOnConnecting];
     }
 }
 
@@ -190,56 +245,36 @@ static XOChatClient *__chatClient = nil;
     NSLog(@"上传进度回调: msg:%@   elemidx:%d   taskid:%d   progress:%d", msg, elemidx, taskid, progress);
 }
 
-#pragma mark ========================= TIMGroupEventListener =========================
-/**
- *  群tips回调
- *
- *  @param elem  群tips消息
- */
-- (void)onGroupTipsEvent:(TIMGroupTipsElem*)elem
-{
-    NSLog(@"群操作Tips回调: %@", elem);
-}
+#pragma mark ========================= 代理 =========================
 
-#pragma mark ========================= TIMFriendshipListener =========================
-/**
- *  添加好友通知
- *
- *  @param users 好友列表（NSString*）
- */
-- (void)onAddFriends:(NSArray*)users
+- (void)addDelegate:(id <XOChatClientProtocol>)delegate delegateQueue:(dispatch_queue_t)delegateQueue
 {
-    NSLog(@"添加好友通知: %@", users);
+    if (delegate != nil) {
+        // 判断是否已经添加同一个类的对象作为代理
+        if (delegateQueue == nil || delegateQueue == NULL) {
+            if ([_multiDelegate countOfClass:[delegate class]] > 0) {
+                [_multiDelegate removeDelegate:delegate];
+            }
+            [_multiDelegate addDelegate:delegate delegateQueue:dispatch_get_main_queue()];
+        } else{
+            if ([_multiDelegate countOfClass:[delegate class]] > 0) {
+                [_multiDelegate removeDelegate:delegate];
+            }
+            [_multiDelegate addDelegate:delegate delegateQueue:delegateQueue];
+        }
+    }
 }
-
-/**
- *  删除好友通知
- *
- *  @param identifiers 用户id列表（NSString*）
- */
-- (void)onDelFriends:(NSArray*)identifiers
+- (void)removeDelegate:(id <XOChatClientProtocol>)delegate delegateQueue:(dispatch_queue_t)delegateQueue
 {
-    NSLog(@"添加好友通知: %@", identifiers);
+    if (_multiDelegate && [_multiDelegate countOfClass:[delegate class]] > 0) {
+        [_multiDelegate removeDelegate:delegateQueue delegateQueue:delegateQueue];
+    }
 }
-
-/**
- *  好友资料更新通知
- *
- *  @param profiles 资料列表（TIMSNSChangeInfo *）
- */
-- (void)onFriendProfileUpdate:(NSArray<TIMSNSChangeInfo *> *)profiles
+- (void)removeDelegate:(id <XOChatClientProtocol>)delegate
 {
-    NSLog(@"添加好友通知: %@", profiles);
-}
-
-/**
- *  好友申请通知
- *
- *  @param reqs 好友申请者id列表（TIMFriendPendencyInfo *）
- */
-- (void)onAddFriendReqs:(NSArray<TIMFriendPendencyInfo *> *)reqs
-{
-    NSLog(@"添加好友通知: %@", reqs);
+    if (_multiDelegate && [_multiDelegate countOfClass:[delegate class]] > 0) {
+        [_multiDelegate removeDelegate:delegate delegateQueue:NULL];
+    }
 }
 
 @end

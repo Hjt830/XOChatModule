@@ -8,6 +8,7 @@
 
 #import "XOConversationListCell.h"
 #import <JTBaseLib/JTBaseLib.h>
+#import "NSDate+JTExtension.h"
 
 @interface XOConversationListCell ()
 

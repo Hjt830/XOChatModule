@@ -48,9 +48,12 @@ static XOMessageManager *__msgManager = nil;
  *
  *  @param receipts 已读回执（TIMMessageReceipt*）列表
  */
-- (void) onRecvMessageReceipts:(NSArray*)receipts
+- (void)onRecvMessageReceipts:(NSArray*)receipts
 {
     NSLog(@"收到了已读回执: %@", receipts);
+    if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnRecvMessageReceipts:)]) {
+        [_multiDelegate xoOnRecvMessageReceipts:receipts];
+    }
 }
 
 #pragma mark ========================= TIMMessageUpdateListener =========================
@@ -62,6 +65,9 @@ static XOMessageManager *__msgManager = nil;
 - (void)onMessageUpdate:(NSArray*) msgs
 {
     NSLog(@"消息修改通知: %@", msgs);
+    if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnMessageUpdate:)]) {
+        [_multiDelegate xoOnMessageUpdate:msgs];
+    }
 }
 
 #pragma mark ========================= TIMMessageRevokeListener =========================
@@ -73,15 +79,42 @@ static XOMessageManager *__msgManager = nil;
 - (void)onRevokeMessage:(TIMMessageLocator*)locator
 {
     NSLog(@"消息撤回通知: %@", locator);
+    if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnRevokeMessage:)]) {
+        [_multiDelegate xoOnRevokeMessage:locator];
+    }
+}
+
+#pragma mark ========================= TIMGroupEventListener =========================
+/**
+ *  群tips回调
+ *
+ *  @param elem  群tips消息
+ */
+- (void)onGroupTipsEvent:(TIMGroupTipsElem*)elem
+{
+    NSLog(@"群tips回调: %@", elem);
+    if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnGroupTipsEvent:)]) {
+        [_multiDelegate xoOnGroupTipsEvent:elem];
+    }
 }
 
 #pragma mark ========================= 添加|删除代理 =========================
 
 - (void)addDelegate:(id <XOMessageDelegate>)delegate delegateQueue:(dispatch_queue_t)delegateQueue
 {
-    // 判断是否已经添加同一个类的对象作为代理
-    if ([_multiDelegate countOfClass:[delegate class]] == 0) {
-        [_multiDelegate addDelegate:delegate delegateQueue:delegateQueue];
+    if (delegate != nil) {
+        // 判断是否已经添加同一个类的对象作为代理
+        if (delegateQueue == nil || delegateQueue == NULL) {
+            if ([_multiDelegate countOfClass:[delegate class]] > 0) {
+                [_multiDelegate removeDelegate:delegate];
+            }
+            [_multiDelegate addDelegate:delegate delegateQueue:dispatch_get_main_queue()];
+        } else{
+            if ([_multiDelegate countOfClass:[delegate class]] > 0) {
+                [_multiDelegate removeDelegate:delegate];
+            }
+            [_multiDelegate addDelegate:delegate delegateQueue:delegateQueue];
+        }
     }
 }
 - (void)removeDelegate:(id <XOMessageDelegate>)delegate delegateQueue:(dispatch_queue_t)delegateQueue

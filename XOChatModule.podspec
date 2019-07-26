@@ -42,6 +42,7 @@ Pod::Spec.new do |s|
   s.dependency 'JTBaseLib', '~> 0.1.2'
   s.dependency 'CTMediator', '~> 25'
   s.dependency 'ReactiveObjC', '~> 3.1.1'
-  s.dependency 'GCDMulticastDelegate', '1.0.0'
+  s.dependency 'GCDMulticastDelegate', '~> 1.0.0'
+  s.dependency 'SVProgressHUD', '~> 2.2.5'
   
 end

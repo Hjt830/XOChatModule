@@ -7,14 +7,13 @@
 //
 
 #import "XOChatAppDelegate.h"
-#import "XOChatListViewController.h"
 
 #import <JTBaseLib/JTBaseLib.h>
 #import "XOChatClient.h"
 
-#define TXTIMAppID      @"1400213643"
-#define TIM_UserId      @"IM_User_1"
-#define TIM_UserSig     @"eJxlj11LwzAARd-7K0qfRdKm6bLBHkKsrrhN3dYJfQllSbpM*mGatXXifxfrwID39Rzu5X46rut6u*X2Nj8c6nNlmPlohOfOXA94N3*waRRnuWFQ839QDI3SguXSCD1CHyEUAGA7iovKKKmuRrJiaSs08y2l5W9s3PntCAEIfBiF0FZUMcJV-EKTWNLkOaZpuiAZofctLk0pIV*Dcgjx6bW-LPdU9adsKx6JIjVZ9Pun6d3GZEM-mYYP7xE9R2tJhqLTXXXhO9h18JjEx2I*tyaNKsX1VBSgCcAYW7QTulV1NQoB8JEfQPATz-lyvgHBtV7d"
+#define TXTIMAppID      @"1400079944"
+#define TIM_UserId      @"c882993b38ab4ec7912ed88c386829cc"
+#define TIM_UserSig     @"eJw1kNFOgzAUht*Fa6MdtNCaeIEMFpJhXBhZ8IaUtmwdkZWuIsz47lbCbr-vnPzn-D-Ofps-UqUkr6ipPM2dZwc4DzMWo5JaVLQxQlvsIuICcJeSi87IRs6KYewS4tUepjUULCArV3CMmYd9Kxhbdq7yaIezuIjSeIqGfngbkiNCPe7GLPLbb7VJ3lu6adDuEO1Ktc7V*pYOoYzDiwDk6Vr4LOnzj*1rHO7TMkWD1ijrzwWuSzIeguw2nQR7uYfxtpofs5EraA8PCIFwkUZ*in*OfAhcGAC0cMrY5aszlZmUmJv4-QMS71dk"
 
 @interface XOChatAppDelegate () <TIMConnListener>
 
@@ -34,7 +33,7 @@
         NSLog(@"=================================");
         NSLog(@"=================================\n");
         
-    } connListener:self];
+    }];
     
     // 2、登录腾讯云通信
     TIMLoginParam *loginParam = [[TIMLoginParam alloc] init];
@@ -82,40 +81,6 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-}
-
-
-
-#pragma mark ========================= TIMConnListener =========================
-
-/**
- *  网络连接成功
- */
-- (void)onConnSucc
-{
-    NSLog(@"\n=======************======= TIM 网络连接成功");
-}
-
-/**
- *  网络连接失败
- *
- *  @param code 错误码
- *  @param err  错误描述
- */
-- (void)onConnFailed:(int)code err:(NSString*)err
-{
-    NSLog(@"\n=======************======= TIM 网络连接失败 code: %d err:%@", code, err);
-}
-
-/**
- *  网络连接断开（断线只是通知用户，不需要重新登陆，重连以后会自动上线）
- *
- *  @param code 错误码
- *  @param err  错误描述
- */
-- (void)onDisconnect:(int)code err:(NSString*)err
-{
-    NSLog(@"\n=======************======= TIM 网络连接断开 code: %d err:%@", code, err);
 }
 
 @end

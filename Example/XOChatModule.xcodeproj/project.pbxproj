@@ -12,11 +12,10 @@
 		551085D522D4756C0060622C /* XOConversationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D422D4756C0060622C /* XOConversationManager.m */; };
 		551085D722D475840060622C /* XOConversationListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D622D475840060622C /* XOConversationListCell.m */; };
 		551085DA22D478620060622C /* XOMessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D922D478620060622C /* XOMessageManager.m */; };
-		551085DD22D47E250060622C /* XOContactManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085DC22D47E250060622C /* XOContactManager.m */; };
-		553B4C3622D438C800524382 /* XOConversationListViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 553B4C3522D438C800524382 /* XOConversationListViewModel.m */; };
-		557D9F8C22CF262F00846F0D /* XOChatListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 557D9F8B22CF262F00846F0D /* XOChatListViewController.m */; };
+		5520654A22EACB9A009F823F /* NSDate+JTExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 5520654922EACB99009F823F /* NSDate+JTExtension.m */; };
+		5520654D22EAD8B2009F823F /* XOConversationListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5520654C22EAD8B2009F823F /* XOConversationListController.m */; };
+		5520655122EAE9E2009F823F /* XOContactManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5520655022EAE9E2009F823F /* XOContactManager.m */; };
 		557D9F8F22CF278500846F0D /* XOChatClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 557D9F8E22CF278500846F0D /* XOChatClient.m */; };
-		557D9F9222CF4A2B00846F0D /* XOConversationListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 557D9F9122CF4A2B00846F0D /* XOConversationListCell.m */; };
 		557D9F9B22CF504900846F0D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 557D9F9D22CF504900846F0D /* Localizable.strings */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
@@ -55,15 +54,16 @@
 		551085D822D478620060622C /* XOMessageManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOMessageManager.h; sourceTree = "<group>"; };
 		551085D922D478620060622C /* XOMessageManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOMessageManager.m; sourceTree = "<group>"; };
 		551085DB22D47E250060622C /* XOContactManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOContactManager.h; sourceTree = "<group>"; };
-		551085DC22D47E250060622C /* XOContactManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOContactManager.m; sourceTree = "<group>"; };
-		553B4C3422D438C800524382 /* XOConversationListViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOConversationListViewModel.h; sourceTree = "<group>"; };
-		553B4C3522D438C800524382 /* XOConversationListViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOConversationListViewModel.m; sourceTree = "<group>"; };
-		557D9F8A22CF262F00846F0D /* XOChatListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatListViewController.h; sourceTree = "<group>"; };
-		557D9F8B22CF262F00846F0D /* XOChatListViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOChatListViewController.m; sourceTree = "<group>"; };
+		5520654822EACB99009F823F /* NSDate+JTExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+JTExtension.h"; sourceTree = "<group>"; };
+		5520654922EACB99009F823F /* NSDate+JTExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+JTExtension.m"; sourceTree = "<group>"; };
+		5520654B22EAD8B2009F823F /* XOConversationListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XOConversationListController.h; sourceTree = "<group>"; };
+		5520654C22EAD8B2009F823F /* XOConversationListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XOConversationListController.m; sourceTree = "<group>"; };
+		5520654E22EAE001009F823F /* XOChatModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatModule.h; sourceTree = "<group>"; };
+		5520654F22EAE9E2009F823F /* XOConversationListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XOConversationListCell.h; sourceTree = "<group>"; };
+		5520655022EAE9E2009F823F /* XOContactManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XOContactManager.m; sourceTree = "<group>"; };
 		557D9F8D22CF278500846F0D /* XOChatClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatClient.h; sourceTree = "<group>"; };
 		557D9F8E22CF278500846F0D /* XOChatClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOChatClient.m; sourceTree = "<group>"; };
 		557D9F9022CF4A2B00846F0D /* XOConversationListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOConversationListCell.h; sourceTree = "<group>"; };
-		557D9F9122CF4A2B00846F0D /* XOConversationListCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOConversationListCell.m; sourceTree = "<group>"; };
 		557D9F9322CF501B00846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		557D9F9422CF501B00846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		557D9F9522CF501C00846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -176,13 +176,10 @@
 				6003F59C195388D20070C39A /* XOChatAppDelegate.h */,
 				6003F59D195388D20070C39A /* XOChatAppDelegate.m */,
 				873B8AEA1B1F5CCA007FD442 /* Main.storyboard */,
-				557D9F8A22CF262F00846F0D /* XOChatListViewController.h */,
-				557D9F8B22CF262F00846F0D /* XOChatListViewController.m */,
-				553B4C3422D438C800524382 /* XOConversationListViewModel.h */,
-				553B4C3522D438C800524382 /* XOConversationListViewModel.m */,
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
+				5520654E22EAE001009F823F /* XOChatModule.h */,
 				557D9F8D22CF278500846F0D /* XOChatClient.h */,
 				557D9F8E22CF278500846F0D /* XOChatClient.m */,
 				551085D322D4756C0060622C /* XOConversationManager.h */,
@@ -190,9 +187,13 @@
 				551085D822D478620060622C /* XOMessageManager.h */,
 				551085D922D478620060622C /* XOMessageManager.m */,
 				551085DB22D47E250060622C /* XOContactManager.h */,
-				551085DC22D47E250060622C /* XOContactManager.m */,
-				557D9F9122CF4A2B00846F0D /* XOConversationListCell.m */,
+				5520655022EAE9E2009F823F /* XOContactManager.m */,
+				5520654F22EAE9E2009F823F /* XOConversationListCell.h */,
 				551085D622D475840060622C /* XOConversationListCell.m */,
+				5520654B22EAD8B2009F823F /* XOConversationListController.h */,
+				5520654C22EAD8B2009F823F /* XOConversationListController.m */,
+				5520654822EACB99009F823F /* NSDate+JTExtension.h */,
+				5520654922EACB99009F823F /* NSDate+JTExtension.m */,
 				557D9F9D22CF504900846F0D /* Localizable.strings */,
 			);
 			name = "Example for XOChatModule";
@@ -440,14 +441,13 @@
 			files = (
 				557D9F8F22CF278500846F0D /* XOChatClient.m in Sources */,
 				551085D722D475840060622C /* XOConversationListCell.m in Sources */,
-				557D9F9222CF4A2B00846F0D /* XOConversationListCell.m in Sources */,
-				553B4C3622D438C800524382 /* XOConversationListViewModel.m in Sources */,
 				551085D522D4756C0060622C /* XOConversationManager.m in Sources */,
 				6003F59E195388D20070C39A /* XOChatAppDelegate.m in Sources */,
+				5520655122EAE9E2009F823F /* XOContactManager.m in Sources */,
+				5520654A22EACB9A009F823F /* NSDate+JTExtension.m in Sources */,
+				5520654D22EAD8B2009F823F /* XOConversationListController.m in Sources */,
 				551085DA22D478620060622C /* XOMessageManager.m in Sources */,
-				551085DD22D47E250060622C /* XOContactManager.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
-				557D9F8C22CF262F00846F0D /* XOChatListViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
