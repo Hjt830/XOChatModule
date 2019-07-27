@@ -18,7 +18,6 @@
 #define TableHeaderViewMaxHeight 200.0f
 
 static NSString * const ConversationListCellID = @"ConversationListCellID";
-static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
 
 @interface XOConversationListController () <UITableViewDataSource, UITableViewDelegate, XOChatClientProtocol, XOMessageDelegate, XOConversationDelegate>
 {
@@ -190,8 +189,6 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
         _tableView.backgroundColor = [UIColor clearColor];
         
         [_tableView registerClass:[XOConversationListCell class] forCellReuseIdentifier:ConversationListCellID];
-        [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:ConversationHeadCellID];
-        
     }
     return _tableView;
 }
@@ -334,6 +331,48 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
 
 #pragma mark ========================= XOMessageDelegate =========================
 
+/**
+ *  收到了已读回执
+ *
+ *  @param receipts 已读回执（TIMMessageReceipt*）列表
+ */
+- (void)xoOnRecvMessageReceipts:(NSArray*)receipts
+{
+    
+}
+
+/**
+ *  消息修改通知
+ *
+ *  @param msgs 修改的消息列表，TIMMessage 类型数组
+ */
+- (void)xoOnMessageUpdate:(NSArray*)msgs
+{
+    
+}
+
+/**
+ *  消息撤回通知
+ *
+ *  @param locator 被撤回消息的标识
+ */
+- (void)xoOnRevokeMessage:(TIMMessageLocator*)locator
+{
+    
+}
+
+/**
+ *  群tips回调
+ *
+ *  @param elem  群tips消息
+ */
+- (void)xoOnGroupTipsEvent:(TIMGroupTipsElem*)elem
+{
+    
+}
+
+#pragma mark ========================= XOConversationDelegate =========================
+
 - (void)xoOnRefresh
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -351,8 +390,6 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
     
 }
 
-#pragma mark ========================= XOConversationDelegate =========================
-
 #pragma mark ====================== UITableViewDataSource =======================
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -365,7 +402,7 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
     XOConversationListCell *cell = [tableView dequeueReusableCellWithIdentifier:ConversationListCellID forIndexPath:indexPath];
     cell.conversation = [self.dataSource objectAtIndex:indexPath.row];
     
-    if (0 == indexPath.row) {
+    if (0 == indexPath.row && cell.layer.mask == nil) {
         UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, tableView.width, 70)
                                                        byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight
                                                              cornerRadii:CGSizeMake(8, 8)];
@@ -374,9 +411,10 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
         maskLayer.path = maskPath.CGPath;
         cell.layer.mask = maskLayer;
     }
-    else if (self.dataSource.count - 1 == indexPath.row) {
+    else if (self.dataSource.count - 1 == indexPath.row && cell.layer.mask == nil) {
         UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, tableView.width, 70)
-                                                       byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight cornerRadii:CGSizeMake(8, 8)];
+                                                       byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight
+                                                             cornerRadii:CGSizeMake(8, 8)];
         CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
         maskLayer.frame = cell.bounds;
         maskLayer.path = maskPath.CGPath;
