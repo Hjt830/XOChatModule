@@ -6,6 +6,7 @@
 //
 
 #import "JTBaseConfig.h"
+#import <JTBaseLib/JTBaseLib.h>
 
 // 本地存储用到的默认秘钥 (JTUserDefault中使用,  为32位小写连续字符串)
 #define JTLocalStorageSign @"YxPDinpCGfKpZAdviKP5o5bVSYdSdu39"

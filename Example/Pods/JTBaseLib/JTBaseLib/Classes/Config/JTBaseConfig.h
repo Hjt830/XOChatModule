@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class JTBaseConfigModel;
 @interface JTBaseConfig : NSObject
 
-@property (nonatomic, readonly) JTBaseConfigModel       *config;
+@property (nonatomic, strong, readonly) JTBaseConfigModel       *config;
 
 + (instancetype)defaultConfig;
 

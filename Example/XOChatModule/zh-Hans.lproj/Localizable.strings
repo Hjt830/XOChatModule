@@ -5,3 +5,9 @@
   Created by kenter on 2019/7/5.
   Copyright © 2019 kenter. All rights reserved.
 */
+
+
+"network.disconnected" = "当前网络不可用，请检查设备网络";
+
+"conversation.systemMessage" = "系统消息";
+"conversation.groupChat" = "发起群聊";

@@ -10,20 +10,20 @@
 #endif
 #endif
 
-#import "JTBaseLib.h"
 #import "JTBaseModel.h"
 #import "JTBaseNavigationController.h"
 #import "JTBaseTabbarController.h"
 #import "JTBaseTableViewController.h"
 #import "JTBaseViewController.h"
-#import "NSBundle+language.h"
+#import "NSBundle+JTBaseLib.h"
+#import "NSDate+JTExtension.h"
 #import "NSDateFormatter+JTExtension.h"
 #import "NSString+JTExtension.h"
 #import "UIView+Frame.h"
 #import "JTBaseConfig.h"
 #import "JTMacro.h"
+#import "JTBaseLib.h"
 #import "JTFileManager.h"
-#import "JTLanguage.h"
 #import "JTLocalPushManager.h"
 #import "JTSettingManager.h"
 #import "JTSmsCodeManager.h"

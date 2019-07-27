@@ -10,6 +10,7 @@ platform :ios, '8.0'
 
 target 'XOChatModule_Example' do
   pod 'XOChatModule', :path => '../'
+  pod 'TZImagePickerController'
   
   target 'XOChatModule_Tests' do
     inherit! :search_paths

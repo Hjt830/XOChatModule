@@ -85,6 +85,7 @@ typedef NS_ENUM(NSInteger, JTGenralChangeType) {
 
 
 @property (nonatomic, copy, readonly) JTLanguageName       language;    // app默认设置为跟随系统设置
+@property (nonatomic, strong, readonly) NSBundle           *languageBundle;
 
 @property (nonatomic, assign, readonly) JTFontSize         fontSize;     // app默认设置为JTFontSizeStandard
 

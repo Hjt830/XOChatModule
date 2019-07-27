@@ -7,8 +7,7 @@
 //
 
 #import "JTKeyChainTool.h"
-#import "JTBaseConfig.h"
-#import "NSString+JTExtension.h"
+#import <JTBaseLib/JTBaseLib.h>
 
 // App的token存储key
 NSString * const JTAppAuthorTokenKey = @"xoKeyChain_AppAuthorTokenKey";

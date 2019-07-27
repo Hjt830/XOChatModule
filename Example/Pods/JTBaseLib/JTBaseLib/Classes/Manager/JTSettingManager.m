@@ -7,9 +7,7 @@
 //
 
 #import "JTSettingManager.h"
-#import "JTFileManager.h"
-#import "JTMacro.h"
-#import "NSBundle+language.h"
+#import <JTBaseLib/JTBaseLib.h>
 #import <MJRefresh/MJRefreshConfig.h>
 
 #pragma mark ========================= language =========================
@@ -88,6 +86,7 @@ static JTSettingManager * __settingManager = nil;
     _isUserSetting = YES;
     // 语言
     _language = _settingDictionary[JTLanguageOptionKey];    // 用户语言设置
+    _languageBundle = [NSBundle bundleWithPath:[[NSBundle jt_baseLibBundle] pathForResource:_language ofType:@"lproj"]];
     // 字体
     NSNumber *fontNumber = _settingDictionary[JTFontSizeOptionKey];
     _fontSize = [fontNumber unsignedIntegerValue];          // 用户字体设置
@@ -100,6 +99,7 @@ static JTSettingManager * __settingManager = nil;
     _isUserSetting = NO;
     // 语言
     _language = [[NSLocale preferredLanguages] firstObject];    // 默认跟随系统语言设置
+    _languageBundle = [NSBundle bundleWithPath:[[NSBundle jt_baseLibBundle] pathForResource:_language ofType:@"lproj"]];
     // 字体
     _fontSize = JTFontSizeStandard;                             // 默认标准字体大小
 }
@@ -111,14 +111,13 @@ static JTSettingManager * __settingManager = nil;
 {
     if (!JTIsEmptyString(language)) {
         // 改变语言
-        [NSBundle setLanguage:language];
         _language = language;
+        _languageBundle = [NSBundle bundleWithPath:[[NSBundle jt_baseLibBundle] pathForResource:language ofType:@"lproj"]];
         // 发送通知
         [[NSNotificationCenter defaultCenter] postNotificationName:JTLanguageDidChangeNotification object:@{JTLanguageOptionKey: language}];
         // 更新用户设置文件
         [self updateUserSettingWithOptionKey:JTLanguageOptionKey optionValue:language];
-        
-        
+
         // 设置第三方库的语言
         [[MJRefreshConfig defaultConfig] setLanguageCode:language];
     }
@@ -171,6 +170,7 @@ static JTSettingManager * __settingManager = nil;
     NSString *systemLanguage = [[NSLocale preferredLanguages] firstObject];
     _language = JTIsEmptyString(systemLanguage) ? @"en" : systemLanguage;
     [mutSetting setValue:_language forKey:JTLanguageOptionKey];
+    _languageBundle = [NSBundle bundleWithPath:[[NSBundle jt_baseLibBundle] pathForResource:_language ofType:@"lproj"]];
     // 字体
     _fontSize = JTFontSizeStandard;
     NSNumber *fontNumber = [NSNumber numberWithFloat:JTFontSizeStandard];

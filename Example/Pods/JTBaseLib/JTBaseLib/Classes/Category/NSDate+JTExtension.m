@@ -7,8 +7,7 @@
 //
 
 #import "NSDate+JTExtension.h"
-#import "JTLanguage.h"
-#import "NSDateFormatter+JTExtension.h"
+#import <JTBaseLib/JTBaseLib.h>
 
 #define DATE_COMPONENTS (NSCalendarUnitYear| NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear |  NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond | NSCalendarUnitWeekday | NSCalendarUnitWeekdayOrdinal)
 #define CURRENT_CALENDAR [NSCalendar currentCalendar]
@@ -19,18 +18,18 @@
 {
     NSTimeInterval timeInterval = [self timeIntervalSinceNow];
     if (timeInterval < 60) {
-        return [JTLanguage getString:@"NSDateCategory.text1"];
+        return JTLocalizedString(@"NSDateCategory.text1");
     } else if (timeInterval < 3600) {
-        return [NSString stringWithFormat:[JTLanguage getString:@"NSDateCategory.text2"], timeInterval / 60];
+        return [NSString stringWithFormat:JTLocalizedString(@"NSDateCategory.text2.%.f"), timeInterval / 60];
     } else if (timeInterval < 86400) {
-        return [NSString stringWithFormat:[JTLanguage getString:@"NSDateCategory.text3"], timeInterval / 3600];
+        return [NSString stringWithFormat:JTLocalizedString(@"NSDateCategory.text3.%.f"), timeInterval / 3600];
     } else if (timeInterval < 2592000) {//within 30 days
-        return [NSString stringWithFormat:[JTLanguage getString:@"NSDateCategory.text4"], timeInterval / 86400];
+        return [NSString stringWithFormat:JTLocalizedString(@"NSDateCategory.text4.%.f"), timeInterval / 86400];
     } else if (timeInterval < 31536000) {//30 days to a year
-        NSDateFormatter *dateFormatter = [NSDateFormatter dateFormatterWithFormat:[JTLanguage getString:@"NSDateCategory.text5"]];
+        NSDateFormatter *dateFormatter = [NSDateFormatter dateFormatterWithFormat:JTLocalizedString(@"NSDateCategory.text5")];
         return [dateFormatter stringFromDate:self];
     } else {
-        return [NSString stringWithFormat:[JTLanguage getString:@"NSDateCategory.text6"], timeInterval / 31536000];
+        return [NSString stringWithFormat:JTLocalizedString(@"NSDateCategory.text6.%.f"), timeInterval / 31536000];
     }
 }
 
@@ -45,7 +44,7 @@
         return [dateFormatter stringFromDate:self];
     } else if ([[dateFormatter dateFromString:currentDay] timeIntervalSinceDate:[dateFormatter dateFromString:theDay]] == 86400) {//one day ago
         [dateFormatter setDateFormat:@"ah:mm"];
-        return [NSString stringWithFormat:[JTLanguage getString:@"NSDateCategory.text7"], [dateFormatter stringFromDate:self]];
+        return [NSString stringWithFormat:JTLocalizedString(@"NSDateCategory.text7.%@"), [dateFormatter stringFromDate:self]];
     } else if ([[dateFormatter dateFromString:currentDay] timeIntervalSinceDate:[dateFormatter dateFromString:theDay]] < 86400 * 7) {//within a week
         [dateFormatter setDateFormat:@"EEEE ah:mm"];
         return [dateFormatter stringFromDate:self];
@@ -80,21 +79,21 @@
         if (hour <= 24 && hour >= 0) {
             dateFormatter = [NSDateFormatter dateFormatterWithFormat:@"HH:mm"];
         }else if (hour < 0 && hour >= -24) {
-            dateFormatter = [NSDateFormatter dateFormatterWithFormat:[JTLanguage getString:@"NSDateCategory.text8"]];
+            dateFormatter = [NSDateFormatter dateFormatterWithFormat:JTLocalizedString(@"NSDateCategory.text8")];
         }else {
             dateFormatter = [NSDateFormatter dateFormatterWithFormat:@"yyyy-MM-dd HH:mm"];
         }
     }else {
         if (hour >= 0 && hour <= 6) {
-            dateFormatter = [NSDateFormatter dateFormatterWithFormat:[JTLanguage getString:@"NSDateCategory.text9"]];
+            dateFormatter = [NSDateFormatter dateFormatterWithFormat:JTLocalizedString(@"NSDateCategory.text9")];
         }else if (hour > 6 && hour <=11 ) {
-            dateFormatter = [NSDateFormatter dateFormatterWithFormat:[JTLanguage getString:@"NSDateCategory.text10"]];
+            dateFormatter = [NSDateFormatter dateFormatterWithFormat:JTLocalizedString(@"NSDateCategory.text10")];
         }else if (hour > 11 && hour <= 17) {
-            dateFormatter = [NSDateFormatter dateFormatterWithFormat:[JTLanguage getString:@"NSDateCategory.text11"]];
+            dateFormatter = [NSDateFormatter dateFormatterWithFormat:JTLocalizedString(@"NSDateCategory.text11")];
         }else if (hour > 17 && hour <= 24) {
-            dateFormatter = [NSDateFormatter dateFormatterWithFormat:[JTLanguage getString:@"NSDateCategory.text12"]];
+            dateFormatter = [NSDateFormatter dateFormatterWithFormat:JTLocalizedString(@"NSDateCategory.text12")];
         }else if (hour < 0 && hour >= -24){
-            dateFormatter = [NSDateFormatter dateFormatterWithFormat:[JTLanguage getString:@"NSDateCategory.text13"]];
+            dateFormatter = [NSDateFormatter dateFormatterWithFormat:JTLocalizedString(@"NSDateCategory.text13")];
         }else  {
             dateFormatter = [NSDateFormatter dateFormatterWithFormat:@"yyyy-MM-dd HH:mm"];
         }
@@ -114,17 +113,17 @@
     
     NSInteger timeInterval = -[self timeIntervalSinceNow];
     if (timeInterval < 60) {
-        return [JTLanguage getString:@"NSDateCategory.text1"];
+        return JTLocalizedString(@"NSDateCategory.text1");
     } else if (timeInterval < 3600) {//within an hour
-        return [NSString stringWithFormat:[JTLanguage getString:@"NSDateCategory.text2"], timeInterval / 60];
+        return [NSString stringWithFormat:JTLocalizedString(@"NSDateCategory.text2.%.f"), timeInterval / 60];
     } else if (timeInterval < 21600) {//within 6 hour
-        return [NSString stringWithFormat:[JTLanguage getString:@"NSDateCategory.text3"], timeInterval / 3600];
+        return [NSString stringWithFormat:JTLocalizedString(@"NSDateCategory.text3.%.f"), timeInterval / 3600];
     } else if ([theDay isEqualToString:currentDay]) {//current day
         [dateFormatter setDateFormat:@"HH:mm"];
-        return [NSString stringWithFormat:[JTLanguage getString:@"NSDateCategory.text14"], [dateFormatter stringFromDate:self]];
+        return [NSString stringWithFormat:JTLocalizedString(@"NSDateCategory.text14.%@"), [dateFormatter stringFromDate:self]];
     } else if ([[dateFormatter dateFromString:currentDay] timeIntervalSinceDate:[dateFormatter dateFromString:theDay]] == 86400) {//one day ago
         [dateFormatter setDateFormat:@"HH:mm"];
-        return [NSString stringWithFormat:[JTLanguage getString:@"NSDateCategory.text7"], [dateFormatter stringFromDate:self]];
+        return [NSString stringWithFormat:JTLocalizedString(@"NSDateCategory.text7.%@"), [dateFormatter stringFromDate:self]];
     } else {
         [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
         return [dateFormatter stringFromDate:self];
@@ -529,25 +528,25 @@
     NSInteger weekday = [self weekday];
     switch (weekday) {
         case 1:
-            weekDayStr = [JTLanguage getString:@"Monday"];
+            weekDayStr = JTLocalizedString(@"Monday");
             break;
         case 2:
-            weekDayStr = [JTLanguage getString:@"Tuesday"];
+            weekDayStr = JTLocalizedString(@"Tuesday");
             break;
         case 3:
-            weekDayStr = [JTLanguage getString:@"Wednesday"];
+            weekDayStr = JTLocalizedString(@"Wednesday");
             break;
         case 4:
-            weekDayStr = [JTLanguage getString:@"Thursday"];
+            weekDayStr = JTLocalizedString(@"Thursday");
             break;
         case 5:
-            weekDayStr = [JTLanguage getString:@"Friday"];
+            weekDayStr = JTLocalizedString(@"Friday");
             break;
         case 6:
-            weekDayStr = [JTLanguage getString:@"Saturday"];
+            weekDayStr = JTLocalizedString(@"Saturday");
             break;
         case 7:
-            weekDayStr = [JTLanguage getString:@"Sunday"];
+            weekDayStr = JTLocalizedString(@"Sunday");
             break;
         default:
             break;

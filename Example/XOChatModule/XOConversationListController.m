@@ -26,17 +26,16 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
 }
 
 @property (nonatomic, weak) UITabBarItem            *chatTabbarItem;
-@property (nonatomic, strong) UITableView           *tableView;         // 会话列表
-
-@property (nonatomic, strong) UIView                *tableHeaderView;   // 头部视图
+@property (nonatomic, strong) UIView                *headerView;        // 头部视图
+@property (nonatomic, strong) UIView                *networkStateView;  // 断网视图
+@property (nonatomic, strong) UILabel               *networkStateLabel; // 断网文字
 @property (nonatomic, strong) UIView                *systemView;        // 系统消息视图
 @property (nonatomic, strong) UIView                *groupChatView;     // 发起群聊视图
-@property (nonatomic, strong) UIView                *networkStateView;  // 断网视图
-
-@property (nonatomic, strong) UILabel               *networkStateLabel;
-@property (nonatomic, strong) UIView                *webPcOnlineView;   // web或者pc在线视图
-@property (nonatomic, strong) UILabel               *webPcOnlineLabel;
+@property (nonatomic, strong) UILabel               *sysNameLabel;      // 系统消息
+@property (nonatomic, strong) UILabel               *groupNameLabel;    // 群聊消息
 @property (nonatomic, assign) BOOL                  isDisConnect;       // 连接是否断开
+
+@property (nonatomic, strong) UITableView           *tableView;         // 会话列表
 
 @property (nonatomic, strong) NSArray    <TIMConversation *>* dataSource;   // 会话数据源
 
@@ -81,6 +80,7 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
 {
     [super viewDidLoad];
     self.title = @"Inbox";
+    self.view.backgroundColor = BG_TableColor;
     
     [self setupSubViews];
     
@@ -89,10 +89,10 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
 
 - (void)setupSubViews
 {
-    [self.tableHeaderView addSubview:self.networkStateView];
-    [self.tableHeaderView addSubview:self.systemView];
-    [self.tableHeaderView addSubview:self.groupChatView];
-    self.tableView.tableHeaderView = self.tableHeaderView;
+    [self.headerView addSubview:self.networkStateView];
+    [self.headerView addSubview:self.systemView];
+    [self.headerView addSubview:self.groupChatView];
+    [self.view addSubview:self.headerView];
     [self.view addSubview:self.tableView];
 }
 
@@ -100,31 +100,30 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
 {
     [super viewDidLayoutSubviews];
     
-    self.tableView.frame = self.view.bounds;
-    [self reloadTableHeaderView];
+    [self reloadHeaderView];
     self.networkStateView.frame = CGRectMake(0, 0, KWIDTH, TableHeaderStateHeight);
 }
 
 /**
  *  切换显示 断网状态栏和web登录状态栏
  */
-- (void)reloadTableHeaderView
+- (void)reloadHeaderView
 {
     // 断网状态
     if (self.isDisConnect) {
-        self.tableHeaderView.height = TableHeaderViewMaxHeight;
+        self.headerView.height = TableHeaderViewMaxHeight;
         self.networkStateView.hidden = NO;
         self.systemView.frame = CGRectMake(0, self.networkStateView.bottom + Margin, KWIDTH, 70);
         self.groupChatView.frame = CGRectMake(0, self.systemView.bottom + Margin, KWIDTH, 70);
     }
     // 连接状态
     else {
-        self.tableHeaderView.height = TableHeaderViewMinHeight;
+        self.headerView.height = TableHeaderViewMinHeight;
         self.networkStateView.hidden = YES;
         self.systemView.frame = CGRectMake(0, 10, KWIDTH, 70);
         self.groupChatView.frame = CGRectMake(0, self.systemView.bottom + Margin, KWIDTH, 70);
     }
-    self.tableView.tableHeaderView = self.tableHeaderView;
+    self.tableView.frame = CGRectMake(10, self.headerView.height + Margin, KWIDTH - 20, self.view.height - (self.headerView.height + Margin));
 }
 
 #pragma mark ====================== load data =======================
@@ -177,31 +176,33 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
 - (UITableView *)tableView
 {
     if (!_tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
         _tableView.dataSource = self;
         _tableView.delegate = self;
         _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _tableView.rowHeight = UITableViewAutomaticDimension;
         _tableView.rowHeight = 70.0f;
-        _tableView.separatorColor = RGBA(220, 220, 220, 1);
+        _tableView.separatorColor = BG_TableSeparatorColor;
         _tableView.separatorInset = UIEdgeInsetsMake(0, _tableView.rowHeight + 10, 0, 0);
         _tableView.sectionHeaderHeight = 0.0f;
         _tableView.sectionFooterHeight = 0.0f;
         _tableView.multipleTouchEnabled = NO;
+        _tableView.backgroundColor = [UIColor clearColor];
         
         [_tableView registerClass:[XOConversationListCell class] forCellReuseIdentifier:ConversationListCellID];
         [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:ConversationHeadCellID];
+        
     }
     return _tableView;
 }
 
-- (UIView *)tableHeaderView
+- (UIView *)headerView
 {
-    if (!_tableHeaderView) {
-        _tableHeaderView = [[UIView alloc] init];
-        _tableHeaderView.backgroundColor = BG_TableSeparatorColor;
+    if (!_headerView) {
+        _headerView = [[UIView alloc] init];
+        _headerView.backgroundColor = BG_TableSeparatorColor;
     }
-    return _tableHeaderView;
+    return _headerView;
 }
 
 - (UIView *)networkStateView
@@ -224,6 +225,7 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
         _networkStateLabel.textAlignment = NSTextAlignmentLeft;
         _networkStateLabel.textColor = [UIColor darkTextColor];
         _networkStateLabel.font = [UIFont systemFontOfSize:14];
+        _networkStateLabel.text = NSLocalizedString(@"network.disconnected", nil);
     }
     return _networkStateLabel;
 }
@@ -238,13 +240,13 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
         imageLayer.frame = CGRectMake(Margin, 7, 50.0, 50.0);
         imageLayer.masksToBounds = YES;
         imageLayer.cornerRadius = 25.0f;
-        CATextLayer *textLayer = [CATextLayer layer];
-        textLayer.frame = CGRectMake(CGRectGetMaxX(imageLayer.frame) + Margin, 25, 240, 20);
-        textLayer.foregroundColor = [UIColor blackColor].CGColor;
-        textLayer.fontSize = 15.0f;
-        textLayer.string = @"System Message";
         [_systemView.layer addSublayer:imageLayer];
-        [_systemView.layer addSublayer:textLayer];
+        self.sysNameLabel = [[UILabel alloc] init];
+        self.sysNameLabel.textColor = [UIColor blackColor];
+        self.sysNameLabel.frame = CGRectMake(CGRectGetMaxX(imageLayer.frame) + Margin, 25, 240, 20);
+        self.sysNameLabel.text = NSLocalizedString(@"conversation.systemMessage", nil);
+        self.sysNameLabel.font = [UIFont boldSystemFontOfSize:18.0f];
+        [_systemView addSubview:self.sysNameLabel];
     }
     return _systemView;
 }
@@ -260,13 +262,13 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
         imageLayer.frame = CGRectMake(Margin, 7, 50.0, 50.0);
         imageLayer.masksToBounds = YES;
         imageLayer.cornerRadius = 25.0f;
-        CATextLayer *textLayer = [CATextLayer layer];
-        textLayer.frame = CGRectMake(CGRectGetMaxX(imageLayer.frame) + Margin, 25, 240, 20);
-        textLayer.foregroundColor = [UIColor blackColor].CGColor;
-        textLayer.fontSize = 15.0f;
-        textLayer.string = @"Group chat";
         [_groupChatView.layer addSublayer:imageLayer];
-        [_groupChatView.layer addSublayer:textLayer];
+        self.groupNameLabel = [[UILabel alloc] init];
+        self.groupNameLabel.textColor = [UIColor blackColor];
+        self.groupNameLabel.frame = CGRectMake(CGRectGetMaxX(imageLayer.frame) + Margin, 25, 240, 20);
+        self.groupNameLabel.text = NSLocalizedString(@"conversation.groupChat", nil);
+        self.groupNameLabel.font = [UIFont boldSystemFontOfSize:18.0f];
+        [_groupChatView addSubview:self.groupNameLabel];
     }
     return _groupChatView;
 }
@@ -303,7 +305,7 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         self.isDisConnect = NO;
         self.title = @"Inbox";
-        [self reloadTableHeaderView];
+        [self reloadHeaderView];
     }];
 }
 // 网络连接失败
@@ -312,7 +314,7 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         self.isDisConnect = YES;
         self.title = @"Inbox (unConnect)";
-        [self reloadTableHeaderView];
+        [self reloadHeaderView];
     }];
 }
 // 网络连接断开（断线只是通知用户，不需要重新登陆，重连以后会自动上线）
@@ -321,7 +323,7 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         self.isDisConnect = YES;
         self.title = @"Inbox (unConnect)";
-        [self reloadTableHeaderView];
+        [self reloadHeaderView];
     }];
 }
 // 连接中
@@ -362,6 +364,25 @@ static NSString * const ConversationHeadCellID = @"ConversationHeadCellID";
 {
     XOConversationListCell *cell = [tableView dequeueReusableCellWithIdentifier:ConversationListCellID forIndexPath:indexPath];
     cell.conversation = [self.dataSource objectAtIndex:indexPath.row];
+    
+    if (0 == indexPath.row) {
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, tableView.width, 70)
+                                                       byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight
+                                                             cornerRadii:CGSizeMake(8, 8)];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame = cell.bounds;
+        maskLayer.path = maskPath.CGPath;
+        cell.layer.mask = maskLayer;
+    }
+    else if (self.dataSource.count - 1 == indexPath.row) {
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, tableView.width, 70)
+                                                       byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight cornerRadii:CGSizeMake(8, 8)];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame = cell.bounds;
+        maskLayer.path = maskPath.CGPath;
+        cell.layer.mask = maskLayer;
+    }
+    
     return cell;
 }
 

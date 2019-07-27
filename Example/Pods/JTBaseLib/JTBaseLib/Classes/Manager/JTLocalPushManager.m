@@ -7,7 +7,7 @@
 //
 
 #import "JTLocalPushManager.h"
-#import "JTLanguage.h"
+#import <JTBaseLib/JTBaseLib.h>
 
 #ifdef NSFoundationVersionNumber_iOS_9_x_Max
 #import <UserNotifications/UserNotifications.h>
@@ -92,7 +92,7 @@ void systemSoundFinishedPlayingCallback(SystemSoundID sound_id, void* user_data)
         localNotification.fireDate = [NSDate new];
         //通知的标题
         if (@available(iOS 8.2, *)) {
-            localNotification.alertTitle = [JTLanguage getString:@"noti.newMsgTitle"];  //IOS_8.2
+            localNotification.alertTitle = JTLocalizedString(@"noti.newMsgTitle");  //IOS_8.2
         }
         //发送的内容
         localNotification.alertBody = notiContent;
@@ -117,7 +117,7 @@ void systemSoundFinishedPlayingCallback(SystemSoundID sound_id, void* user_data)
         
         //创建通知的内容
         UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc]init];
-        content.body = [JTLanguage getString:@"noti.newMsgContent"];
+        content.body = JTLocalizedString(@"noti.newMsgContent");
         UIApplication *application = [UIApplication sharedApplication];
         content.badge = @(++application.applicationIconBadgeNumber);
         content.sound = [UNNotificationSound defaultSound];
@@ -141,10 +141,10 @@ void systemSoundFinishedPlayingCallback(SystemSoundID sound_id, void* user_data)
         localNotification.fireDate = [NSDate new];
         //通知的标题
         if (@available(iOS 8.2, *)) {
-            localNotification.alertTitle = [JTLanguage getString:@"noti.newMsgTitle"];  //IOS_8.2
+            localNotification.alertTitle = JTLocalizedString(@"noti.newMsgTitle");  //IOS_8.2
         }
         //发送的内容
-        localNotification.alertBody = [JTLanguage getString:@"noti.newMsgContent"];
+        localNotification.alertBody = JTLocalizedString(@"noti.newMsgContent");
         //通知的声音
         localNotification.soundName = UILocalNotificationDefaultSoundName;
         //设置APP图标显示的消息数量

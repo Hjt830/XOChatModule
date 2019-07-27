@@ -20,15 +20,19 @@
 #import <MJRefresh/MJRefresh.h>
 
 // 配置参数
-#include "JTBaseConfig.h"
+#import "JTMacro.h"
+#import "JTBaseConfig.h"
 
 // 工具类
 #import "JTHttpTool.h"
+#import "JTKeyChainTool.h"
+#import "JTUserDefault.h"
 
 // 类扩展
 #import "NSString+JTExtension.h"
 #import "NSDateFormatter+JTExtension.h"
-#import "NSBundle+language.h"
+#import "NSDate+JTExtension.h"
+#import "NSBundle+JTBaseLib.h"
 #import "UIView+Frame.h"
 
 // 管理类
@@ -37,7 +41,6 @@
 #import "JTFileManager.h"
 #import "JTSmsCodeManager.h"
 #import "JTLocalPushManager.h"
-#import "JTLanguage.h"
 
 // Base
 #import "JTBaseViewController.h"

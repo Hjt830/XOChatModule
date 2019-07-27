@@ -7,9 +7,7 @@
 //
 
 #import "JTUserDefault.h"
-#import "JTMacro.h"
-#import "JTBaseConfig.h"
-#import "NSString+JTExtension.h"
+#import <JTBaseLib/JTBaseLib.h>
 
 static NSString * const KSaveKey = @"param";       // 参数
 static NSString * const KTimeKey = @"timeStamp";   // 时间戳

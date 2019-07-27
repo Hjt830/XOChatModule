@@ -11,6 +11,9 @@
 
 #import <Foundation/Foundation.h>
 
+
+#define JTLocalizedString(key) ([NSBundle jt_localizedStringForKey:(key)])
+
 #pragma mark ====================== 字体 ======================
 
 #define JTSystemFont(f)         [UIFont systemFontOfSize:f]

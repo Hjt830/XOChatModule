@@ -12,7 +12,6 @@
 		551085D522D4756C0060622C /* XOConversationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D422D4756C0060622C /* XOConversationManager.m */; };
 		551085D722D475840060622C /* XOConversationListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D622D475840060622C /* XOConversationListCell.m */; };
 		551085DA22D478620060622C /* XOMessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D922D478620060622C /* XOMessageManager.m */; };
-		5520654A22EACB9A009F823F /* NSDate+JTExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 5520654922EACB99009F823F /* NSDate+JTExtension.m */; };
 		5520654D22EAD8B2009F823F /* XOConversationListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5520654C22EAD8B2009F823F /* XOConversationListController.m */; };
 		5520655122EAE9E2009F823F /* XOContactManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5520655022EAE9E2009F823F /* XOContactManager.m */; };
 		557D9F8F22CF278500846F0D /* XOChatClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 557D9F8E22CF278500846F0D /* XOChatClient.m */; };
@@ -54,8 +53,6 @@
 		551085D822D478620060622C /* XOMessageManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOMessageManager.h; sourceTree = "<group>"; };
 		551085D922D478620060622C /* XOMessageManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOMessageManager.m; sourceTree = "<group>"; };
 		551085DB22D47E250060622C /* XOContactManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOContactManager.h; sourceTree = "<group>"; };
-		5520654822EACB99009F823F /* NSDate+JTExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+JTExtension.h"; sourceTree = "<group>"; };
-		5520654922EACB99009F823F /* NSDate+JTExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+JTExtension.m"; sourceTree = "<group>"; };
 		5520654B22EAD8B2009F823F /* XOConversationListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XOConversationListController.h; sourceTree = "<group>"; };
 		5520654C22EAD8B2009F823F /* XOConversationListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XOConversationListController.m; sourceTree = "<group>"; };
 		5520654E22EAE001009F823F /* XOChatModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatModule.h; sourceTree = "<group>"; };
@@ -192,8 +189,6 @@
 				551085D622D475840060622C /* XOConversationListCell.m */,
 				5520654B22EAD8B2009F823F /* XOConversationListController.h */,
 				5520654C22EAD8B2009F823F /* XOConversationListController.m */,
-				5520654822EACB99009F823F /* NSDate+JTExtension.h */,
-				5520654922EACB99009F823F /* NSDate+JTExtension.m */,
 				557D9F9D22CF504900846F0D /* Localizable.strings */,
 			);
 			name = "Example for XOChatModule";
@@ -411,6 +406,7 @@
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
 				"${PODS_ROOT}/TXIMSDK_iOS/iOS/ImSDK/Framework/ImSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/TZImagePickerController/TZImagePickerController.framework",
 				"${BUILT_PRODUCTS_DIR}/YYModel/YYModel.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -425,6 +421,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ImSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TZImagePickerController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYModel.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -444,7 +441,6 @@
 				551085D522D4756C0060622C /* XOConversationManager.m in Sources */,
 				6003F59E195388D20070C39A /* XOChatAppDelegate.m in Sources */,
 				5520655122EAE9E2009F823F /* XOContactManager.m in Sources */,
-				5520654A22EACB9A009F823F /* NSDate+JTExtension.m in Sources */,
 				5520654D22EAD8B2009F823F /* XOConversationListController.m in Sources */,
 				551085DA22D478620060622C /* XOMessageManager.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,

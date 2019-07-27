@@ -43,10 +43,9 @@
 
 - (void)setupView
 {
-    self.contentView.backgroundColor = [UIColor clearColor];
-    self.selectionStyle = UITableViewCellSelectionStyleNone;
+    self.backgroundColor = [UIColor whiteColor];
     
-    _iconImageView = [UIImageView new];
+    _iconImageView = [[UIImageView alloc] init];
     _iconImageView.layer.cornerRadius = 5;
     _iconImageView.clipsToBounds = YES;
     _iconImageView.backgroundColor = RGBA(221, 222, 224, 1);
@@ -108,9 +107,9 @@
     self.unreadLabel.frame = CGRectMake(unredLeft, unredTop, 18.0, 18.0);
     
     if (self.shouldTopShow) {
-        self.contentView.backgroundColor = [UIColor whiteColor];
-    } else {
         self.contentView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    } else {
+        self.contentView.backgroundColor = [UIColor whiteColor];
     }
 }
 
@@ -169,31 +168,31 @@
         text = [(TIMTextElem *)elem text];
     }
     else if ([elem isKindOfClass:[TIMImageElem class]]) { // 图片
-        text = [JTLanguage getString:@""];
+        text = JTLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMSoundElem class]]) { // 语音
-        text = [JTLanguage getString:@""];
+        text = JTLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMVideoElem class]]) { // 视频
-        text = [JTLanguage getString:@""];
+        text = JTLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMFileElem class]]) {  // 文件
-        text = [JTLanguage getString:@""];
+        text = JTLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMFaceElem class]]) {  // 表情
-        text = [JTLanguage getString:@""];
+        text = JTLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMLocationElem class]]) { // 地理位置
-        text = [JTLanguage getString:@""];
+        text = JTLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMCustomElem class]]) {   // 自定义消息
-        text = [JTLanguage getString:@""];
+        text = JTLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMGroupTipsElem class]]) {// 群Tips
-        text = [JTLanguage getString:@""];
+        text = JTLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMGroupSystemElem class]]) { // 群系统消息
-        text = [JTLanguage getString:@""];
+        text = JTLocalizedString(@"");
     }
     return text;
 }

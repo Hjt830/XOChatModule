@@ -17,57 +17,9 @@ PODS:
   - CTMediator (25)
   - GCDMulticastDelegate (1.0.0)
   - GTMBase64 (1.0.1)
-  - JTBaseLib (0.1.2):
+  - JTBaseLib (0.1.9):
     - AFNetworking (~> 3.2.1)
     - GTMBase64 (~> 1.0.1)
-    - JTBaseLib/Base (= 0.1.2)
-    - JTBaseLib/Category (= 0.1.2)
-    - JTBaseLib/Config (= 0.1.2)
-    - JTBaseLib/Manager (= 0.1.2)
-    - JTBaseLib/Tools (= 0.1.2)
-    - MJRefresh (~> 3.2.0)
-    - SDWebImage (~> 5.0.6)
-    - SVProgressHUD (~> 2.2.5)
-    - YYModel (~> 1.0.4)
-  - JTBaseLib/Base (0.1.2):
-    - AFNetworking (~> 3.2.1)
-    - GTMBase64 (~> 1.0.1)
-    - JTBaseLib/Category
-    - JTBaseLib/Config
-    - JTBaseLib/Manager
-    - MJRefresh (~> 3.2.0)
-    - SDWebImage (~> 5.0.6)
-    - SVProgressHUD (~> 2.2.5)
-    - YYModel (~> 1.0.4)
-  - JTBaseLib/Category (0.1.2):
-    - AFNetworking (~> 3.2.1)
-    - GTMBase64 (~> 1.0.1)
-    - JTBaseLib/Config
-    - MJRefresh (~> 3.2.0)
-    - SDWebImage (~> 5.0.6)
-    - SVProgressHUD (~> 2.2.5)
-    - YYModel (~> 1.0.4)
-  - JTBaseLib/Config (0.1.2):
-    - AFNetworking (~> 3.2.1)
-    - GTMBase64 (~> 1.0.1)
-    - MJRefresh (~> 3.2.0)
-    - SDWebImage (~> 5.0.6)
-    - SVProgressHUD (~> 2.2.5)
-    - YYModel (~> 1.0.4)
-  - JTBaseLib/Manager (0.1.2):
-    - AFNetworking (~> 3.2.1)
-    - GTMBase64 (~> 1.0.1)
-    - JTBaseLib/Category
-    - JTBaseLib/Config
-    - MJRefresh (~> 3.2.0)
-    - SDWebImage (~> 5.0.6)
-    - SVProgressHUD (~> 2.2.5)
-    - YYModel (~> 1.0.4)
-  - JTBaseLib/Tools (0.1.2):
-    - AFNetworking (~> 3.2.1)
-    - GTMBase64 (~> 1.0.1)
-    - JTBaseLib/Category
-    - JTBaseLib/Config
     - MJRefresh (~> 3.2.0)
     - SDWebImage (~> 5.0.6)
     - SVProgressHUD (~> 2.2.5)
@@ -79,16 +31,18 @@ PODS:
   - SDWebImage/Core (5.0.6)
   - SVProgressHUD (2.2.5)
   - TXIMSDK_iOS (4.4.627)
+  - TZImagePickerController (3.2.1)
   - XOChatModule (0.0.1):
     - CTMediator (~> 25)
     - GCDMulticastDelegate (~> 1.0.0)
-    - JTBaseLib (~> 0.1.2)
+    - JTBaseLib (~> 0.1.9)
     - ReactiveObjC (~> 3.1.1)
     - SVProgressHUD (~> 2.2.5)
     - TXIMSDK_iOS (~> 4.4.627)
   - YYModel (1.0.4)
 
 DEPENDENCIES:
+  - TZImagePickerController
   - XOChatModule (from `../`)
 
 SPEC REPOS:
@@ -104,6 +58,7 @@ SPEC REPOS:
     - SDWebImage
     - SVProgressHUD
     - TXIMSDK_iOS
+    - TZImagePickerController
     - YYModel
 
 EXTERNAL SOURCES:
@@ -115,15 +70,16 @@ SPEC CHECKSUMS:
   CTMediator: 830c1fc204b3a6abf2a059510c7380f56343da0f
   GCDMulticastDelegate: 3c0ae43d8998623db0876c77d7ae2c3844afeba8
   GTMBase64: f0f91be06a7a20b84c8e4fee30c0430395091d82
-  JTBaseLib: 83e28391cabd6d686941b5ef56ff8e7ac8887084
+  JTBaseLib: 6b3ef76404c36101428a38463751758e0d0d59a5
   MJRefresh: ed450d6eb9d3346a2cb033ab7eb6de090aeef437
   ReactiveObjC: 011caa393aa0383245f2dcf9bf02e86b80b36040
   SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   TXIMSDK_iOS: 6641a71d741a1a1fb31b69419b2431d9aecdf12e
-  XOChatModule: c31d628e33c0bebf4f22ad6624b6493cad8b2d2b
+  TZImagePickerController: bf4c57b98d8707fce41ea6be872414a71c7a8c9d
+  XOChatModule: 0f11f0bec46a53e0dccd4618cf5682c936301163
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: f6ebe298cfa982015b37b35404cf1c955d227ef4
+PODFILE CHECKSUM: 7f9e9f0456b18ef21e35d433af35d6cadba75b25
 
 COCOAPODS: 1.7.5

@@ -7,8 +7,7 @@
 //
 
 #import "JTBaseViewController.h"
-#import "JTMacro.h"
-#import "JTLanguage.h"
+#import <JTBaseLib/JTBaseLib.h>
 #import <SVProgressHUD/SVProgressHUD.h>
 
 @interface JTBaseViewController () <UINavigationControllerDelegate>
@@ -354,7 +353,7 @@
         [alertVC addAction:action];
     }
     
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:[JTLanguage getString:@"cancel"] style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:JTLocalizedString(@"cancel") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         if (cancelComplection) {
             cancelComplection();
         }
@@ -374,7 +373,7 @@
 - (void)showPickerPhoto:(void(^)(void))takePicture
        photoLibrary:(void(^)(void))photoLibrary
 {
-    NSArray *actions = @[[JTLanguage getString:@"action.title.photos"], [JTLanguage getString:@"action.title.camera"]];
+    NSArray *actions = @[JTLocalizedString(@"action.title.photos"), JTLocalizedString(@"action.title.camera")];
     [self showSheetWithTitle:nil message:nil actions:actions redIndex:nil complection:^(int index, NSString *title) {
         if (0 == index) {
             if (takePicture) {
@@ -401,36 +400,37 @@
  */
 - (void)showAlertAuthor:(JTRequestAuthType)authType
 {
-    NSString *tips = [JTLanguage getString:@"tip.title"];
-    NSString *sure = [JTLanguage getString:@"sure"];
+    NSString *tips = JTLocalizedString(@"tip.title");
+    NSString *sure = JTLocalizedString(@"sure");
+    NSString *appname = [[NSBundle mainBundle] infoDictionary][@"CFBundleDisplayName"];
     // 相机
     if (JTRequestAuthCamera == authType) {
-        NSString *message = [JTLanguage getString:@"permission.setting.Camera"];
+        NSString *message = [NSString stringWithFormat:@"%@%@", JTLocalizedString(@"permission.setting.Camera.%@"), appname];
         [self showAlertWithTitle:tips message:message sureTitle:sure cancelTitle:nil sureComplection:nil cancelComplection:nil];
     }
     // 相册
     else if (JTRequestAuthPhotos == authType) {
-        NSString *message = [JTLanguage getString:@"permission.setting.Photos"];
+        NSString *message = [NSString stringWithFormat:@"%@%@", JTLocalizedString(@"permission.setting.Photos.%@"), appname];
         [self showAlertWithTitle:tips message:message sureTitle:sure cancelTitle:nil sureComplection:nil cancelComplection:nil];
     }
     // 定位
     else if (JTRequestAuthLocation == authType) {
-        NSString *message = [JTLanguage getString:@"permission.setting.Location"];
+        NSString *message = [NSString stringWithFormat:@"%@%@", JTLocalizedString(@"permission.setting.Location.%@"), appname];
         [self showAlertWithTitle:tips message:message sureTitle:sure cancelTitle:nil sureComplection:nil cancelComplection:nil];
     }
     // 麦克风
     else if (JTRequestAuthMicphone == authType) {
-        NSString *message = [JTLanguage getString:@"permission.setting.Micphone"];
+        NSString *message = [NSString stringWithFormat:@"%@%@", JTLocalizedString(@"permission.setting.Micphone.%@"), appname];
         [self showAlertWithTitle:tips message:message sureTitle:sure cancelTitle:nil sureComplection:nil cancelComplection:nil];
     }
     // 通讯录
     else if (JTRequestAuthAddressBook == authType) {
-        NSString *message = [JTLanguage getString:@"permission.setting.AddressBook"];
+        NSString *message = [NSString stringWithFormat:@"%@%@", JTLocalizedString(@"permission.setting.AddressBook.%@"), appname];
         [self showAlertWithTitle:tips message:message sureTitle:sure cancelTitle:nil sureComplection:nil cancelComplection:nil];
     }
     // 通知
     else if (JTRequestAuthNotification == authType) {
-        NSString *message = [JTLanguage getString:@"permission.setting.Notification"];
+        NSString *message = [NSString stringWithFormat:@"%@%@", JTLocalizedString(@"permission.setting.Notification.%@"), appname];
         [self showAlertWithTitle:tips message:message sureTitle:sure cancelTitle:nil sureComplection:nil cancelComplection:nil];
     }
 }

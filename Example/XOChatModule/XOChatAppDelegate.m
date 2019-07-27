@@ -24,6 +24,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [[JTSettingManager defaultManager] loadSetting];
+    [[JTSettingManager defaultManager] setAppLanguage:JTLanguageNameZh_Hans];
+    
+    NSString *str = JTLocalizedString(@"NSDateCategory.text8");
+    NSLog(@"str: %@", str);
+    
     // 1、初始化腾讯云通信
     [[XOChatClient shareClient] initSDKWithAppId:[TXTIMAppID intValue] logFun:^(TIMLogLevel lvl, NSString *msg) {
         
