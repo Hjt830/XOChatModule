@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
   # s.public_header_files = 'Pod/Classes/**/*.h'
   s.frameworks = 'UIKit', 'Foundation'
   s.dependency 'TXIMSDK_iOS', '~> 4.4.627'
-  s.dependency 'JTBaseLib', '~> 0.1.2'
+  s.dependency 'JTBaseLib', '~> 0.1.9'
   s.dependency 'CTMediator', '~> 25'
   s.dependency 'ReactiveObjC', '~> 3.1.1'
   s.dependency 'GCDMulticastDelegate', '~> 1.0.0'
