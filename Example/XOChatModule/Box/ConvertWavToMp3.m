@@ -11,12 +11,12 @@
 
 @implementation ConvertWavToMp3
 
-+ (BOOL)convertToMp3WithOriginalPath:(NSString*)mp3Path sourcePath:(NSString *)sourcePath
++ (BOOL)convertToMp3WithSavePath:(NSString*)mp3Path sourcePath:(NSString *)cafPath
 {
     @try {
         int read, write;
         
-        FILE *pcm = fopen([sourcePath cStringUsingEncoding:1], "rb");  // source 被转换的音频文件位置
+        FILE *pcm = fopen([cafPath cStringUsingEncoding:1], "rb");  // source 被转换的音频文件位置
         fseek(pcm, 4*1024, SEEK_CUR);                                  // skip file header
         FILE *mp3 = fopen([mp3Path cStringUsingEncoding:1], "wb");     // output 输出生成的Mp3文件位置
         
@@ -46,6 +46,12 @@
         lame_close(lame);
         fclose(mp3);
         fclose(pcm);
+        
+        // 删除录音原文件
+        NSError *rmError = nil;
+        if (![[NSFileManager defaultManager] removeItemAtPath:cafPath error:&rmError]) {
+            XOLog(@"删除录音原文件失败, %@", rmError);
+        }
         
         return YES;
     }

@@ -17,6 +17,7 @@
 #import "ZXChatBoxMoreView.h"
 #import "LGAudioKit.h"
 #import "amrFileCodec.h"
+#import "ConvertWavToMp3.h"
 
 static NSTimeInterval MaxAudioRecordTime = 60.0f;
 static NSTimeInterval audioRecordTime = 0.0f;
@@ -70,6 +71,14 @@ static NSTimeInterval audioRecordTime = 0.0f;
 {
     [super viewWillDisappear:animated];
     [self resignFirstResponder];
+}
+
+- (void)viewSafeAreaInsetsDidChange
+{
+    [super viewSafeAreaInsetsDidChange];
+    
+    self.chatBox.safeBottom = self.view.safeAreaInsets.bottom;
+    self.chatBox.height = HEIGHT_TABBAR + self.view.safeAreaInsets.bottom;
 }
 
 #pragma mark ====================== lazy load =======================
@@ -381,7 +390,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
         dispatch_resume(self.timer);
         // 开始录音
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            NSString *audioPath = [DocumentDirectory() stringByAppendingPathComponent:WXMsgFileDirectory(XOMsgFileTypeAudio)];
+            NSString *audioPath = [DocumentDirectory() stringByAppendingPathComponent:XOMsgFileDirectory(XOMsgFileTypeAudio)];
             [[LGSoundRecorder shareInstance] startSoundRecord:self.view recordPath:audioPath];
         }];
     }
@@ -481,12 +490,12 @@ static NSTimeInterval audioRecordTime = 0.0f;
     if (0 == itemIndex) {            // 相册
         PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
         if (PHAuthorizationStatusAuthorized == status) { // 已授权
-            [self pickPhotosFromLibrary];
+            [self pickPhotos];
         }
         else if (PHAuthorizationStatusNotDetermined == status) { // 未选择过, 申请授权
             [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
                 if (PHAuthorizationStatusAuthorized == status) {
-                    [self pickPhotosFromLibrary];
+                    [self pickPhotos];
                 } else {
                     [SVProgressHUD showInfoWithStatus:@"授权失败"];
                     [SVProgressHUD dismissWithDelay:0.6f];
@@ -500,12 +509,12 @@ static NSTimeInterval audioRecordTime = 0.0f;
     else if (1 == itemIndex) {       // 相机
         AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
         if (AVAuthorizationStatusAuthorized == status) { // 已授权
-            [self takePhotosUseCamera];
+            [self takePhoto];
         }
         else if (AVAuthorizationStatusNotDetermined == status) { // 未选择过, 申请授权
             [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
                 if (granted) {
-                    [self takePhotosUseCamera];
+                    [self takePhoto];
                 } else {
                     [SVProgressHUD showInfoWithStatus:@"授权失败"];
                     [SVProgressHUD dismissWithDelay:0.6f];
@@ -527,25 +536,29 @@ static NSTimeInterval audioRecordTime = 0.0f;
         }
     }
     else if (4 == itemIndex) {       // 视频
-        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-            if (PHAuthorizationStatusAuthorized == status) {
-                
-                if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-                    self.TZImagePicker.allowTakePicture = NO;   // 关闭拍照
-                    self.TZImagePicker.allowPickingImage = NO;  // 关闭选照片
-                    self.TZImagePicker.allowPickingGif = NO;    // 关闭选动图
-                    self.TZImagePicker.allowTakeVideo = YES;    // 打开拍视频
-                    self.TZImagePicker.allowPickingVideo = YES; // 打开选视频
-                    self.TZImagePicker.videoMaximumDuration = 15; // 设定拍摄最大时间为15s
-                    [self.parentViewController presentViewController:self.TZImagePicker animated:YES completion:NULL];
-                } else {
-                    [SVProgressHUD showInfoWithStatus:@"当前设备不支持拍照"];
-                    [SVProgressHUD dismissWithDelay:1.3f];
-                }
+        PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+        if (PHAuthorizationStatusAuthorized == status) {
+            if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+                [self takeVideo];
             } else {
-                [SVProgressHUD showInfoWithStatus:@"授权失败"];
+                [SVProgressHUD showInfoWithStatus:@"当前设备不支持拍照"];
+                [SVProgressHUD dismissWithDelay:1.3f];
             }
-        }];
+        }
+        else if (PHAuthorizationStatusNotDetermined == status) {
+            [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                if (PHAuthorizationStatusAuthorized == status) {
+                    [self takeVideo];
+                }
+                else if (PHAuthorizationStatusDenied == status) {
+                    [SVProgressHUD showInfoWithStatus:@"授权失败"];
+                    [SVProgressHUD dismissWithDelay:0.8];
+                }
+            }];
+        }
+        else {
+            [self showAlertAuthor:XORequestAuthCamera];
+        }
     }
     else if (5 == itemIndex) {       // 红包
         if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
@@ -605,7 +618,19 @@ static NSTimeInterval audioRecordTime = 0.0f;
 
 #pragma mark =========================== event ===========================
 
-- (void)pickPhotosFromLibrary
+- (void)takeVideo
+{
+    self.TZImagePicker.allowTakePicture = NO;   // 关闭拍照
+    self.TZImagePicker.allowPickingImage = NO;  // 关闭选照片
+    self.TZImagePicker.allowPickingGif = NO;    // 关闭选动图
+    self.TZImagePicker.allowTakeVideo = YES;    // 打开拍视频
+    self.TZImagePicker.allowPickingVideo = YES; // 打开选视频
+    self.TZImagePicker.videoMaximumDuration = 15; // 设定拍摄最大时间为15s
+    self.TZImagePicker.allowPickingMultipleVideo = NO; // 不允许多选视频
+    [self.parentViewController presentViewController:self.TZImagePicker animated:YES completion:NULL];
+}
+
+- (void)pickPhotos
 {
     self.TZImagePicker.allowPickingVideo = YES;
     self.TZImagePicker.allowPickingImage = YES;
@@ -614,7 +639,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
     [self.parentViewController presentViewController:self.TZImagePicker animated:YES completion:NULL];
 }
 
-- (void)takePhotosUseCamera
+- (void)takePhoto
 {
     self.TZImagePicker.allowTakePicture = YES;   // 打开拍照
     self.TZImagePicker.allowPickingImage = YES;  // 打开选照片
@@ -626,6 +651,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
 }
 
 #pragma mark =========================== LGSoundRecorderDelegate ===========================
+
 - (void)showSoundRecordFailed
 {
     if (self->_timer) {
@@ -633,83 +659,90 @@ static NSTimeInterval audioRecordTime = 0.0f;
         self->_timer = nil;
     }
 }
+
+// 录音停止
 - (void)didStopSoundRecord
 {
-    // 发送语音消息
+    // 录音文件地址
     __block NSString *cafPath = [LGSoundRecorder shareInstance].soundFilePath;
-    // 将wav->amr格式
-    @XOWeakify(self);
-    [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-        @XOStrongify(self);
-        
-        NSData *cafData = [NSData dataWithContentsOfFile:cafPath];
-        NSData *mp3Data = EncodeWAVEToAMR(cafData, 1, 16);
-        NSString *mp3Name = [NSString stringWithFormat:@"%@.mp3", [NSString creatUUID]];
-        __block NSString *mp3Path = [[DocumentDirectory() stringByAppendingPathComponent:XOMsgFileDirectory(XOMsgFileTypeAudio)] stringByAppendingPathComponent:mp3Name];
-        if (audioRecordTime > 1.0f && mp3Data != nil && mp3Data.length > 0 && [mp3Data writeToFile:mp3Path atomically:YES]) {
+    // 转码后的文件地址
+    NSString *mp3Name = [NSString stringWithFormat:@"%@.mp3", [NSString creatUUID]];
+    __block NSString *mp3Path = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:mp3Name];
+    
+    if (![XOFM fileExistsAtPath:mp3Path]) {
+        NSLog(@"录音文件不存在");
+    }
+    else { // 发送语音消息
+        @XOWeakify(self);
+        [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+            @XOStrongify(self);
             
-            // 传相对路径，而不是绝对路径，因为沙盒路径会变
-            NSString *wavName = [wavPath lastPathComponent];
-            wavPath = [WXMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:wavName];
-            amrPath = [WXMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:amrName];
-            
-            if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendAmrAudio:wavPath:audioDuration:)]) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self.delegate chatBoxViewController:self sendAmrAudio:amrPath wavPath:wavPath audioDuration:(int)audioRecordTime];
+            // 转码mp3格式
+            if ([ConvertWavToMp3 convertToMp3WithSavePath:mp3Path sourcePath:cafPath])
+            {
+                if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendMp3Audio:audioDuration:)]) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [self.delegate chatBoxViewController:self sendMp3Audio:mp3Path audioDuration:(int)audioRecordTime];
+                        audioRecordTime = 0.0f;
+                    }];
+                } else {
                     audioRecordTime = 0.0f;
-                }];
-            } else {
-                audioRecordTime = 0.0f;
+                }
             }
-        }
-        else {
-            if (audioRecordTime > 1.0f) {
-                [SVProgressHUD showInfoWithStatus:NSLocalizedString(@"error.unknown", nil)];
-                [SVProgressHUD dismissWithDelay:0.6f];
+            else {
+                if (audioRecordTime > 1.0f) {
+                    [SVProgressHUD showInfoWithStatus:NSLocalizedString(@"error.unknown", nil)];
+                    [SVProgressHUD dismissWithDelay:0.6f];
+                }
             }
-        }
-    }];
+        }];
+    }
 }
 
 #pragma mark ====================== TZImagePickerControllerDelegate =======================
 
+// 选择图片、视频的回调
 - (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingPhotos:(NSArray<UIImage *> *)photos sourceAssets:(NSArray *)assets isSelectOriginalPhoto:(BOOL)isSelectOriginalPhoto infos:(NSArray<NSDictionary *> *)infos
 {
     [assets enumerateObjectsUsingBlock:^(PHAsset *asset , NSUInteger idx, BOOL *stop){
-        if (asset) {
-            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:nil resultHandler:^(NSData *data, NSString *uti, UIImageOrientation orientation, NSDictionary *dic){
-                
-                if (data.length > 6 * 1024 * 1024) { // 图片不能大于6M
-                    [SVProgressHUD showInfoWithStatus:NSLocalizedString(@"image.choose", @"Image size is too large, please re-select")];
-                    [SVProgressHUD dismissWithDelay:1.3f];
-                    return;
-                }
-                
-                if (data != nil) {
-                    if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendImage:imageSize:)]) {
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            [self.delegate chatBoxViewController:self sendImage:data imageSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight)];
-                        }];
-                    }
-                } else {
-                    [SVProgressHUD showInfoWithStatus:NSLocalizedString(@"image.choose", @"Image size is too large, please re-select")];
-                    [SVProgressHUD dismissWithDelay:1.3f];
-                }
+        // 选择了原图
+        if (isSelectOriginalPhoto) {
+            // 获取原图
+            [[TZImageManager manager] getOriginalPhotoWithAsset:asset completion:^(UIImage *photo, NSDictionary *info) {
+                [self getImageForAsset:asset];
+            }];
+        }
+        // 未选择原图
+        else {
+            // 获取封面图
+            [[TZImageManager manager] getPhotoWithAsset:asset completion:^(UIImage *photo, NSDictionary *info, BOOL isDegraded) {
+                [self getImageForAsset:asset];
             }];
         }
     }];
     
-#warning 取消本次选择的所有照片, 否则下次使用默认选中上次发送过的图片
+    // 取消选中的item
+    __weak TZImagePickerController *weakPick = picker;
+    [picker.selectedModels enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(TZAssetModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        __strong TZImagePickerController *strongPick = weakPick;
+        [strongPick removeSelectedModel:obj];
+    }];
+    if (picker.viewControllers.count > 0) {
+        [picker popViewControllerAnimated:YES];
+    }
 }
-
-//- (void)imagePickerControllerDidCancel:(TZImagePickerController *)picker
-//{
-//    [self.TZImagePicker dismissViewControllerAnimated:YES completion:nil];
-//}
 
 // 如果系统版本大于iOS8，asset是PHAsset类的对象，否则是ALAsset类的对象
 - (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingVideo:(UIImage *)coverImage sourceAssets:(id)asset;
 {
+    if (asset) {
+        PHAsset *phAsset = (PHAsset *)asset;
+        [[TZImageManager manager] getVideoWithAsset:phAsset completion:^(AVPlayerItem *playerItem, NSDictionary *info) {
+            
+        }];
+    }
+    
+    
     PHAsset *phAsset = (PHAsset *)asset;
     if (phAsset && PHAssetMediaTypeVideo == phAsset.mediaType) {
         PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
@@ -729,92 +762,43 @@ static NSTimeInterval audioRecordTime = 0.0f;
     }
 }
 
-#pragma mark ====================== UIImagePickerControllerDelegate =======================
-
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info
+// 获取图片
+- (void)getImageForAsset:(PHAsset *)asset
 {
-    NSLog(@"editingInfo: %@", info);
-    
-    NSString *mediaType = info[UIImagePickerControllerMediaType];
-    
-    if ([mediaType isEqualToString:(NSString *)kUTTypeMovie]) {
-        __block NSURL *videoURL = info[UIImagePickerControllerMediaURL];
-        NSDictionary *opts = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:AVURLAssetPreferPreciseDurationAndTimingKey];
-        AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:videoURL options:opts];
-        __block float duration = urlAsset.duration.value/urlAsset.duration.timescale;
-        
-        if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendVideo:videoDuration:)]) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.delegate chatBoxViewController:self sendVideo:videoURL videoDuration:duration];
-            }];
-        }
-    }
-    else if ([mediaType isEqualToString:@"public.image"]) {
-        NSURL *url = info[UIImagePickerControllerReferenceURL];
-        if (url == nil) {
-            __block UIImage *originalImage = info[UIImagePickerControllerOriginalImage];
+    if (asset) {
+        [[PHImageManager defaultManager] requestImageDataForAsset:asset options:nil resultHandler:^(NSData *data, NSString *uti, UIImageOrientation orientation, NSDictionary *dic){
             
-            if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendImage:imageSize:)]) {
-                [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-                    NSData *data = UIImagePNGRepresentation(originalImage);
-                    if (data.length > 6 * 1024 * 1024) { // 图片不能大于6M
-                        CGSize size = [[XOMsgFileManager shareManager] getScaleImageSize:originalImage.size maxFloat:KWIDTH * KSCALE];
-                        data = [[XOMsgFileManager shareManager] scaleImage:originalImage maxSize:size compressionQuality:1.0];
-                    }
-                    
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        [self.delegate chatBoxViewController:self sendImage:data imageSize:CGSizeMake(originalImage.size.width, originalImage.size.height)];
-                    }];
-                }];
-            }
-        }
-        else {
-            PHFetchResult *result = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
-            [result enumerateObjectsUsingBlock:^(PHAsset *asset , NSUInteger idx, BOOL *stop){
-                if (asset) {
-                    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:nil resultHandler:^(NSData *data, NSString *uti, UIImageOrientation orientation, NSDictionary *dic){
+            if (data != nil) {
+                if (data.length > 6 * 1024 * 1024) // 图片大于6M压缩
+                {
+                    [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                        UIImage *originImage = [UIImage imageWithData:data];
+                        CGSize scaleSize = [[XOFileManager shareInstance] getScaleImageSize:originImage];
+                        UIImage *scaleImage = [[XOFileManager shareInstance] scaleOriginImage:originImage toSize:scaleSize];
+                        __block NSData *scaleData = UIImageJPEGRepresentation(scaleImage, 0.8);
                         
-                        if (data != nil) {
-                            if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendImage:imageSize:)]) {
-                                [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-                                    NSData *imageData = data;
-                                    if (data.length > 6 * 1024 * 1024) { // 图片不能大于6M
-                                        UIImage * originalImage = [UIImage imageWithData:data];
-                                        CGSize size = [[XOMsgFileManager shareManager] getScaleImageSize:originalImage.size maxFloat:KWIDTH * KSCALE];
-                                        imageData = [[XOMsgFileManager shareManager] scaleImage:originalImage maxSize:size compressionQuality:1.0];
-                                    }
-                                    
-                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                        [self.delegate chatBoxViewController:self sendImage:imageData imageSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight)];
-                                    }];
-                                }];
-                            }
-                        }
-                        else {
-                            [SVProgressHUD showInfoWithStatus:NSLocalizedString(@"image.choose", @"nil")];
-                            [SVProgressHUD dismissWithDelay:1.3f];
-                        }
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            [self.delegate chatBoxViewController:self sendImage:scaleData imageSize:scaleSize];
+                        }];
                     }];
                 }
-            }];
-        }
+                else {
+                    if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendImage:imageSize:)]) {
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            [self.delegate chatBoxViewController:self sendImage:data imageSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight)];
+                        }];
+                    }
+                }
+            }
+            else {
+                [SVProgressHUD showInfoWithStatus:NSLocalizedString(@"image.choose", @"Image size is too large, please re-select")];
+                [SVProgressHUD dismissWithDelay:1.3f];
+            }
+        }];
     }
-    
-    [picker dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
-{
-    [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark ====================== public method =======================
-
-- (void)safeAreaDidChange:(UIEdgeInsets)safeAreaInset;
-{
-    self.chatBox.safeBottom = safeAreaInset.bottom;
-    self.chatBox.height = HEIGHT_TABBAR + safeAreaInset.bottom;
-}
 
 // 增加了@**
 - (void)addAtSomeOne:(NSString *)atString

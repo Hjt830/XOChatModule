@@ -16,7 +16,8 @@
 
 @implementation XOChatViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
     // 聊天对象的userId或者groupId

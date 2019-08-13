@@ -14,10 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * 将caf格式的音频转为mp3格式
- * mp3Path 生成的MP3文件保存的地址
- * sourcePath caf文件地址
+ * mp3Path 转码后的的mp3文件保存的地址
+ * cafPath caf文件地址
  */
-+ (BOOL)convertToMp3WithOriginalPath:(NSString*)mp3Path sourcePath:(NSString *)sourcePath;
++ (BOOL)convertToMp3WithSavePath:(NSString*)mp3Path sourcePath:(NSString *)cafPath;
 
 @end
 

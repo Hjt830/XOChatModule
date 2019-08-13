@@ -26,7 +26,7 @@ PODS:
   - SVProgressHUD (2.2.5)
   - TXIMSDK_iOS (4.4.627)
   - TZImagePickerController (3.2.1)
-  - XOBaseLib (0.0.2):
+  - XOBaseLib (0.0.4):
     - AFNetworking (~> 3.2.1)
     - GTMBase64 (~> 1.0.1)
     - MJRefresh (~> 3.2.0)
@@ -41,7 +41,7 @@ PODS:
     - SVProgressHUD (~> 2.2.5)
     - TXIMSDK_iOS (~> 4.4.627)
     - TZImagePickerController (~> 3.2.1)
-    - XOBaseLib (~> 0.0.2)
+    - XOBaseLib (~> 0.0.4)
   - YYKit (1.0.9):
     - YYKit/no-arc (= 1.0.9)
   - YYKit/no-arc (1.0.9)
@@ -83,8 +83,8 @@ SPEC CHECKSUMS:
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   TXIMSDK_iOS: 6641a71d741a1a1fb31b69419b2431d9aecdf12e
   TZImagePickerController: bf4c57b98d8707fce41ea6be872414a71c7a8c9d
-  XOBaseLib: 6b0ef5feeec622bb4afb8dbef5d35672312df31a
-  XOChatModule: 46f25ca1d21704eca74d6d6706d7845887d63f22
+  XOBaseLib: de00fb7f232e4d4a470cacceed6dd1dccaf6a819
+  XOChatModule: d51e3c9e5cd6467c50ba89bd1911138fe6640040
   YYKit: 7cda43304a8dc3696c449041e2cb3107b4e236e7
 
 PODFILE CHECKSUM: ad87e188dd2dd634ad31e9e2f3b674cb151f1207

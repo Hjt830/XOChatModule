@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMessage:(NSString *)content;
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendImage:(NSData *)image imageSize:(CGSize)size;
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendVideo:(NSURL *)videoUrl videoDuration:(float)duration;
-- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendAmrAudio:(NSString *)amrPath wavPath:(NSString *)wavPath audioDuration:(NSTimeInterval)duration;
+- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMp3Audio:(NSString *)amrPath audioDuration:(NSTimeInterval)duration;
 - (void)chatBoxViewControllerSendPosition:(XOChatBoxViewController *)chatboxViewController;
 - (void)chatBoxViewControllerSendCall:(XOChatBoxViewController *)chatboxViewController;
 - (void)chatBoxViewControllerSendRedPacket:(XOChatBoxViewController *)chatboxViewController;

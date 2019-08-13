@@ -14,8 +14,9 @@
 		551085DA22D478620060622C /* XOMessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D922D478620060622C /* XOMessageManager.m */; };
 		5520654D22EAD8B2009F823F /* XOConversationListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5520654C22EAD8B2009F823F /* XOConversationListController.m */; };
 		5520655122EAE9E2009F823F /* XOContactManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5520655022EAE9E2009F823F /* XOContactManager.m */; };
-		555AECD42302A6E20037C961 /* ConvertWavToMp3.m in Sources */ = {isa = PBXBuildFile; fileRef = 555AECD32302A6E20037C961 /* ConvertWavToMp3.m */; };
 		555AECD92302A74A0037C961 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 555AECD72302A74A0037C961 /* libmp3lame.a */; };
+		555AECDC2302AF430037C961 /* ConvertWavToMp3.m in Sources */ = {isa = PBXBuildFile; fileRef = 555AECDB2302AF430037C961 /* ConvertWavToMp3.m */; };
+		555AECE02302C2EF0037C961 /* NSBundle+ChatModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 555AECDF2302C2EF0037C961 /* NSBundle+ChatModule.m */; };
 		555C044422EE87EA00B27BF0 /* XOChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C044322EE87EA00B27BF0 /* XOChatViewController.m */; };
 		555C044822EE881A00B27BF0 /* XOChatBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C044722EE881A00B27BF0 /* XOChatBoxViewController.m */; };
 		555C044E22EE887600B27BF0 /* XOChatMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C044D22EE887600B27BF0 /* XOChatMessageController.m */; };
@@ -90,10 +91,12 @@
 		5520654F22EAE9E2009F823F /* XOConversationListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XOConversationListCell.h; sourceTree = "<group>"; };
 		5520655022EAE9E2009F823F /* XOContactManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XOContactManager.m; sourceTree = "<group>"; };
 		555AECD12302942A0037C961 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
-		555AECD22302A6E20037C961 /* ConvertWavToMp3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvertWavToMp3.h; sourceTree = "<group>"; };
-		555AECD32302A6E20037C961 /* ConvertWavToMp3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConvertWavToMp3.m; sourceTree = "<group>"; };
 		555AECD72302A74A0037C961 /* libmp3lame.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmp3lame.a; sourceTree = "<group>"; };
 		555AECD82302A74A0037C961 /* lame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lame.h; sourceTree = "<group>"; };
+		555AECDA2302AF430037C961 /* ConvertWavToMp3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvertWavToMp3.h; sourceTree = "<group>"; };
+		555AECDB2302AF430037C961 /* ConvertWavToMp3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConvertWavToMp3.m; sourceTree = "<group>"; };
+		555AECDE2302C2EF0037C961 /* NSBundle+ChatModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSBundle+ChatModule.h"; sourceTree = "<group>"; };
+		555AECDF2302C2EF0037C961 /* NSBundle+ChatModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+ChatModule.m"; sourceTree = "<group>"; };
 		555C044222EE87EA00B27BF0 /* XOChatViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatViewController.h; sourceTree = "<group>"; };
 		555C044322EE87EA00B27BF0 /* XOChatViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOChatViewController.m; sourceTree = "<group>"; };
 		555C044622EE881A00B27BF0 /* XOChatBoxViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatBoxViewController.h; sourceTree = "<group>"; };
@@ -240,6 +243,15 @@
 			path = lame;
 			sourceTree = "<group>";
 		};
+		555AECDD2302C2A80037C961 /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				555AECDE2302C2EF0037C961 /* NSBundle+ChatModule.h */,
+				555AECDF2302C2EF0037C961 /* NSBundle+ChatModule.m */,
+			);
+			name = Category;
+			sourceTree = "<group>";
+		};
 		555C044022EE877800B27BF0 /* Client */ = {
 			isa = PBXGroup;
 			children = (
@@ -283,6 +295,8 @@
 		555C044F22EE904600B27BF0 /* Box */ = {
 			isa = PBXGroup;
 			children = (
+				555AECDA2302AF430037C961 /* ConvertWavToMp3.h */,
+				555AECDB2302AF430037C961 /* ConvertWavToMp3.m */,
 				555C047022EE91D900B27BF0 /* LGAudioKit */,
 				555C045022EE904600B27BF0 /* Model */,
 				555C045922EE904600B27BF0 /* View */,
@@ -374,8 +388,6 @@
 		555C048322EE91D900B27BF0 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
-				555AECD22302A6E20037C961 /* ConvertWavToMp3.h */,
-				555AECD32302A6E20037C961 /* ConvertWavToMp3.m */,
 				555C048422EE91D900B27BF0 /* AMR */,
 			);
 			path = Vendor;
@@ -473,6 +485,7 @@
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
+				555AECDD2302C2A80037C961 /* Category */,
 				555AECD52302A7320037C961 /* Lib */,
 				555C044022EE877800B27BF0 /* Client */,
 				555C044522EE880300B27BF0 /* Chat */,
@@ -742,8 +755,8 @@
 			files = (
 				555C046E22EE904600B27BF0 /* ZXChatFaceMenuView.m in Sources */,
 				557D9F8F22CF278500846F0D /* XOChatClient.m in Sources */,
-				555AECD42302A6E20037C961 /* ConvertWavToMp3.m in Sources */,
 				551085D722D475840060622C /* XOConversationListCell.m in Sources */,
+				555AECE02302C2EF0037C961 /* NSBundle+ChatModule.m in Sources */,
 				551085D522D4756C0060622C /* XOConversationManager.m in Sources */,
 				555C046A22EE904600B27BF0 /* ZXChatBoxFaceView.m in Sources */,
 				555C044822EE881A00B27BF0 /* XOChatBoxViewController.m in Sources */,
@@ -752,6 +765,7 @@
 				5520655122EAE9E2009F823F /* XOContactManager.m in Sources */,
 				5520654D22EAD8B2009F823F /* XOConversationListController.m in Sources */,
 				555C049322EE91D900B27BF0 /* LGAudioPlayer.m in Sources */,
+				555AECDC2302AF430037C961 /* ConvertWavToMp3.m in Sources */,
 				555C046D22EE904600B27BF0 /* ZXChatBoxMoreView.m in Sources */,
 				551085DA22D478620060622C /* XOMessageManager.m in Sources */,
 				555C046C22EE904600B27BF0 /* ZXChatFaceItemView.m in Sources */,
@@ -919,6 +933,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(PROJECT_DIR)/XOChatModule/PrefixHeader.pch";
 				INFOPLIST_FILE = "XOChatModule/XOChatModule-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/XOChatModule/Box/LGAudioKit/Vendor/AMR/lib",
@@ -948,6 +963,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(PROJECT_DIR)/XOChatModule/PrefixHeader.pch";
 				INFOPLIST_FILE = "XOChatModule/XOChatModule-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/XOChatModule/Box/LGAudioKit/Vendor/AMR/lib",

@@ -251,7 +251,7 @@
 		return;
 	}
 	//设置文件保存路径和名称
-	NSString *fileName = [NSString stringWithFormat:@"/voice-%5.2f.wav", [[NSDate date] timeIntervalSince1970] ];
+	NSString *fileName = [NSString stringWithFormat:@"voice_%lld.caf", (long long)[[NSDate date] timeIntervalSince1970] * 1000];
 	self.recordPath = [self.recordPath stringByAppendingPathComponent:fileName];
 	NSURL *recordedFile = [NSURL fileURLWithPath:self.recordPath];
 	NSDictionary *dic = [self recordingSettings];
@@ -314,13 +314,19 @@
 - (NSDictionary *)recordingSettings
 {
 	NSMutableDictionary *recordSetting =[NSMutableDictionary dictionaryWithCapacity:10];
-	[recordSetting setObject:[NSNumber numberWithInt: kAudioFormatLinearPCM] forKey: AVFormatIDKey];
-	//2 采样率
-	[recordSetting setObject:[NSNumber numberWithFloat:8000.0] forKey: AVSampleRateKey];
-	//3 通道的数目
-	[recordSetting setObject:[NSNumber numberWithInt:1]forKey:AVNumberOfChannelsKey];
-	//4 采样位数  默认 16
-	[recordSetting setObject:[NSNumber numberWithInt:16] forKey:AVLinearPCMBitDepthKey];
+    //1 采样率
+    [recordSetting setObject:[NSNumber numberWithFloat:16000.0] forKey: AVSampleRateKey];
+    //2 采样率
+    [recordSetting setObject:[NSNumber numberWithInteger:16000] forKey: AVEncoderBitRateKey];
+    //3 音频格式
+    [recordSetting setObject:[NSNumber numberWithInteger:kAudioFormatLinearPCM] forKey: AVFormatIDKey];
+    //4 通道的数目
+    [recordSetting setObject:[NSNumber numberWithInteger:1] forKey:AVNumberOfChannelsKey];
+    //5 采样位数  默认 16
+    [recordSetting setObject:[NSNumber numberWithInteger:16] forKey:AVLinearPCMBitDepthKey];
+    //6 录音质量
+    [recordSetting setObject:[NSNumber numberWithInteger:AVAudioQualityMax] forKey:AVEncoderAudioQualityKey];
+    
 	return recordSetting;
 }
 
