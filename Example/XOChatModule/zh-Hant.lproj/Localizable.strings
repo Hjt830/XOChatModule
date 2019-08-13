@@ -11,3 +11,9 @@
 
 "conversation.systemMessage" = "系統消息";
 "conversation.groupChat" = "發起群聊";
+"conversation.delete.title" = "刪除";
+"conversation.delete.alertMsg" = "你確定要刪除該會話嗎？";
+"conversation.delete.success" = "删除成功";
+"conversation.delete.fail" = "删除失敗";
+"conversation.top.title" = "置頂";
+"conversation.unTop.title" = "取消置頂";

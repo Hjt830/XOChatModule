@@ -1,0 +1,21 @@
+//
+//  NSBundle+XOBaseLib.h
+//  XOBaseLib
+//
+//  Created by kenter on 2019/8/13.
+//  Copyright © 2019 KENTER. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface NSBundle (XOBaseLib)
+
++ (NSBundle *)xo_baseLibBundle;
++ (NSString *)xo_localizedStringForKey:(NSString *)key value:(NSString *)value;
++ (NSString *)xo_localizedStringForKey:(NSString *)key;
+
+@end
+
+NS_ASSUME_NONNULL_END

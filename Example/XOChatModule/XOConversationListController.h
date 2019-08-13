@@ -6,11 +6,11 @@
 //  Copyright © 2019年 乐派. All rights reserved.
 //
 
-#import "JTBaseViewController.h"
+#import "XOBaseViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface XOConversationListController : JTBaseViewController
+@interface XOConversationListController : XOBaseViewController
 
 @end
 

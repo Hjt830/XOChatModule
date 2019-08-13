@@ -27,8 +27,11 @@
     "TXIMSDK_iOS": [
       "~> 4.4.627"
     ],
-    "JTBaseLib": [
-      "~> 0.1.9"
+    "XOBaseLib": [
+      "~> 0.0.2"
+    ],
+    "TZImagePickerController": [
+      "~> 3.2.1"
     ],
     "CTMediator": [
       "~> 25"
@@ -41,6 +44,9 @@
     ],
     "SVProgressHUD": [
       "~> 2.2.5"
+    ],
+    "MBProgressHUD": [
+      "~> 1.1.0"
     ]
   }
 }

@@ -9,12 +9,12 @@
 #import "XOChatAppDelegate.h"
 #import "XOConversationListController.h"
 
-#import <JTBaseLib/JTBaseLib.h>
+#import <XOBaseLib/XOBaseLib.h>
 #import "XOChatClient.h"
 
 #define TXTIMAppID      @"1400079944"
-#define TIM_UserId      @"c882993b38ab4ec7912ed88c386829cc"
-#define TIM_UserSig     @"eJw1kNFOgzAUht*Fa6MdtNCaeIEMFpJhXBhZ8IaUtmwdkZWuIsz47lbCbr-vnPzn-D-Ofps-UqUkr6ipPM2dZwc4DzMWo5JaVLQxQlvsIuICcJeSi87IRs6KYewS4tUepjUULCArV3CMmYd9Kxhbdq7yaIezuIjSeIqGfngbkiNCPe7GLPLbb7VJ3lu6adDuEO1Ktc7V*pYOoYzDiwDk6Vr4LOnzj*1rHO7TMkWD1ijrzwWuSzIeguw2nQR7uYfxtpofs5EraA8PCIFwkUZ*in*OfAhcGAC0cMrY5aszlZmUmJv4-QMS71dk"
+#define TIM_UserId      @"020dff421e5e4e349c6c3b24805dc7a0"
+#define TIM_UserSig     @"eJw1kMtugzAQRf*FLVVk-ABcKQsSIgKlCxIWTTfItceRU5IgY5pUVf*9FIXtOTO6M-fHq8v9QnSdUY1wDbHKe-aQ9zRhuHfGQiO0AztizDhGaJZGwcUZbSaFMFJaUxwAAwqEchlK8oFpjJiSkZh3enMch1831TrfntvQvKWtZX16sLqFYZ**10ITuKHqnsQ5dClK9KovgsSs-Lby-RvnWRnVBTmVdJvrr4PU2c7Xx*vQv*z6OitOm9Amy*Ucpj6b6bExMqDj4RHnlD6kM2f45yxkYYBQjB9cSHkdLq5x3x1MTfz*AZvkVkY_"
 
 @interface XOChatAppDelegate () <TIMConnListener>
 
@@ -24,21 +24,20 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [[JTSettingManager defaultManager] loadSetting];
-    [[JTSettingManager defaultManager] setAppLanguage:JTLanguageNameZh_Hans];
+    [[XOSettingManager defaultManager] setAppLanguage:JTLanguageNameZh_Hans];
     
-    NSString *str = JTLocalizedString(@"NSDateCategory.text8");
+    NSString *str = XOLocalizedString(@"NSDateCategory.text8");
     NSLog(@"str: %@", str);
     
     // 1、初始化腾讯云通信
     [[XOChatClient shareClient] initSDKWithAppId:[TXTIMAppID intValue] logFun:^(TIMLogLevel lvl, NSString *msg) {
         
-//        NSLog(@"=================================");
-//        NSLog(@"=========== 云通信日志 ============");
-//        NSLog(@"=================================");
-//        NSLog(@"=========== TIM msg: %@", msg);
-//        NSLog(@"=================================");
-//        NSLog(@"=================================\n");
+        NSLog(@"=================================");
+        NSLog(@"=========== 云通信日志 ============");
+        NSLog(@"=================================");
+        NSLog(@"=========== TIM msg: %@", msg);
+        NSLog(@"=================================");
+        NSLog(@"=================================\n");
         
     }];
     
@@ -56,7 +55,7 @@
     [self.window makeKeyAndVisible];
     
     XOConversationListController *chatListVC = [[XOConversationListController alloc] init];
-    JTBaseNavigationController *nav = [[JTBaseNavigationController alloc] initWithRootViewController:chatListVC];
+    XOBaseNavigationController *nav = [[XOBaseNavigationController alloc] initWithRootViewController:chatListVC];
     
     self.window.rootViewController = nav;
     

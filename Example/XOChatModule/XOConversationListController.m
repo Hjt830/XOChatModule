@@ -7,8 +7,11 @@
 //
 
 #import "XOConversationListController.h"
+
 #import "XOConversationListCell.h"
-#import <JTBaseLib/JTBaseLib.h>
+
+#import "XOChatViewController.h"
+#import <XOBaseLib/XOBaseLib.h>
 #import "XOChatModule.h"
 #import "XOChatClient.h"
 
@@ -387,7 +390,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
  */
 - (void)xoOnRefreshConversations:(NSArray <TIMConversation*>* )conversations
 {
-    
+    NSLog(@"conversations: %@", conversations);
 }
 
 #pragma mark ====================== UITableViewDataSource =======================
@@ -426,13 +429,17 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 
 #pragma mark ====================== UITableViewDelegate =======================
 
+// 进入聊天
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     TIMConversation *conversation = [self.dataSource objectAtIndex:indexPath.row];
     if (conversation) {
-        
+        XOChatViewController *chatVC = [[XOChatViewController alloc] init];
+        chatVC.conversation = conversation;
+        chatVC.chatType = [conversation getType];
+        [self.navigationController pushViewController:chatVC animated:YES];
     }
 }
 
@@ -449,7 +456,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
-    editingStyle = UITableViewCellEditingStyleDelete;
+    
 }
 
 //自定义左滑效果

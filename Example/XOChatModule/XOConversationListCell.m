@@ -7,8 +7,7 @@
 //
 
 #import "XOConversationListCell.h"
-#import <JTBaseLib/JTBaseLib.h>
-#import "NSDate+JTExtension.h"
+#import <XOBaseLib/XOBaseLib.h>
 
 @interface XOConversationListCell ()
 
@@ -51,7 +50,7 @@
     _iconImageView.backgroundColor = RGBA(221, 222, 224, 1);
     
     _nameLabel = [UILabel new];
-    CGFloat fontSize = [JTSettingManager defaultManager].fontSize;
+    CGFloat fontSize = [XOSettingManager defaultManager].fontSize;
     _nameLabel.font = [UIFont boldSystemFontOfSize:fontSize];
     _nameLabel.textColor = [UIColor blackColor];
     
@@ -156,8 +155,8 @@
     NSString *time = [lastMsg.timestamp formattedDateDescription];
     _timeLabel.text = time;
     
-    _nameLabel.font = [UIFont boldSystemFontOfSize:[JTSettingManager defaultManager].fontSize];
-    _messageLabel.font = [UIFont systemFontOfSize:([JTSettingManager defaultManager].fontSize - 2.0)];
+    _nameLabel.font = [UIFont boldSystemFontOfSize:[XOSettingManager defaultManager].fontSize];
+    _messageLabel.font = [UIFont systemFontOfSize:([XOSettingManager defaultManager].fontSize - 2.0)];
 }
 
 
@@ -168,31 +167,31 @@
         text = [(TIMTextElem *)elem text];
     }
     else if ([elem isKindOfClass:[TIMImageElem class]]) { // 图片
-        text = JTLocalizedString(@"");
+        text = XOLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMSoundElem class]]) { // 语音
-        text = JTLocalizedString(@"");
+        text = XOLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMVideoElem class]]) { // 视频
-        text = JTLocalizedString(@"");
+        text = XOLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMFileElem class]]) {  // 文件
-        text = JTLocalizedString(@"");
+        text = XOLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMFaceElem class]]) {  // 表情
-        text = JTLocalizedString(@"");
+        text = XOLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMLocationElem class]]) { // 地理位置
-        text = JTLocalizedString(@"");
+        text = XOLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMCustomElem class]]) {   // 自定义消息
-        text = JTLocalizedString(@"");
+        text = XOLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMGroupTipsElem class]]) {// 群Tips
-        text = JTLocalizedString(@"");
+        text = XOLocalizedString(@"");
     }
     else if ([elem isKindOfClass:[TIMGroupSystemElem class]]) { // 群系统消息
-        text = JTLocalizedString(@"");
+        text = XOLocalizedString(@"");
     }
     return text;
 }

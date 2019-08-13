@@ -8,7 +8,7 @@
 
 #import "XOChatClient.h"
 #import <GCDMulticastDelegate/GCDMulticastDelegate.h>
-#import <JTBaseLib/JTBaseLib.h>
+#import <XOBaseLib/XOBaseLib.h>
 #import "XOContactManager.h"
 
 @interface XOChatClient () <TIMConnListener, TIMMessageListener, TIMUserStatusListener, TIMUploadProgressListener, TIMGroupEventListener, TIMFriendshipListener>

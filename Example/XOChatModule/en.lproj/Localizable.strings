@@ -11,3 +11,7 @@
 
 "conversation.systemMessage" = "System Message";
 "conversation.groupChat" = "Group Chat";
+"conversation.delete.title" = "Delete";
+"conversation.delete.alertMsg" = "Are you sure to delete this conversation ?";
+"conversation.delete.success" = "delete success";
+"conversation.delete.fail" = "delete failed";
