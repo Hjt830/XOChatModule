@@ -125,7 +125,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
         _TZImagePicker.isSelectOriginalPhoto = NO;
         _TZImagePicker.statusBarStyle = UIStatusBarStyleLightContent;
         _TZImagePicker.maxImagesCount = 9;
-        _TZImagePicker.videoMaximumDuration = 20;
+        _TZImagePicker.videoMaximumDuration = 15;
         // 2. 在这里设置imagePickerVc的外观
          _TZImagePicker.navigationBar.barTintColor = MainPurpleLightColor;
         _TZImagePicker.navigationBar.tintColor = [UIColor whiteColor];
@@ -160,9 +160,9 @@ static NSTimeInterval audioRecordTime = 0.0f;
         uint64_t interval = (uint64_t)(1.0 * NSEC_PER_SEC); // 执行间隔时间
         dispatch_source_set_timer(_timer, start, interval, 0);
         // 设置事件回调
-        @JTWeakify(self);
+        @XOWeakify(self);
         dispatch_source_set_event_handler(_timer, ^{
-            @JTStrongify(self);
+            @XOStrongify(self);
             
             self->_seconds++;
             NSLog(@"录音时间: %d  ---  %f", self->_seconds, [LGSoundRecorder shareInstance].soundRecordTime);
@@ -381,13 +381,13 @@ static NSTimeInterval audioRecordTime = 0.0f;
         dispatch_resume(self.timer);
         // 开始录音
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            NSString *audioPath = [DocumentDirectory() stringByAppendingPathComponent:WXMsgFileDirectory(HTMsgFileTypeAudio)];
+            NSString *audioPath = [DocumentDirectory() stringByAppendingPathComponent:WXMsgFileDirectory(XOMsgFileTypeAudio)];
             [[LGSoundRecorder shareInstance] startSoundRecord:self.view recordPath:audioPath];
         }];
     }
     else if (AVAuthorizationStatusDenied == authStatus || AVAuthorizationStatusRestricted == authStatus) {
         // 打开授权提示
-        [self showAlertAuthor:WXRequestAuthMicphone];
+        [self showAlertAuthor:XORequestAuthMicphone];
     }
     else {
         // 申请权限
@@ -494,7 +494,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
             }];
         }
         else { // 提示授权
-            [self showAlertAuthor:WXRequestAuthLibrary];
+            [self showAlertAuthor:XORequestAuthPhotos];
         }
     }
     else if (1 == itemIndex) {       // 相机
@@ -513,7 +513,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
             }];
         }
         else { // 提示授权
-            [self showAlertAuthor:WXRequestAuthCamera];
+            [self showAlertAuthor:XORequestAuthCamera];
         }
     }
     else if (2 == itemIndex) {       // 通话
@@ -531,11 +531,13 @@ static NSTimeInterval audioRecordTime = 0.0f;
             if (PHAuthorizationStatusAuthorized == status) {
                 
                 if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-                    self.imagePicker.mediaTypes = @[(NSString *)kUTTypeMovie];
-                    self.imagePicker.videoQuality = UIImagePickerControllerQualityTypeIFrame960x540;
-                    self.imagePicker.videoMaximumDuration = 10;
-                    self.imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-                    [self.parentViewController presentViewController:self.imagePicker animated:YES completion:NULL];
+                    self.TZImagePicker.allowTakePicture = NO;   // 关闭拍照
+                    self.TZImagePicker.allowPickingImage = NO;  // 关闭选照片
+                    self.TZImagePicker.allowPickingGif = NO;    // 关闭选动图
+                    self.TZImagePicker.allowTakeVideo = YES;    // 打开拍视频
+                    self.TZImagePicker.allowPickingVideo = YES; // 打开选视频
+                    self.TZImagePicker.videoMaximumDuration = 15; // 设定拍摄最大时间为15s
+                    [self.parentViewController presentViewController:self.TZImagePicker animated:YES completion:NULL];
                 } else {
                     [SVProgressHUD showInfoWithStatus:@"当前设备不支持拍照"];
                     [SVProgressHUD dismissWithDelay:1.3f];
@@ -551,7 +553,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
         }
     }
     else if (6 == itemIndex) {       // 转账(单聊时) | 名片(群聊时)
-        if (HTChatTypeSingle == self.chatType) {
+        if (TIM_C2C == self.chatType) {
             if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
                 [self.delegate chatBoxViewControllerSendTransfer:self];
             }
@@ -562,7 +564,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
         }
     }
     else if (7 == itemIndex) {       // 名片(单聊时) | 文件(群聊时)
-        if (HTChatTypeSingle == self.chatType) {
+        if (TIM_C2C == self.chatType) {
             if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
                 [self.delegate chatBoxViewControllerSendCarte:self];
             }
@@ -614,8 +616,13 @@ static NSTimeInterval audioRecordTime = 0.0f;
 
 - (void)takePhotosUseCamera
 {
-    self.imagePicker.mediaTypes = @[(NSString *)kUTTypeImage];
-    [self.parentViewController presentViewController:self.imagePicker animated:YES completion:NULL];
+    self.TZImagePicker.allowTakePicture = YES;   // 打开拍照
+    self.TZImagePicker.allowPickingImage = YES;  // 打开选照片
+    self.TZImagePicker.photoPreviewMaxWidth = 9; // 最多选9张
+    self.TZImagePicker.allowPickingGif = NO;     // 关闭选动图
+    self.TZImagePicker.allowTakeVideo = NO;      // 关闭拍视频
+    self.TZImagePicker.allowPickingVideo = NO;   // 关闭选视频
+    [self.parentViewController presentViewController:self.TZImagePicker animated:YES completion:NULL];
 }
 
 #pragma mark =========================== LGSoundRecorderDelegate ===========================
@@ -629,22 +636,22 @@ static NSTimeInterval audioRecordTime = 0.0f;
 - (void)didStopSoundRecord
 {
     // 发送语音消息
-    __block NSString *wavPath = [LGSoundRecorder shareInstance].soundFilePath;
+    __block NSString *cafPath = [LGSoundRecorder shareInstance].soundFilePath;
     // 将wav->amr格式
-    @WXWeakify(self);
+    @XOWeakify(self);
     [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-        @WXStrongify(self);
+        @XOStrongify(self);
         
-        NSData *wavData = [NSData dataWithContentsOfFile:wavPath];
-        NSData *amrData = EncodeWAVEToAMR(wavData, 1, 16);
-        NSString *amrName = [NSString stringWithFormat:@"%@_%@.amr", DatePath(), [NSString creatUUID]];
-        __block NSString *amrPath = [[DocumentPath() stringByAppendingPathComponent:WXMsgFileDirectory(HTMsgFileTypeAudio)] stringByAppendingPathComponent:amrName];
-        if (audioRecordTime > 1.0f && amrData != nil && amrData.length > 0 && [amrData writeToFile:amrPath atomically:YES]) {
+        NSData *cafData = [NSData dataWithContentsOfFile:cafPath];
+        NSData *mp3Data = EncodeWAVEToAMR(cafData, 1, 16);
+        NSString *mp3Name = [NSString stringWithFormat:@"%@.mp3", [NSString creatUUID]];
+        __block NSString *mp3Path = [[DocumentDirectory() stringByAppendingPathComponent:XOMsgFileDirectory(XOMsgFileTypeAudio)] stringByAppendingPathComponent:mp3Name];
+        if (audioRecordTime > 1.0f && mp3Data != nil && mp3Data.length > 0 && [mp3Data writeToFile:mp3Path atomically:YES]) {
             
             // 传相对路径，而不是绝对路径，因为沙盒路径会变
             NSString *wavName = [wavPath lastPathComponent];
-            wavPath = [WXMsgFileDirectory(HTMsgFileTypeAudio) stringByAppendingPathComponent:wavName];
-            amrPath = [WXMsgFileDirectory(HTMsgFileTypeAudio) stringByAppendingPathComponent:amrName];
+            wavPath = [WXMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:wavName];
+            amrPath = [WXMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:amrName];
             
             if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendAmrAudio:wavPath:audioDuration:)]) {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -751,8 +758,8 @@ static NSTimeInterval audioRecordTime = 0.0f;
                 [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
                     NSData *data = UIImagePNGRepresentation(originalImage);
                     if (data.length > 6 * 1024 * 1024) { // 图片不能大于6M
-                        CGSize size = [[WXMsgFileManager shareManager] getScaleImageSize:originalImage.size maxFloat:KWIDTH * KSCALE];
-                        data = [[WXMsgFileManager shareManager] scaleImage:originalImage maxSize:size compressionQuality:1.0];
+                        CGSize size = [[XOMsgFileManager shareManager] getScaleImageSize:originalImage.size maxFloat:KWIDTH * KSCALE];
+                        data = [[XOMsgFileManager shareManager] scaleImage:originalImage maxSize:size compressionQuality:1.0];
                     }
                     
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -773,8 +780,8 @@ static NSTimeInterval audioRecordTime = 0.0f;
                                     NSData *imageData = data;
                                     if (data.length > 6 * 1024 * 1024) { // 图片不能大于6M
                                         UIImage * originalImage = [UIImage imageWithData:data];
-                                        CGSize size = [[WXMsgFileManager shareManager] getScaleImageSize:originalImage.size maxFloat:KWIDTH * KSCALE];
-                                        imageData = [[WXMsgFileManager shareManager] scaleImage:originalImage maxSize:size compressionQuality:1.0];
+                                        CGSize size = [[XOMsgFileManager shareManager] getScaleImageSize:originalImage.size maxFloat:KWIDTH * KSCALE];
+                                        imageData = [[XOMsgFileManager shareManager] scaleImage:originalImage maxSize:size compressionQuality:1.0];
                                     }
                                     
                                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{

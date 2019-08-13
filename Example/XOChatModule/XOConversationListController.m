@@ -463,7 +463,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
     __block TIMConversation *conversation = [self.dataSource objectAtIndex:indexPath.row];
-    @JTWeakify(self);
+    @XOWeakify(self);
     BOOL isTop = NO;
     NSString *topTitle = !isTop ? NSLocalizedString(@"conversation.unTop.title", @"unTop") : NSLocalizedString(@"conversation.top.title", @"Top");
     UITableViewRowAction *topRowAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:topTitle handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull indexPath) {
@@ -472,7 +472,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
     UITableViewRowAction *deleteRowAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:NSLocalizedString(@"conversation.delete.title", @"Delete") handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
         NSString *message = NSLocalizedString(@"conversation.delete.alertMsg", nil);
         [self showAlertWithTitle:nil message:message sureTitle:NSLocalizedString(@"sure", nil) cancelTitle:NSLocalizedString(@"cancel", nil) sureComplection:^{
-            @JTStrongify(self);
+            @XOStrongify(self);
             if ([[TIMManager sharedInstance] deleteConversation:[conversation getType] receiver:[conversation getReceiver]]) {
                 [SVProgressHUD showErrorWithStatus:@"delete success"];
                 [SVProgressHUD dismissWithDelay:1.0f];
@@ -490,10 +490,10 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
     return @[topRowAction, deleteRowAction];
 }
 
-- (void)refreshByGenralSettingChange:(JTGenralChangeType)genralType userInfo:(NSDictionary *)userInfo
+- (void)refreshByGenralSettingChange:(XOGenralChangeType)genralType userInfo:(NSDictionary *)userInfo
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if (JTGenralChangeFontSize == genralType) {
+        if (XOGenralChangeFontSize == genralType) {
             [self.tableView reloadData];
         }
     }];

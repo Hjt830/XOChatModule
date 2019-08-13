@@ -14,6 +14,8 @@
 		551085DA22D478620060622C /* XOMessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D922D478620060622C /* XOMessageManager.m */; };
 		5520654D22EAD8B2009F823F /* XOConversationListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5520654C22EAD8B2009F823F /* XOConversationListController.m */; };
 		5520655122EAE9E2009F823F /* XOContactManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5520655022EAE9E2009F823F /* XOContactManager.m */; };
+		555AECD42302A6E20037C961 /* ConvertWavToMp3.m in Sources */ = {isa = PBXBuildFile; fileRef = 555AECD32302A6E20037C961 /* ConvertWavToMp3.m */; };
+		555AECD92302A74A0037C961 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 555AECD72302A74A0037C961 /* libmp3lame.a */; };
 		555C044422EE87EA00B27BF0 /* XOChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C044322EE87EA00B27BF0 /* XOChatViewController.m */; };
 		555C044822EE881A00B27BF0 /* XOChatBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C044722EE881A00B27BF0 /* XOChatBoxViewController.m */; };
 		555C044E22EE887600B27BF0 /* XOChatMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C044D22EE887600B27BF0 /* XOChatMessageController.m */; };
@@ -39,7 +41,6 @@
 		555C049C22EE91D900B27BF0 /* toast_vol_2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 555C047E22EE91D900B27BF0 /* toast_vol_2@2x.png */; };
 		555C049D22EE91D900B27BF0 /* toast_timeshort@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 555C047F22EE91D900B27BF0 /* toast_timeshort@2x.png */; };
 		555C049E22EE91D900B27BF0 /* LGSoundRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C048122EE91D900B27BF0 /* LGSoundRecorder.m */; };
-		555C049F22EE91D900B27BF0 /* HTVoiceConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C048522EE91D900B27BF0 /* HTVoiceConverter.m */; };
 		555C04A022EE91D900B27BF0 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 555C049022EE91D900B27BF0 /* libopencore-amrwb.a */; };
 		555C04A122EE91D900B27BF0 /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 555C049122EE91D900B27BF0 /* libopencore-amrnb.a */; };
 		555C04A222EE91D900B27BF0 /* amrFileCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C049222EE91D900B27BF0 /* amrFileCodec.m */; };
@@ -88,6 +89,11 @@
 		5520654E22EAE001009F823F /* XOChatModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatModule.h; sourceTree = "<group>"; };
 		5520654F22EAE9E2009F823F /* XOConversationListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XOConversationListCell.h; sourceTree = "<group>"; };
 		5520655022EAE9E2009F823F /* XOContactManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XOContactManager.m; sourceTree = "<group>"; };
+		555AECD12302942A0037C961 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
+		555AECD22302A6E20037C961 /* ConvertWavToMp3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvertWavToMp3.h; sourceTree = "<group>"; };
+		555AECD32302A6E20037C961 /* ConvertWavToMp3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConvertWavToMp3.m; sourceTree = "<group>"; };
+		555AECD72302A74A0037C961 /* libmp3lame.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmp3lame.a; sourceTree = "<group>"; };
+		555AECD82302A74A0037C961 /* lame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lame.h; sourceTree = "<group>"; };
 		555C044222EE87EA00B27BF0 /* XOChatViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatViewController.h; sourceTree = "<group>"; };
 		555C044322EE87EA00B27BF0 /* XOChatViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOChatViewController.m; sourceTree = "<group>"; };
 		555C044622EE881A00B27BF0 /* XOChatBoxViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatBoxViewController.h; sourceTree = "<group>"; };
@@ -129,13 +135,11 @@
 		555C047F22EE91D900B27BF0 /* toast_timeshort@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toast_timeshort@2x.png"; sourceTree = "<group>"; };
 		555C048122EE91D900B27BF0 /* LGSoundRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LGSoundRecorder.m; sourceTree = "<group>"; };
 		555C048222EE91D900B27BF0 /* LGSoundRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LGSoundRecorder.h; sourceTree = "<group>"; };
-		555C048522EE91D900B27BF0 /* HTVoiceConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTVoiceConverter.m; sourceTree = "<group>"; };
 		555C048622EE91D900B27BF0 /* amrFileCodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amrFileCodec.h; sourceTree = "<group>"; };
 		555C048922EE91D900B27BF0 /* if_rom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = if_rom.h; sourceTree = "<group>"; };
 		555C048A22EE91D900B27BF0 /* dec_if.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dec_if.h; sourceTree = "<group>"; };
 		555C048C22EE91D900B27BF0 /* interf_dec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_dec.h; sourceTree = "<group>"; };
 		555C048D22EE91D900B27BF0 /* interf_enc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_enc.h; sourceTree = "<group>"; };
-		555C048E22EE91D900B27BF0 /* HTVoiceConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTVoiceConverter.h; sourceTree = "<group>"; };
 		555C049022EE91D900B27BF0 /* libopencore-amrwb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libopencore-amrwb.a"; sourceTree = "<group>"; };
 		555C049122EE91D900B27BF0 /* libopencore-amrnb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libopencore-amrnb.a"; sourceTree = "<group>"; };
 		555C049222EE91D900B27BF0 /* amrFileCodec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = amrFileCodec.m; sourceTree = "<group>"; };
@@ -190,6 +194,7 @@
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
 				40E501F311986D08A630E78E /* Pods_XOChatModule_Example.framework in Frameworks */,
+				555AECD92302A74A0037C961 /* libmp3lame.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,6 +221,23 @@
 				A3D0A1316B54DE35B9ED0E3D /* Pods-XOChatModule_Tests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		555AECD52302A7320037C961 /* Lib */ = {
+			isa = PBXGroup;
+			children = (
+				555AECD62302A74A0037C961 /* lame */,
+			);
+			name = Lib;
+			sourceTree = "<group>";
+		};
+		555AECD62302A74A0037C961 /* lame */ = {
+			isa = PBXGroup;
+			children = (
+				555AECD72302A74A0037C961 /* libmp3lame.a */,
+				555AECD82302A74A0037C961 /* lame.h */,
+			);
+			path = lame;
 			sourceTree = "<group>";
 		};
 		555C044022EE877800B27BF0 /* Client */ = {
@@ -352,6 +374,8 @@
 		555C048322EE91D900B27BF0 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				555AECD22302A6E20037C961 /* ConvertWavToMp3.h */,
+				555AECD32302A6E20037C961 /* ConvertWavToMp3.m */,
 				555C048422EE91D900B27BF0 /* AMR */,
 			);
 			path = Vendor;
@@ -362,8 +386,6 @@
 			children = (
 				555C048622EE91D900B27BF0 /* amrFileCodec.h */,
 				555C049222EE91D900B27BF0 /* amrFileCodec.m */,
-				555C048E22EE91D900B27BF0 /* HTVoiceConverter.h */,
-				555C048522EE91D900B27BF0 /* HTVoiceConverter.m */,
 				555C048722EE91D900B27BF0 /* include */,
 				555C048F22EE91D900B27BF0 /* lib */,
 			);
@@ -451,11 +473,13 @@
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
+				555AECD52302A7320037C961 /* Lib */,
 				555C044022EE877800B27BF0 /* Client */,
 				555C044522EE880300B27BF0 /* Chat */,
 				555C044122EE87AD00B27BF0 /* Conversation */,
 				5520654E22EAE001009F823F /* XOChatModule.h */,
 				557D9F9D22CF504900846F0D /* Localizable.strings */,
+				555AECD12302942A0037C961 /* PrefixHeader.pch */,
 			);
 			name = "Example for XOChatModule";
 			path = XOChatModule;
@@ -718,6 +742,7 @@
 			files = (
 				555C046E22EE904600B27BF0 /* ZXChatFaceMenuView.m in Sources */,
 				557D9F8F22CF278500846F0D /* XOChatClient.m in Sources */,
+				555AECD42302A6E20037C961 /* ConvertWavToMp3.m in Sources */,
 				551085D722D475840060622C /* XOConversationListCell.m in Sources */,
 				551085D522D4756C0060622C /* XOConversationManager.m in Sources */,
 				555C046A22EE904600B27BF0 /* ZXChatBoxFaceView.m in Sources */,
@@ -741,7 +766,6 @@
 				555C044422EE87EA00B27BF0 /* XOChatViewController.m in Sources */,
 				555C046722EE904600B27BF0 /* ChatFaceHelper.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
-				555C049F22EE91D900B27BF0 /* HTVoiceConverter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -893,11 +917,12 @@
 					"$(PROJECT_DIR)/XOChatModule",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "XOChatModule/XOChatModule-Prefix.pch";
+				GCC_PREFIX_HEADER = "$(PROJECT_DIR)/XOChatModule/PrefixHeader.pch";
 				INFOPLIST_FILE = "XOChatModule/XOChatModule-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/XOChatModule/Box/LGAudioKit/Vendor/AMR/lib",
+					"$(PROJECT_DIR)/XOChatModule/lame",
 				);
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = test.xxoogo.chat;
@@ -921,11 +946,12 @@
 					"$(PROJECT_DIR)/XOChatModule",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "XOChatModule/XOChatModule-Prefix.pch";
+				GCC_PREFIX_HEADER = "$(PROJECT_DIR)/XOChatModule/PrefixHeader.pch";
 				INFOPLIST_FILE = "XOChatModule/XOChatModule-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/XOChatModule/Box/LGAudioKit/Vendor/AMR/lib",
+					"$(PROJECT_DIR)/XOChatModule/lame",
 				);
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = test.xxoogo.chat;

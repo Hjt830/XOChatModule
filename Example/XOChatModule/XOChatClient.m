@@ -142,7 +142,7 @@ static XOChatClient *__chatClient = nil;
  */
 - (void)onNewMessage:(NSArray *)msgs
 {
-    JTLog(@"=================================\n=================================\n收到新消息条数: %lu \n收到新消息: %@\n=================================\n=================================", msgs.count, msgs);
+    XOLog(@"=================================\n=================================\n收到新消息条数: %lu \n收到新消息: %@\n=================================\n=================================", msgs.count, msgs);
     if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnForceOffline)]) {
         [_multiDelegate xoOnForceOffline];
     }
@@ -154,7 +154,7 @@ static XOChatClient *__chatClient = nil;
  */
 - (void)onForceOffline
 {
-    JTLog(@"被踢下线");
+    XOLog(@"被踢下线");
     if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnForceOffline)]) {
         [_multiDelegate xoOnForceOffline];
     }
@@ -164,7 +164,7 @@ static XOChatClient *__chatClient = nil;
  */
 - (void)onReConnFailed:(int)code err:(NSString*)err
 {
-    JTLog(@"断线重连失败");
+    XOLog(@"断线重连失败");
     if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnReConnFailed:err:)]) {
         [_multiDelegate xoOnReConnFailed:code err:err];
     }
@@ -174,7 +174,7 @@ static XOChatClient *__chatClient = nil;
  */
 - (void)onUserSigExpired
 {
-    JTLog(@"登录过期");
+    XOLog(@"登录过期");
     if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnUserSigExpired)]) {
         [_multiDelegate xoOnUserSigExpired];
     }
@@ -186,7 +186,7 @@ static XOChatClient *__chatClient = nil;
  */
 - (void)onConnSucc
 {
-    JTLog(@"\n=======************======= TIM 网络连接成功");
+    XOLog(@"\n=======************======= TIM 网络连接成功");
     if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnConnSucc)]) {
         [_multiDelegate xoOnConnSucc];
     }
@@ -200,7 +200,7 @@ static XOChatClient *__chatClient = nil;
  */
 - (void)onConnFailed:(int)code err:(NSString*)err
 {
-    JTLog(@"\n=======************======= TIM 网络连接失败 code: %d err:%@", code, err);
+    XOLog(@"\n=======************======= TIM 网络连接失败 code: %d err:%@", code, err);
     if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnConnFailed:err:)]) {
         [_multiDelegate xoOnConnFailed:code err:err];
     }
@@ -214,7 +214,7 @@ static XOChatClient *__chatClient = nil;
  */
 - (void)onDisconnect:(int)code err:(NSString*)err
 {
-    JTLog(@"\n=======************======= TIM 网络连接断开 code: %d err:%@", code, err);
+    XOLog(@"\n=======************======= TIM 网络连接断开 code: %d err:%@", code, err);
     if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnDisconnect:err:)]) {
         [_multiDelegate xoOnDisconnect:code err:err];
     }
@@ -225,7 +225,7 @@ static XOChatClient *__chatClient = nil;
  */
 - (void)onConnecting
 {
-    JTLog(@"\n=======************======= TIM 正在连接...");
+    XOLog(@"\n=======************======= TIM 正在连接...");
     if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnConnecting)]) {
         [_multiDelegate xoOnConnecting];
     }

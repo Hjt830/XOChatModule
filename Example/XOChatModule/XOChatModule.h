@@ -9,7 +9,7 @@
 #ifndef XOChatModule_h
 #define XOChatModule_h
 
-#import <SVProgressHUD/SVProgressHUD.h>
+
 
 
 #endif /* XOChatModule_h */

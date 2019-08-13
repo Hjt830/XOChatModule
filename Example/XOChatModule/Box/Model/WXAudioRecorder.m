@@ -68,7 +68,7 @@ static WXAudioRecorder *__recorder = nil;
     //停止播放录音
     [[LGAudioPlayer sharePlayer] stopAudioPlayer];
     //开始录音
-    NSString *audioPath = [DocumentDirectory() stringByAppendingPathComponent:WXMsgFileDirectory(JTMsgFileTypeAudio)];
+    NSString *audioPath = [DocumentDirectory() stringByAppendingPathComponent:WXMsgFileDirectory(XOMsgFileTypeAudio)];
     [[LGSoundRecorder shareInstance] startSoundRecord:view recordPath:audioPath];
     //开启定时器
     self->_seconds = 0;

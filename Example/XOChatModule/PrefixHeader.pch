@@ -1,0 +1,15 @@
+//
+//  PrefixHeader.pch
+//  XOChatModule
+//
+//  Created by kenter on 2019/8/13.
+//  Copyright © 2019 kenter. All rights reserved.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+#import <SVProgressHUD/SVProgressHUD.h>
+#import <XOBaseLib/XOBaseLib.h>
+
+#endif /* PrefixHeader_pch */
