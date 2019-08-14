@@ -1,0 +1,36 @@
+/* 
+  Localizable.strings
+  Pods
+
+  Created by kenter on 2019/8/14.
+  
+*/
+
+
+"network.disconnected" = "Network disconnected, please check network";
+
+"tip.auth.success"      = "Authorized success";
+"tip.auth.fail"         = "Authorized fail";
+"tip.chat.file.faile"   = "Failed to get file";
+"tip.delete.success"    = "delete success";
+"tip.delete.fail"       = "delete fail";
+
+"conversation.systemMessage"    = "System Message";
+"conversation.groupChat"        = "Group Chat";
+"conversation.delete.title"     = "Delete";
+"conversation.delete.alertMsg"  = "Are you sure to delete this conversation ?";
+"conversation.delete.success"   = "delete success";
+"conversation.delete.fail"      = "delete failed";
+"conversation.top.title"        = "Top";
+"conversation.unTop.title"      = "Unpin";
+
+"chat.more.album"       = "Album";
+"chat.more.camera"      = "Camera";
+"chat.more.voice.call"  = "Sound call";
+"chat.more.video.call"  = "Video call";
+"chat.more.location"    = "Location";
+"chat.more.video"       = "Video";
+"chat.more.redPacket"   = "Red Packet";
+"chat.more.transfer"    = "Transfer";
+"chat.more.carte"       = "Card";
+"chat.more.file"        = "File";

@@ -10,11 +10,11 @@
 #import "XOConversationListController.h"
 
 #import <XOBaseLib/XOBaseLib.h>
-#import "XOChatClient.h"
+#import <XOChatModule/XOChatModule.h>
 
 #define TXTIMAppID      @"1400079944"
-#define TIM_UserId      @"020dff421e5e4e349c6c3b24805dc7a0"
-#define TIM_UserSig     @"eJw1kMtugzAQRf*FLVVk-ABcKQsSIgKlCxIWTTfItceRU5IgY5pUVf*9FIXtOTO6M-fHq8v9QnSdUY1wDbHKe-aQ9zRhuHfGQiO0AztizDhGaJZGwcUZbSaFMFJaUxwAAwqEchlK8oFpjJiSkZh3enMch1831TrfntvQvKWtZX16sLqFYZ**10ITuKHqnsQ5dClK9KovgsSs-Lby-RvnWRnVBTmVdJvrr4PU2c7Xx*vQv*z6OitOm9Amy*Ucpj6b6bExMqDj4RHnlD6kM2f45yxkYYBQjB9cSHkdLq5x3x1MTfz*AZvkVkY_"
+#define TIM_UserId      @"9590fec205b8490b934f2601b16dbd65"
+#define TIM_UserSig     @"eJw1kNFOgzAUht*FW81WSkutdw0jc4C6ZhtxVw3QApXIsKtDZnx3kbDb7zsn-zn-j7NPdous67QUmRWekc6jA5z7CavvThslstIqM2KIKQTgJrVUrdWlnhTFFJSqgADnD4iCnHqohD5wc9eXufTxvHPW1Tj8HB6DDQ9Mmhzq8xA9EaJX9C3mA-tcRym*6Chg0FVoX-XvIL3GLdvULH69SxNehIfTpcnXS8375rhl2IuWvbI7bNqq7gJ*3b5E4S1MNmJ6bIx00Xg4oRShWVr9of459jHxiefCmWdFcfpqrbBDp6Ymfv8Abv1WdQ__"
 
 @interface XOChatAppDelegate () <TIMConnListener>
 

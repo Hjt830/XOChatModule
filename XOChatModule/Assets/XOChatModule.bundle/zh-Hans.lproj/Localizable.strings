@@ -1,0 +1,36 @@
+/* 
+  Localizable.strings
+  Pods
+
+  Created by kenter on 2019/8/14.
+  
+*/
+
+
+"network.disconnected" = "当前网络不可用，请检查设备网络";
+
+"tip.auth.success"      = "授权成功";
+"tip.auth.fail"         = "授权失败";
+"tip.chat.file.faile"   = "获取文件失败";
+"tip.delete.success"    = "删除成功";
+"tip.delete.fail"       = "删除失敗";
+
+"conversation.systemMessage"    = "系统消息";
+"conversation.groupChat"        = "发起群聊";
+"conversation.delete.title"     = "删除";
+"conversation.delete.alertMsg"  = "你确定要删除该会话吗？";
+"conversation.delete.success"   = "删除成功";
+"conversation.delete.fail"      = "删除失败";
+"conversation.top.title"        = "置頂";
+"conversation.unTop.title"      = "取消置頂";
+
+"chat.more.album"       = "照片";
+"chat.more.camera"      = "拍照";
+"chat.more.voice.call"  = "语音通话";
+"chat.more.video.call"  = "视频通话";
+"chat.more.location"    = "位置";
+"chat.more.video"       = "视频";
+"chat.more.redPacket"   = "红包";
+"chat.more.transfer"    = "转账";
+"chat.more.carte"       = "名片";
+"chat.more.file"        = "文件";

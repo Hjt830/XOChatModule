@@ -31,15 +31,17 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '9.0'
 
   s.source_files = 'XOChatModule/Classes/**/*'
+  s.public_header_files = 'XOChatModule/Classes/**/*.h'
   
-  # s.resource_bundles = {
-  #   'XOChatModule' => ['XOChatModule/Assets/*.png']
-  # }
+  s.resource_bundles = {
+      'XOChatModule' => ['XOChatModule/Assets/*']
+  }
+  
+  s.vendored_libraries = '${PODS_ROOT}/../../XOChatModule/Classes/Lib/lame'
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
   s.frameworks = 'UIKit', 'Foundation'
   s.dependency 'TXIMSDK_iOS', '~> 4.4.627'
-  s.dependency 'XOBaseLib', '~> 0.0.2'
+  s.dependency 'XOBaseLib', '~> 0.1.1'
   s.dependency 'TZImagePickerController', '~> 3.2.1'
   s.dependency 'CTMediator', '~> 25'
   s.dependency 'ReactiveObjC', '~> 3.1.1'

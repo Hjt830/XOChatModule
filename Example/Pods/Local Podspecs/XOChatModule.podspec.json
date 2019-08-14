@@ -19,6 +19,13 @@
     "ios": "9.0"
   },
   "source_files": "XOChatModule/Classes/**/*",
+  "public_header_files": "XOChatModule/Classes/**/*.h",
+  "resource_bundles": {
+    "XOChatModule": [
+      "XOChatModule/Assets/*"
+    ]
+  },
+  "vendored_libraries": "${PODS_ROOT}/../../XOChatModule/Classes/Lib/lame",
   "frameworks": [
     "UIKit",
     "Foundation"
@@ -28,7 +35,7 @@
       "~> 4.4.627"
     ],
     "XOBaseLib": [
-      "~> 0.0.6"
+      "~> 0.1.1"
     ],
     "TZImagePickerController": [
       "~> 3.2.1"

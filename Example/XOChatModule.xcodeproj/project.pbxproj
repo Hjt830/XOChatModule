@@ -9,45 +9,6 @@
 /* Begin PBXBuildFile section */
 		1A1E6143B592723DE2A0CBCA /* Pods_XOChatModule_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E6607D7A3689FF2CCDFC079 /* Pods_XOChatModule_Tests.framework */; };
 		40E501F311986D08A630E78E /* Pods_XOChatModule_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F5E934AFF24DDDD4E38B285 /* Pods_XOChatModule_Example.framework */; };
-		551085D522D4756C0060622C /* XOConversationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D422D4756C0060622C /* XOConversationManager.m */; };
-		551085D722D475840060622C /* XOConversationListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D622D475840060622C /* XOConversationListCell.m */; };
-		551085DA22D478620060622C /* XOMessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 551085D922D478620060622C /* XOMessageManager.m */; };
-		5520654D22EAD8B2009F823F /* XOConversationListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5520654C22EAD8B2009F823F /* XOConversationListController.m */; };
-		5520655122EAE9E2009F823F /* XOContactManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5520655022EAE9E2009F823F /* XOContactManager.m */; };
-		555AECD92302A74A0037C961 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 555AECD72302A74A0037C961 /* libmp3lame.a */; };
-		555AECDC2302AF430037C961 /* ConvertWavToMp3.m in Sources */ = {isa = PBXBuildFile; fileRef = 555AECDB2302AF430037C961 /* ConvertWavToMp3.m */; };
-		555AECE02302C2EF0037C961 /* NSBundle+ChatModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 555AECDF2302C2EF0037C961 /* NSBundle+ChatModule.m */; };
-		555C044422EE87EA00B27BF0 /* XOChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C044322EE87EA00B27BF0 /* XOChatViewController.m */; };
-		555C044822EE881A00B27BF0 /* XOChatBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C044722EE881A00B27BF0 /* XOChatBoxViewController.m */; };
-		555C044E22EE887600B27BF0 /* XOChatMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C044D22EE887600B27BF0 /* XOChatMessageController.m */; };
-		555C046622EE904600B27BF0 /* ChatFace.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C045322EE904600B27BF0 /* ChatFace.m */; };
-		555C046722EE904600B27BF0 /* ChatFaceHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C045422EE904600B27BF0 /* ChatFaceHelper.m */; };
-		555C046822EE904600B27BF0 /* WXAudioRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C045522EE904600B27BF0 /* WXAudioRecorder.m */; };
-		555C046922EE904600B27BF0 /* ZXChatHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C045722EE904600B27BF0 /* ZXChatHelper.m */; };
-		555C046A22EE904600B27BF0 /* ZXChatBoxFaceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C045A22EE904600B27BF0 /* ZXChatBoxFaceView.m */; };
-		555C046B22EE904600B27BF0 /* ZXChatBoxItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C045B22EE904600B27BF0 /* ZXChatBoxItemView.m */; };
-		555C046C22EE904600B27BF0 /* ZXChatFaceItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C045C22EE904600B27BF0 /* ZXChatFaceItemView.m */; };
-		555C046D22EE904600B27BF0 /* ZXChatBoxMoreView.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C045F22EE904600B27BF0 /* ZXChatBoxMoreView.m */; };
-		555C046E22EE904600B27BF0 /* ZXChatFaceMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C046122EE904600B27BF0 /* ZXChatFaceMenuView.m */; };
-		555C046F22EE904600B27BF0 /* ZXChatBoxView.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C046522EE904600B27BF0 /* ZXChatBoxView.m */; };
-		555C049322EE91D900B27BF0 /* LGAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C047322EE91D900B27BF0 /* LGAudioPlayer.m */; };
-		555C049422EE91D900B27BF0 /* toast_vol_5@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 555C047622EE91D900B27BF0 /* toast_vol_5@2x.png */; };
-		555C049522EE91D900B27BF0 /* toast_vol_7@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 555C047722EE91D900B27BF0 /* toast_vol_7@2x.png */; };
-		555C049622EE91D900B27BF0 /* toast_vol_3@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 555C047822EE91D900B27BF0 /* toast_vol_3@2x.png */; };
-		555C049722EE91D900B27BF0 /* toast_microphone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 555C047922EE91D900B27BF0 /* toast_microphone@2x.png */; };
-		555C049822EE91D900B27BF0 /* toast_vol_1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 555C047A22EE91D900B27BF0 /* toast_vol_1@2x.png */; };
-		555C049922EE91D900B27BF0 /* toast_vol_4@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 555C047B22EE91D900B27BF0 /* toast_vol_4@2x.png */; };
-		555C049A22EE91D900B27BF0 /* toast_vol_6@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 555C047C22EE91D900B27BF0 /* toast_vol_6@2x.png */; };
-		555C049B22EE91D900B27BF0 /* toast_cancelsend@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 555C047D22EE91D900B27BF0 /* toast_cancelsend@2x.png */; };
-		555C049C22EE91D900B27BF0 /* toast_vol_2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 555C047E22EE91D900B27BF0 /* toast_vol_2@2x.png */; };
-		555C049D22EE91D900B27BF0 /* toast_timeshort@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 555C047F22EE91D900B27BF0 /* toast_timeshort@2x.png */; };
-		555C049E22EE91D900B27BF0 /* LGSoundRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C048122EE91D900B27BF0 /* LGSoundRecorder.m */; };
-		555C04A022EE91D900B27BF0 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 555C049022EE91D900B27BF0 /* libopencore-amrwb.a */; };
-		555C04A122EE91D900B27BF0 /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 555C049122EE91D900B27BF0 /* libopencore-amrnb.a */; };
-		555C04A222EE91D900B27BF0 /* amrFileCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C049222EE91D900B27BF0 /* amrFileCodec.m */; };
-		555C04A522EE96C900B27BF0 /* CommonTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 555C04A422EE96C900B27BF0 /* CommonTool.m */; };
-		557D9F8F22CF278500846F0D /* XOChatClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 557D9F8E22CF278500846F0D /* XOChatClient.m */; };
-		557D9F9B22CF504900846F0D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 557D9F9D22CF504900846F0D /* Localizable.strings */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -79,87 +40,13 @@
 		1C08E6A3A635C8FB9731D3A0 /* Pods-XOChatModule_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XOChatModule_Example.release.xcconfig"; path = "Target Support Files/Pods-XOChatModule_Example/Pods-XOChatModule_Example.release.xcconfig"; sourceTree = "<group>"; };
 		2E6607D7A3689FF2CCDFC079 /* Pods_XOChatModule_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XOChatModule_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		32AB2CC07E3638844E4EF99D /* XOChatModule.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = XOChatModule.podspec; path = ../XOChatModule.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		551085D322D4756C0060622C /* XOConversationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOConversationManager.h; sourceTree = "<group>"; };
-		551085D422D4756C0060622C /* XOConversationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOConversationManager.m; sourceTree = "<group>"; };
-		551085D622D475840060622C /* XOConversationListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XOConversationListCell.m; sourceTree = "<group>"; };
-		551085D822D478620060622C /* XOMessageManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOMessageManager.h; sourceTree = "<group>"; };
-		551085D922D478620060622C /* XOMessageManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOMessageManager.m; sourceTree = "<group>"; };
-		551085DB22D47E250060622C /* XOContactManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOContactManager.h; sourceTree = "<group>"; };
-		5520654B22EAD8B2009F823F /* XOConversationListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XOConversationListController.h; sourceTree = "<group>"; };
-		5520654C22EAD8B2009F823F /* XOConversationListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XOConversationListController.m; sourceTree = "<group>"; };
-		5520654E22EAE001009F823F /* XOChatModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatModule.h; sourceTree = "<group>"; };
-		5520654F22EAE9E2009F823F /* XOConversationListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XOConversationListCell.h; sourceTree = "<group>"; };
-		5520655022EAE9E2009F823F /* XOContactManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XOContactManager.m; sourceTree = "<group>"; };
 		555AECD12302942A0037C961 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
-		555AECD72302A74A0037C961 /* libmp3lame.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmp3lame.a; sourceTree = "<group>"; };
-		555AECD82302A74A0037C961 /* lame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lame.h; sourceTree = "<group>"; };
-		555AECDA2302AF430037C961 /* ConvertWavToMp3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvertWavToMp3.h; sourceTree = "<group>"; };
-		555AECDB2302AF430037C961 /* ConvertWavToMp3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConvertWavToMp3.m; sourceTree = "<group>"; };
-		555AECDE2302C2EF0037C961 /* NSBundle+ChatModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSBundle+ChatModule.h"; sourceTree = "<group>"; };
-		555AECDF2302C2EF0037C961 /* NSBundle+ChatModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+ChatModule.m"; sourceTree = "<group>"; };
-		555C044222EE87EA00B27BF0 /* XOChatViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatViewController.h; sourceTree = "<group>"; };
-		555C044322EE87EA00B27BF0 /* XOChatViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOChatViewController.m; sourceTree = "<group>"; };
-		555C044622EE881A00B27BF0 /* XOChatBoxViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatBoxViewController.h; sourceTree = "<group>"; };
-		555C044722EE881A00B27BF0 /* XOChatBoxViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOChatBoxViewController.m; sourceTree = "<group>"; };
-		555C044C22EE887600B27BF0 /* XOChatMessageController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatMessageController.h; sourceTree = "<group>"; };
-		555C044D22EE887600B27BF0 /* XOChatMessageController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOChatMessageController.m; sourceTree = "<group>"; };
-		555C045122EE904600B27BF0 /* WXAudioRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WXAudioRecorder.h; sourceTree = "<group>"; };
-		555C045222EE904600B27BF0 /* ZXChatHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZXChatHelper.h; sourceTree = "<group>"; };
-		555C045322EE904600B27BF0 /* ChatFace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatFace.m; sourceTree = "<group>"; };
-		555C045422EE904600B27BF0 /* ChatFaceHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatFaceHelper.m; sourceTree = "<group>"; };
-		555C045522EE904600B27BF0 /* WXAudioRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WXAudioRecorder.m; sourceTree = "<group>"; };
-		555C045622EE904600B27BF0 /* ChatFace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatFace.h; sourceTree = "<group>"; };
-		555C045722EE904600B27BF0 /* ZXChatHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZXChatHelper.m; sourceTree = "<group>"; };
-		555C045822EE904600B27BF0 /* ChatFaceHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatFaceHelper.h; sourceTree = "<group>"; };
-		555C045A22EE904600B27BF0 /* ZXChatBoxFaceView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZXChatBoxFaceView.m; sourceTree = "<group>"; };
-		555C045B22EE904600B27BF0 /* ZXChatBoxItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZXChatBoxItemView.m; sourceTree = "<group>"; };
-		555C045C22EE904600B27BF0 /* ZXChatFaceItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZXChatFaceItemView.m; sourceTree = "<group>"; };
-		555C045D22EE904600B27BF0 /* ZXChatFaceMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZXChatFaceMenuView.h; sourceTree = "<group>"; };
-		555C045E22EE904600B27BF0 /* ZXChatBoxView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZXChatBoxView.h; sourceTree = "<group>"; };
-		555C045F22EE904600B27BF0 /* ZXChatBoxMoreView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZXChatBoxMoreView.m; sourceTree = "<group>"; };
-		555C046022EE904600B27BF0 /* ZXChatBoxFaceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZXChatBoxFaceView.h; sourceTree = "<group>"; };
-		555C046122EE904600B27BF0 /* ZXChatFaceMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZXChatFaceMenuView.m; sourceTree = "<group>"; };
-		555C046222EE904600B27BF0 /* ZXChatFaceItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZXChatFaceItemView.h; sourceTree = "<group>"; };
-		555C046322EE904600B27BF0 /* ZXChatBoxItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZXChatBoxItemView.h; sourceTree = "<group>"; };
-		555C046422EE904600B27BF0 /* ZXChatBoxMoreView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZXChatBoxMoreView.h; sourceTree = "<group>"; };
-		555C046522EE904600B27BF0 /* ZXChatBoxView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZXChatBoxView.m; sourceTree = "<group>"; };
-		555C047122EE91D900B27BF0 /* LGAudioKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LGAudioKit.h; sourceTree = "<group>"; };
-		555C047322EE91D900B27BF0 /* LGAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LGAudioPlayer.m; sourceTree = "<group>"; };
-		555C047422EE91D900B27BF0 /* LGAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LGAudioPlayer.h; sourceTree = "<group>"; };
-		555C047622EE91D900B27BF0 /* toast_vol_5@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toast_vol_5@2x.png"; sourceTree = "<group>"; };
-		555C047722EE91D900B27BF0 /* toast_vol_7@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toast_vol_7@2x.png"; sourceTree = "<group>"; };
-		555C047822EE91D900B27BF0 /* toast_vol_3@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toast_vol_3@2x.png"; sourceTree = "<group>"; };
-		555C047922EE91D900B27BF0 /* toast_microphone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toast_microphone@2x.png"; sourceTree = "<group>"; };
-		555C047A22EE91D900B27BF0 /* toast_vol_1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toast_vol_1@2x.png"; sourceTree = "<group>"; };
-		555C047B22EE91D900B27BF0 /* toast_vol_4@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toast_vol_4@2x.png"; sourceTree = "<group>"; };
-		555C047C22EE91D900B27BF0 /* toast_vol_6@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toast_vol_6@2x.png"; sourceTree = "<group>"; };
-		555C047D22EE91D900B27BF0 /* toast_cancelsend@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toast_cancelsend@2x.png"; sourceTree = "<group>"; };
-		555C047E22EE91D900B27BF0 /* toast_vol_2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toast_vol_2@2x.png"; sourceTree = "<group>"; };
-		555C047F22EE91D900B27BF0 /* toast_timeshort@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toast_timeshort@2x.png"; sourceTree = "<group>"; };
-		555C048122EE91D900B27BF0 /* LGSoundRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LGSoundRecorder.m; sourceTree = "<group>"; };
-		555C048222EE91D900B27BF0 /* LGSoundRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LGSoundRecorder.h; sourceTree = "<group>"; };
-		555C048622EE91D900B27BF0 /* amrFileCodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amrFileCodec.h; sourceTree = "<group>"; };
-		555C048922EE91D900B27BF0 /* if_rom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = if_rom.h; sourceTree = "<group>"; };
-		555C048A22EE91D900B27BF0 /* dec_if.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dec_if.h; sourceTree = "<group>"; };
-		555C048C22EE91D900B27BF0 /* interf_dec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_dec.h; sourceTree = "<group>"; };
-		555C048D22EE91D900B27BF0 /* interf_enc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_enc.h; sourceTree = "<group>"; };
-		555C049022EE91D900B27BF0 /* libopencore-amrwb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libopencore-amrwb.a"; sourceTree = "<group>"; };
-		555C049122EE91D900B27BF0 /* libopencore-amrnb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libopencore-amrnb.a"; sourceTree = "<group>"; };
-		555C049222EE91D900B27BF0 /* amrFileCodec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = amrFileCodec.m; sourceTree = "<group>"; };
-		555C04A322EE96C900B27BF0 /* CommonTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonTool.h; sourceTree = "<group>"; };
-		555C04A422EE96C900B27BF0 /* CommonTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommonTool.m; sourceTree = "<group>"; };
-		557D9F8D22CF278500846F0D /* XOChatClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOChatClient.h; sourceTree = "<group>"; };
-		557D9F8E22CF278500846F0D /* XOChatClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XOChatClient.m; sourceTree = "<group>"; };
-		557D9F9022CF4A2B00846F0D /* XOConversationListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XOConversationListCell.h; sourceTree = "<group>"; };
 		557D9F9322CF501B00846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		557D9F9422CF501B00846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		557D9F9522CF501C00846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		557D9F9622CF502000846F0D /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		557D9F9722CF502100846F0D /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		557D9F9822CF502100846F0D /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
-		557D9F9C22CF504900846F0D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		557D9F9E22CF505500846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		557D9F9F22CF505900846F0D /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		5F5E934AFF24DDDD4E38B285 /* Pods_XOChatModule_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XOChatModule_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58A195388D20070C39A /* XOChatModule_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XOChatModule_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -192,12 +79,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
-				555C04A122EE91D900B27BF0 /* libopencore-amrnb.a in Frameworks */,
-				555C04A022EE91D900B27BF0 /* libopencore-amrwb.a in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
 				40E501F311986D08A630E78E /* Pods_XOChatModule_Example.framework in Frameworks */,
-				555AECD92302A74A0037C961 /* libmp3lame.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -224,220 +108,6 @@
 				A3D0A1316B54DE35B9ED0E3D /* Pods-XOChatModule_Tests.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		555AECD52302A7320037C961 /* Lib */ = {
-			isa = PBXGroup;
-			children = (
-				555AECD62302A74A0037C961 /* lame */,
-			);
-			name = Lib;
-			sourceTree = "<group>";
-		};
-		555AECD62302A74A0037C961 /* lame */ = {
-			isa = PBXGroup;
-			children = (
-				555AECD72302A74A0037C961 /* libmp3lame.a */,
-				555AECD82302A74A0037C961 /* lame.h */,
-			);
-			path = lame;
-			sourceTree = "<group>";
-		};
-		555AECDD2302C2A80037C961 /* Category */ = {
-			isa = PBXGroup;
-			children = (
-				555AECDE2302C2EF0037C961 /* NSBundle+ChatModule.h */,
-				555AECDF2302C2EF0037C961 /* NSBundle+ChatModule.m */,
-			);
-			name = Category;
-			sourceTree = "<group>";
-		};
-		555C044022EE877800B27BF0 /* Client */ = {
-			isa = PBXGroup;
-			children = (
-				557D9F8D22CF278500846F0D /* XOChatClient.h */,
-				557D9F8E22CF278500846F0D /* XOChatClient.m */,
-				551085D322D4756C0060622C /* XOConversationManager.h */,
-				551085D422D4756C0060622C /* XOConversationManager.m */,
-				551085D822D478620060622C /* XOMessageManager.h */,
-				551085D922D478620060622C /* XOMessageManager.m */,
-				551085DB22D47E250060622C /* XOContactManager.h */,
-				5520655022EAE9E2009F823F /* XOContactManager.m */,
-			);
-			name = Client;
-			sourceTree = "<group>";
-		};
-		555C044122EE87AD00B27BF0 /* Conversation */ = {
-			isa = PBXGroup;
-			children = (
-				5520654F22EAE9E2009F823F /* XOConversationListCell.h */,
-				551085D622D475840060622C /* XOConversationListCell.m */,
-				5520654B22EAD8B2009F823F /* XOConversationListController.h */,
-				5520654C22EAD8B2009F823F /* XOConversationListController.m */,
-			);
-			name = Conversation;
-			sourceTree = "<group>";
-		};
-		555C044522EE880300B27BF0 /* Chat */ = {
-			isa = PBXGroup;
-			children = (
-				555C044222EE87EA00B27BF0 /* XOChatViewController.h */,
-				555C044322EE87EA00B27BF0 /* XOChatViewController.m */,
-				555C044622EE881A00B27BF0 /* XOChatBoxViewController.h */,
-				555C044722EE881A00B27BF0 /* XOChatBoxViewController.m */,
-				555C044C22EE887600B27BF0 /* XOChatMessageController.h */,
-				555C044D22EE887600B27BF0 /* XOChatMessageController.m */,
-				555C044F22EE904600B27BF0 /* Box */,
-			);
-			name = Chat;
-			sourceTree = "<group>";
-		};
-		555C044F22EE904600B27BF0 /* Box */ = {
-			isa = PBXGroup;
-			children = (
-				555AECDA2302AF430037C961 /* ConvertWavToMp3.h */,
-				555AECDB2302AF430037C961 /* ConvertWavToMp3.m */,
-				555C047022EE91D900B27BF0 /* LGAudioKit */,
-				555C045022EE904600B27BF0 /* Model */,
-				555C045922EE904600B27BF0 /* View */,
-			);
-			path = Box;
-			sourceTree = "<group>";
-		};
-		555C045022EE904600B27BF0 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				555C045622EE904600B27BF0 /* ChatFace.h */,
-				555C045322EE904600B27BF0 /* ChatFace.m */,
-				555C045822EE904600B27BF0 /* ChatFaceHelper.h */,
-				555C045422EE904600B27BF0 /* ChatFaceHelper.m */,
-				555C045222EE904600B27BF0 /* ZXChatHelper.h */,
-				555C045722EE904600B27BF0 /* ZXChatHelper.m */,
-				555C045122EE904600B27BF0 /* WXAudioRecorder.h */,
-				555C045522EE904600B27BF0 /* WXAudioRecorder.m */,
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
-		555C045922EE904600B27BF0 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				555C045A22EE904600B27BF0 /* ZXChatBoxFaceView.m */,
-				555C045B22EE904600B27BF0 /* ZXChatBoxItemView.m */,
-				555C045C22EE904600B27BF0 /* ZXChatFaceItemView.m */,
-				555C045D22EE904600B27BF0 /* ZXChatFaceMenuView.h */,
-				555C045E22EE904600B27BF0 /* ZXChatBoxView.h */,
-				555C045F22EE904600B27BF0 /* ZXChatBoxMoreView.m */,
-				555C046022EE904600B27BF0 /* ZXChatBoxFaceView.h */,
-				555C046122EE904600B27BF0 /* ZXChatFaceMenuView.m */,
-				555C046222EE904600B27BF0 /* ZXChatFaceItemView.h */,
-				555C046322EE904600B27BF0 /* ZXChatBoxItemView.h */,
-				555C046422EE904600B27BF0 /* ZXChatBoxMoreView.h */,
-				555C046522EE904600B27BF0 /* ZXChatBoxView.m */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		555C047022EE91D900B27BF0 /* LGAudioKit */ = {
-			isa = PBXGroup;
-			children = (
-				555C047122EE91D900B27BF0 /* LGAudioKit.h */,
-				555C047222EE91D900B27BF0 /* LGSoundPlayer */,
-				555C047522EE91D900B27BF0 /* Resource */,
-				555C048022EE91D900B27BF0 /* LGSoundRecorder */,
-				555C048322EE91D900B27BF0 /* Vendor */,
-			);
-			path = LGAudioKit;
-			sourceTree = "<group>";
-		};
-		555C047222EE91D900B27BF0 /* LGSoundPlayer */ = {
-			isa = PBXGroup;
-			children = (
-				555C047322EE91D900B27BF0 /* LGAudioPlayer.m */,
-				555C047422EE91D900B27BF0 /* LGAudioPlayer.h */,
-			);
-			path = LGSoundPlayer;
-			sourceTree = "<group>";
-		};
-		555C047522EE91D900B27BF0 /* Resource */ = {
-			isa = PBXGroup;
-			children = (
-				555C047622EE91D900B27BF0 /* toast_vol_5@2x.png */,
-				555C047722EE91D900B27BF0 /* toast_vol_7@2x.png */,
-				555C047822EE91D900B27BF0 /* toast_vol_3@2x.png */,
-				555C047922EE91D900B27BF0 /* toast_microphone@2x.png */,
-				555C047A22EE91D900B27BF0 /* toast_vol_1@2x.png */,
-				555C047B22EE91D900B27BF0 /* toast_vol_4@2x.png */,
-				555C047C22EE91D900B27BF0 /* toast_vol_6@2x.png */,
-				555C047D22EE91D900B27BF0 /* toast_cancelsend@2x.png */,
-				555C047E22EE91D900B27BF0 /* toast_vol_2@2x.png */,
-				555C047F22EE91D900B27BF0 /* toast_timeshort@2x.png */,
-			);
-			path = Resource;
-			sourceTree = "<group>";
-		};
-		555C048022EE91D900B27BF0 /* LGSoundRecorder */ = {
-			isa = PBXGroup;
-			children = (
-				555C048122EE91D900B27BF0 /* LGSoundRecorder.m */,
-				555C048222EE91D900B27BF0 /* LGSoundRecorder.h */,
-			);
-			path = LGSoundRecorder;
-			sourceTree = "<group>";
-		};
-		555C048322EE91D900B27BF0 /* Vendor */ = {
-			isa = PBXGroup;
-			children = (
-				555C048422EE91D900B27BF0 /* AMR */,
-			);
-			path = Vendor;
-			sourceTree = "<group>";
-		};
-		555C048422EE91D900B27BF0 /* AMR */ = {
-			isa = PBXGroup;
-			children = (
-				555C048622EE91D900B27BF0 /* amrFileCodec.h */,
-				555C049222EE91D900B27BF0 /* amrFileCodec.m */,
-				555C048722EE91D900B27BF0 /* include */,
-				555C048F22EE91D900B27BF0 /* lib */,
-			);
-			path = AMR;
-			sourceTree = "<group>";
-		};
-		555C048722EE91D900B27BF0 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				555C048822EE91D900B27BF0 /* opencore-amrwb */,
-				555C048B22EE91D900B27BF0 /* opencore-amrnb */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		555C048822EE91D900B27BF0 /* opencore-amrwb */ = {
-			isa = PBXGroup;
-			children = (
-				555C048922EE91D900B27BF0 /* if_rom.h */,
-				555C048A22EE91D900B27BF0 /* dec_if.h */,
-			);
-			path = "opencore-amrwb";
-			sourceTree = "<group>";
-		};
-		555C048B22EE91D900B27BF0 /* opencore-amrnb */ = {
-			isa = PBXGroup;
-			children = (
-				555C048C22EE91D900B27BF0 /* interf_dec.h */,
-				555C048D22EE91D900B27BF0 /* interf_enc.h */,
-			);
-			path = "opencore-amrnb";
-			sourceTree = "<group>";
-		};
-		555C048F22EE91D900B27BF0 /* lib */ = {
-			isa = PBXGroup;
-			children = (
-				555C049022EE91D900B27BF0 /* libopencore-amrwb.a */,
-				555C049122EE91D900B27BF0 /* libopencore-amrnb.a */,
-			);
-			path = lib;
 			sourceTree = "<group>";
 		};
 		6003F581195388D10070C39A = {
@@ -479,19 +149,10 @@
 			children = (
 				6003F59C195388D20070C39A /* XOChatAppDelegate.h */,
 				6003F59D195388D20070C39A /* XOChatAppDelegate.m */,
-				555C04A322EE96C900B27BF0 /* CommonTool.h */,
-				555C04A422EE96C900B27BF0 /* CommonTool.m */,
 				873B8AEA1B1F5CCA007FD442 /* Main.storyboard */,
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
-				555AECDD2302C2A80037C961 /* Category */,
-				555AECD52302A7320037C961 /* Lib */,
-				555C044022EE877800B27BF0 /* Client */,
-				555C044522EE880300B27BF0 /* Chat */,
-				555C044122EE87AD00B27BF0 /* Conversation */,
-				5520654E22EAE001009F823F /* XOChatModule.h */,
-				557D9F9D22CF504900846F0D /* Localizable.strings */,
 				555AECD12302942A0037C961 /* PrefixHeader.pch */,
 			);
 			name = "Example for XOChatModule";
@@ -501,7 +162,6 @@
 		6003F594195388D20070C39A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				557D9F9022CF4A2B00846F0D /* XOConversationListCell.h */,
 				6003F595195388D20070C39A /* XOChatModule-Info.plist */,
 				6003F596195388D20070C39A /* InfoPlist.strings */,
 				6003F599195388D20070C39A /* main.m */,
@@ -631,19 +291,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				555C049D22EE91D900B27BF0 /* toast_timeshort@2x.png in Resources */,
-				557D9F9B22CF504900846F0D /* Localizable.strings in Resources */,
-				555C049B22EE91D900B27BF0 /* toast_cancelsend@2x.png in Resources */,
 				873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */,
-				555C049922EE91D900B27BF0 /* toast_vol_4@2x.png in Resources */,
-				555C049422EE91D900B27BF0 /* toast_vol_5@2x.png in Resources */,
-				555C049C22EE91D900B27BF0 /* toast_vol_2@2x.png in Resources */,
-				555C049522EE91D900B27BF0 /* toast_vol_7@2x.png in Resources */,
-				555C049622EE91D900B27BF0 /* toast_vol_3@2x.png in Resources */,
 				71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */,
-				555C049A22EE91D900B27BF0 /* toast_vol_6@2x.png in Resources */,
-				555C049822EE91D900B27BF0 /* toast_vol_1@2x.png in Resources */,
-				555C049722EE91D900B27BF0 /* toast_microphone@2x.png in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
 			);
@@ -723,6 +372,7 @@
 				"${PODS_ROOT}/TXIMSDK_iOS/iOS/ImSDK/Framework/ImSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/TZImagePickerController/TZImagePickerController.framework",
 				"${BUILT_PRODUCTS_DIR}/XOBaseLib/XOBaseLib.framework",
+				"${BUILT_PRODUCTS_DIR}/XOChatModule/XOChatModule.framework",
 				"${BUILT_PRODUCTS_DIR}/YYKit/YYKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -739,6 +389,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ImSDK.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TZImagePickerController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/XOBaseLib.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/XOChatModule.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -753,32 +404,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				555C046E22EE904600B27BF0 /* ZXChatFaceMenuView.m in Sources */,
-				557D9F8F22CF278500846F0D /* XOChatClient.m in Sources */,
-				551085D722D475840060622C /* XOConversationListCell.m in Sources */,
-				555AECE02302C2EF0037C961 /* NSBundle+ChatModule.m in Sources */,
-				551085D522D4756C0060622C /* XOConversationManager.m in Sources */,
-				555C046A22EE904600B27BF0 /* ZXChatBoxFaceView.m in Sources */,
-				555C044822EE881A00B27BF0 /* XOChatBoxViewController.m in Sources */,
-				555C046922EE904600B27BF0 /* ZXChatHelper.m in Sources */,
 				6003F59E195388D20070C39A /* XOChatAppDelegate.m in Sources */,
-				5520655122EAE9E2009F823F /* XOContactManager.m in Sources */,
-				5520654D22EAD8B2009F823F /* XOConversationListController.m in Sources */,
-				555C049322EE91D900B27BF0 /* LGAudioPlayer.m in Sources */,
-				555AECDC2302AF430037C961 /* ConvertWavToMp3.m in Sources */,
-				555C046D22EE904600B27BF0 /* ZXChatBoxMoreView.m in Sources */,
-				551085DA22D478620060622C /* XOMessageManager.m in Sources */,
-				555C046C22EE904600B27BF0 /* ZXChatFaceItemView.m in Sources */,
-				555C046622EE904600B27BF0 /* ChatFace.m in Sources */,
-				555C049E22EE91D900B27BF0 /* LGSoundRecorder.m in Sources */,
-				555C04A522EE96C900B27BF0 /* CommonTool.m in Sources */,
-				555C046F22EE904600B27BF0 /* ZXChatBoxView.m in Sources */,
-				555C046822EE904600B27BF0 /* WXAudioRecorder.m in Sources */,
-				555C044E22EE887600B27BF0 /* XOChatMessageController.m in Sources */,
-				555C04A222EE91D900B27BF0 /* amrFileCodec.m in Sources */,
-				555C046B22EE904600B27BF0 /* ZXChatBoxItemView.m in Sources */,
-				555C044422EE87EA00B27BF0 /* XOChatViewController.m in Sources */,
-				555C046722EE904600B27BF0 /* ChatFaceHelper.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -802,16 +428,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		557D9F9D22CF504900846F0D /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				557D9F9C22CF504900846F0D /* en */,
-				557D9F9E22CF505500846F0D /* zh-Hans */,
-				557D9F9F22CF505900846F0D /* zh-Hant */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
 		6003F596195388D20070C39A /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -926,6 +542,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zhe Dai (B7F4N4Z9F7)";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = A8GN5C88ZP;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/XOChatModule",
@@ -956,6 +573,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Shenzhen D one Network Technology Co.,Ltd (A8GN5C88ZP)";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = A8GN5C88ZP;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/XOChatModule",

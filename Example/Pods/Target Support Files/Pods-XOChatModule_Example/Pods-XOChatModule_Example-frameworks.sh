@@ -173,6 +173,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${PODS_ROOT}/TXIMSDK_iOS/iOS/ImSDK/Framework/ImSDK.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/TZImagePickerController/TZImagePickerController.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/XOBaseLib/XOBaseLib.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/XOChatModule/XOChatModule.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/YYKit/YYKit.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
@@ -188,6 +189,7 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${PODS_ROOT}/TXIMSDK_iOS/iOS/ImSDK/Framework/ImSDK.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/TZImagePickerController/TZImagePickerController.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/XOBaseLib/XOBaseLib.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/XOChatModule/XOChatModule.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/YYKit/YYKit.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then
