@@ -29,6 +29,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.navigationController.navigationBar.translucent = NO;
+    [self.view setBackgroundColor:BG_TableColor];
+    [self setHidesBottomBarWhenPushed:YES];
     
     // 聊天对象的userId或者groupId
     self.receiver = [self.conversation getReceiver];
@@ -81,10 +84,6 @@
 
 - (void)setupSubViews
 {
-    self.navigationController.navigationBar.translucent = NO;
-    [self.view setBackgroundColor:BG_TableColor];
-    [self setHidesBottomBarWhenPushed:YES];
-    
     [self addChildViewController:self.chatMsgVC];
     [self.view addSubview:self.chatMsgVC.view];
     
