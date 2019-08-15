@@ -69,11 +69,11 @@
 - (void) setImageName:(NSString *)imageName
 {
     _imageName = imageName;
-    UIImage *image = [UIImage imageNamed:imageName];
+    UIImage *image = [UIImage xo_imageNamedFromChatBundle:imageName];
     if (!image) {
-        image = [UIImage xo_imageNamedFromChatBundle:imageName];
+        image = [UIImage imageNamed:imageName];
     }
-    [self.button setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
+    [self.button setImage:image forState:UIControlStateNormal];
 }
 
 #pragma mark - Getter

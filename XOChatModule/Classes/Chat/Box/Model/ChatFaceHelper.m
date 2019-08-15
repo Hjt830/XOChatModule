@@ -9,6 +9,7 @@
 #import "ChatFaceHelper.h"
 #import "ChatFace.h"
 #import <XOBaseLib/XOBaseLib.h>
+#import "XOChatClient.h"
 
 static ChatFaceHelper * faceHeleper = nil;
 
@@ -47,7 +48,7 @@ static ChatFaceHelper * faceHeleper = nil;
     NSArray *faceArray = [self.faceGroupsSet objectForKey:groupID];
     if (XOIsEmptyArray(faceArray)) {
         [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-            NSArray *array = [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:groupID ofType:@"plist"]];
+            NSArray *array = [NSArray arrayWithContentsOfFile:[[XOChatClient shareClient].chatBundle pathForResource:groupID ofType:@"plist"]];
             __block NSMutableArray *chatFaceArray = [[NSMutableArray alloc] initWithCapacity:array.count];
             for (NSDictionary *dic in array) {
                 if ([dic isKindOfClass:[NSDictionary class]]) {
@@ -58,8 +59,12 @@ static ChatFaceHelper * faceHeleper = nil;
                 }
             }
             // 将表情组加到集合中
-            [self.faceGroupsSet removeObjectForKey:groupID];
-            [self.faceGroupsSet setObject:chatFaceArray forKey:groupID];
+            if (!XOIsEmptyString(groupID) && !XOIsEmptyArray(chatFaceArray)) {
+                @synchronized (self) {
+                    [self.faceGroupsSet removeObjectForKey:groupID];
+                    [self.faceGroupsSet setObject:chatFaceArray forKey:groupID];
+                }
+            }
             
             if (handler) {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{

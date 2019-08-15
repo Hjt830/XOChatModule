@@ -28,5 +28,7 @@
 #import "XOChatBoxViewController.h"
 #import "XOChatMessageController.h"
 
+#import "ChatFaceHelper.h"
+
 
 #endif /* XOChatModule_h */

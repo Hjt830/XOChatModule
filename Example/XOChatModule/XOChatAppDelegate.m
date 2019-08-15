@@ -46,9 +46,14 @@
     loginParam.identifier = TIM_UserId;
     loginParam.userSig = TIM_UserSig;
     loginParam.appidAt3rd = TIM_UserId;
-    [[XOChatClient shareClient] loginWith:loginParam successBlock:nil failBlock:nil];
-    
-    [NSThread sleepForTimeInterval:3];
+    [[XOChatClient shareClient] loginWith:loginParam successBlock:^{
+        
+        NSLog(@"============ 云通信登录成功 ================");
+    } failBlock:^(int code, NSString *msg) {
+        
+        NSLog(@"============ 云通信登录失败 ================");
+    }];
+    [XOKeyChainTool saveAppUserName:TIM_UserId password:@"123456"];
     
     self.window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, KWIDTH, KHEIGHT)];
     self.window.backgroundColor = [UIColor whiteColor];
@@ -56,6 +61,9 @@
     
     XOConversationListController *chatListVC = [[XOConversationListController alloc] init];
     XOBaseNavigationController *nav = [[XOBaseNavigationController alloc] initWithRootViewController:chatListVC];
+    
+    // 初始化表情包
+    [[ChatFaceHelper sharedFaceHelper] initilizationEmoji];
     
     self.window.rootViewController = nav;
     

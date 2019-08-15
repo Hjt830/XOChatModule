@@ -383,7 +383,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
         // 开始录音
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             NSString *audioPath = [DocumentDirectory() stringByAppendingPathComponent:XOMsgFileDirectory(XOMsgFileTypeAudio)];
-            [[LGSoundRecorder shareInstance] startSoundRecord:self.view recordPath:audioPath];
+            [[LGSoundRecorder shareInstance] startSoundRecord:self.view.superview recordPath:audioPath];
         }];
     }
     else if (AVAuthorizationStatusDenied == authStatus || AVAuthorizationStatusRestricted == authStatus) {

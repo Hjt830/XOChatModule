@@ -380,7 +380,7 @@
 
 - (void) talkButtonDown:(UIButton *)sender
 {
-    [_talkButton setTitle:@"松开 结束" forState:UIControlStateNormal];
+    [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.send") forState:UIControlStateNormal];
     UIImage *image = [UIImage imageWithColor:RGBA(255.0 * 0.7, 255.0 * 0.7, 255.0 * 0.7, 0.5) size:CGSizeMake(1.0f, 1.0f)];
     [_talkButton setBackgroundImage:image forState:UIControlStateNormal];
     
@@ -391,7 +391,7 @@
 
 - (void) talkButtonUpInside:(UIButton *)sender
 {
-    [_talkButton setTitle:@"按住 说话" forState:UIControlStateNormal];
+    [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.talk") forState:UIControlStateNormal];
     UIImage *image = [UIImage imageWithColor:[UIColor clearColor] size:CGSizeMake(1.0f, 1.0f)];
     [_talkButton setBackgroundImage:image forState:UIControlStateNormal];
     
@@ -402,7 +402,7 @@
 
 - (void) talkButtonUpOutside:(UIButton *)sender
 {
-    [_talkButton setTitle:@"按住 说话" forState:UIControlStateNormal];
+    [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.talk") forState:UIControlStateNormal];
     UIImage *image = [UIImage imageWithColor:[UIColor clearColor] size:CGSizeMake(1.0f, 1.0f)];
     [_talkButton setBackgroundImage:image forState:UIControlStateNormal];
     
@@ -413,7 +413,7 @@
 
 - (void) talkButtonUpCancel:(UIButton *)sender
 {
-    [_talkButton setTitle:@"按住 说话" forState:UIControlStateNormal];
+    [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.talk") forState:UIControlStateNormal];
     UIImage *image = [UIImage imageWithColor:[UIColor clearColor] size:CGSizeMake(1.0f, 1.0f)];
     [_talkButton setBackgroundImage:image forState:UIControlStateNormal];
     
@@ -424,6 +424,7 @@
 
 - (void) talkButtonDragExit:(UIButton *)sender
 {
+    [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.cancel") forState:UIControlStateNormal];
     if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxWillCancelTalking:)]) {
         [self.delegate chatBoxWillCancelTalking:self];
     }
@@ -431,6 +432,7 @@
 
 - (void) talkButtonDragEnter:(UIButton *)sender
 {
+    [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.send") forState:UIControlStateNormal];
     if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxWillGoOnTalking:)]) {
         [self.delegate chatBoxWillGoOnTalking:self];
     }
@@ -499,8 +501,8 @@
 {
     if (_talkButton == nil) {
         _talkButton = [[UIButton alloc] initWithFrame:CGRectMake(self.voiceButton.x + self.voiceButton.width + 4, self.height * 0.13, self.faceButton.x - self.voiceButton.x - self.voiceButton.width - 8, HEIGHT_TEXTVIEW)];
-        [_talkButton setTitle:@"按住 说话" forState:UIControlStateNormal];
-        [_talkButton setTitle:@"松开 结束" forState:UIControlStateHighlighted];
+        [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.talk") forState:UIControlStateNormal];
+        [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.send") forState:UIControlStateHighlighted];
         [_talkButton setTitleColor:[UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0] forState:UIControlStateNormal];
         [_talkButton setBackgroundImage:[UIImage imageWithColor:[UIColor colorWithRed:0.7 green:0.7 blue:0.7 alpha:0.5] size:CGSizeMake(1.0, 1.0)] forState:UIControlStateHighlighted];
         [_talkButton.titleLabel setFont:[UIFont boldSystemFontOfSize:16.0f]];

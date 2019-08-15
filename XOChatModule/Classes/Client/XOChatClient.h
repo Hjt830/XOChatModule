@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 // 资源包
 @property (nonatomic, strong, readonly) NSBundle                *chatBundle;
 // 资源包
+@property (nonatomic, strong, readonly) NSBundle                *chatResourceBundle;
+// 资源包
 @property (nonatomic, strong, readonly) NSBundle                *languageBundle;
 // 会话管理器
 @property (nonatomic, strong, readonly) XOConversationManager   *conversationManager;

@@ -12,53 +12,81 @@
 
 @implementation UIImage (XOChatBundle)
 
++ (UIImage *)xo_1xImageNamed:(NSString *)name
+{
+    NSBundle *imageBundle = [XOChatClient shareClient].chatResourceBundle;
+    NSString *imagePath = [imageBundle pathForResource:name ofType:@"png"];
+    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+    return image;
+}
+
++ (UIImage *)xo_2xImageNamed:(NSString *)name
+{
+    NSBundle *imageBundle = [XOChatClient shareClient].chatResourceBundle;
+    name = [name stringByAppendingString:@"@2x"];
+    NSString *imagePath = [imageBundle pathForResource:name ofType:@"png"];
+    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+    return image;
+}
+
++ (UIImage *)xo_3xImageNamed:(NSString *)name
+{
+    NSBundle *imageBundle = [XOChatClient shareClient].chatResourceBundle;
+    name = [name stringByAppendingString:@"@3x"];
+    NSString *imagePath = [imageBundle pathForResource:name ofType:@"png"];
+    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+    return image;
+}
+
 + (UIImage *)xo_imageNamedFromChatBundle:(NSString *)name
 {
-    NSBundle *imageBundle = [XOChatClient shareClient].chatBundle;
-    
     // 根据设备分辨率选择图片
     CGFloat scale = [UIScreen mainScreen].scale;
     if (scale >= 3.0) {
         // 取三倍图
-        name = [name stringByAppendingString:@"@3x"];
-        NSString *imagePath = [imageBundle pathForResource:name ofType:@"png"];
-        UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+        UIImage *image = [UIImage xo_3xImageNamed:name];
         
         if (nil == image) {
-            // 没有三倍图, 取两倍图
-            name = [name stringByReplacingOccurrencesOfString:@"@3x" withString:@"@2x"];
-            imagePath = [imageBundle pathForResource:name ofType:@"png"];
-            image = [UIImage imageWithContentsOfFile:imagePath];
+            // 没有三倍图, 取二倍图
+            image = [UIImage xo_2xImageNamed:name];
             
             if (nil == image) {
-                // 没有两倍图, 取一倍图
-                name = [name stringByReplacingOccurrencesOfString:@"@2x" withString:@""];
-                imagePath = [imageBundle pathForResource:name ofType:@"png"];
-                image = [UIImage imageWithContentsOfFile:imagePath];
+                // 没有二倍图, 取一倍图
+                image = [UIImage xo_1xImageNamed:name];
             }
         }
         
         return image;
     }
     else if (scale >= 2.0) {
-        // 取两倍图
-        name = [name stringByAppendingString:@"@2x"];
-        NSString *imagePath = [imageBundle pathForResource:name ofType:@"png"];
-        UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+        // 取二倍图
+        UIImage *image = [UIImage xo_2xImageNamed:name];
         
         if (nil == image) {
-            // 没有两倍图, 取一倍图
-            name = [name stringByReplacingOccurrencesOfString:@"@2x" withString:@""];
-            imagePath = [imageBundle pathForResource:name ofType:@"png"];
-            image = [UIImage imageWithContentsOfFile:imagePath];
+            // 没有二倍图, 取一倍图
+            image = [UIImage xo_1xImageNamed:name];
+            
+            if (nil == image) {
+                // 没有一倍图, 取三倍图
+                image = [UIImage xo_1xImageNamed:name];
+            }
         }
         
         return image;
     }
     else {
         // 取一倍图
-        NSString *imagePath = [imageBundle pathForResource:name ofType:@"png"];
-        UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+        UIImage *image = [UIImage xo_1xImageNamed:name];
+        
+        if (nil == image) {
+            // 没有一倍图, 取二倍图
+            image = [UIImage xo_2xImageNamed:name];
+            
+            if (nil == image) {
+                // 没有二倍图, 取三倍图
+                image = [UIImage xo_3xImageNamed:name];
+            }
+        }
         
         return image;
     }

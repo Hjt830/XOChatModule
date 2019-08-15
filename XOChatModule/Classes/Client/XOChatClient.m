@@ -36,9 +36,10 @@ static XOChatClient *__chatClient = nil;
     self = [super init];
     if (self) {
         _chatBundle = [NSBundle xo_chatBundle];
+        _chatResourceBundle = [NSBundle xo_chatResourceBundle];
         
         NSString *language = [XOSettingManager defaultManager].language;
-        NSString *languagePath = [_chatBundle pathForResource:language ofType:@"lproj"];
+        NSString *languagePath = [_chatResourceBundle pathForResource:language ofType:@"lproj"];
         _languageBundle = [NSBundle bundleWithPath:languagePath];
         _conversationManager = [XOConversationManager defaultManager];
         _messageManager = [XOMessageManager defaultManager];
@@ -63,7 +64,7 @@ static XOChatClient *__chatClient = nil;
 - (void)languageDidChange
 {
     NSString *language = [XOSettingManager defaultManager].language;
-    NSString *languagePath = [_chatBundle pathForResource:language ofType:@"lproj"];
+    NSString *languagePath = [_chatResourceBundle pathForResource:language ofType:@"lproj"];
     _languageBundle = [NSBundle bundleWithPath:languagePath];
 }
 

@@ -8,6 +8,7 @@
 
 #import "ZXChatFaceItemView.h"
 #import <XOBaseLib/XOBaseLib.h>
+#import "UIImage+XOChatBundle.h"
 
 @interface ZXChatFaceItemView () <UIGestureRecognizerDelegate>
 
@@ -82,7 +83,7 @@
         }
         else {
             ChatFace  *face = [group.facesArray objectAtIndex:i];
-            layer.contents = (__bridge id _Nullable)([UIImage imageNamed:face.faceName].CGImage);
+            layer.contents = (__bridge id _Nullable)([UIImage xo_imageNamedFromChatBundle:face.faceName].CGImage);
             layer.frame = CGRectMake(x + (w - realW)/2.0, y + (h - realH)/2.0, realW, realH);
             layer.hidden = NO;
             x = (index % col == 0 ? spaceX: x + w);
@@ -192,7 +193,7 @@
     if (_delButton == nil) {
         _delButton = [[UIButton alloc] init];
         _delButton.tag = -1;
-        [_delButton setImage:[UIImage imageNamed:@"DeleteEmoticonBtn"] forState:UIControlStateNormal];
+        [_delButton setImage:[UIImage xo_imageNamedFromChatBundle:@"DeleteEmoticonBtn"] forState:UIControlStateNormal];
         [_delButton addTarget:self action:@selector(didClickDelete:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _delButton;

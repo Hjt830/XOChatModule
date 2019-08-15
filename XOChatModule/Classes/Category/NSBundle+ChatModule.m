@@ -16,6 +16,14 @@
     NSBundle *bundle = [NSBundle bundleForClass:[XOChatClient class]];
     NSURL *url = [bundle URLForResource:@"XOChatModule" withExtension:@"bundle"];
     bundle = [NSBundle bundleWithURL:url];
+    return bundle;
+}
+
++ (NSBundle *)xo_chatResourceBundle
+{
+    NSBundle *bundle = [NSBundle bundleForClass:[XOChatClient class]];
+    NSURL *url = [bundle URLForResource:@"XOChatModule" withExtension:@"bundle"];
+    bundle = [NSBundle bundleWithURL:url];
     NSURL *url1 = [bundle URLForResource:@"XOChatModule" withExtension:@"bundle"];
     bundle = [NSBundle bundleWithURL:url1];
     return bundle;

@@ -34,3 +34,8 @@
 "chat.more.transfer"    = "Transfer";
 "chat.more.carte"       = "Card";
 "chat.more.file"        = "File";
+
+"chat.keyboard.send"          = "send";
+"chat.keyboard.sound.talk"    = "Hold to talk";
+"chat.keyboard.sound.send"    = "Release to send";
+"chat.keyboard.sound.cancel"  = "Release to cancel";

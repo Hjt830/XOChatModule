@@ -8,6 +8,8 @@
 
 #import "ZXChatFaceMenuView.h"
 #import <XOBaseLib/XOBaseLib.h>
+#import "NSBundle+ChatModule.h"
+#import "UIImage+XOChatBundle.h"
 
 @interface ZXChatFaceMenuView ()
 
@@ -50,8 +52,8 @@
      */
     for (ChatFaceGroup *group in faceGroupArray) {
         UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(x, 0, w, self.height)];
-        [button.imageView setContentMode:UIViewContentModeCenter];
-        [button setImage:[UIImage imageNamed:group.groupImageName] forState:UIControlStateNormal];
+//        [button.imageView setContentMode:UIViewContentModeScaleAspectFit];
+        [button setImage:[UIImage xo_imageNamedFromChatBundle:group.groupImageName] forState:UIControlStateNormal];
         [button setTag:i ++];// 不同的组按钮有不同的Tag
         [button addTarget:self action:@selector(buttonDown:) forControlEvents:UIControlEventTouchDown];
         [self.faceMenuViewArray addObject:button];
@@ -114,7 +116,7 @@
     if (_addButton == nil) {
         _addButton = [[UIButton alloc] init];
         _addButton.tag = -1;
-        [_addButton setImage:[UIImage imageNamed:@"Card_AddIcon"] forState:UIControlStateNormal];
+        [_addButton setImage:[UIImage xo_imageNamedFromChatBundle:@"Card_AddIcon"] forState:UIControlStateNormal];
         [_addButton addTarget:self action:@selector(buttonDown:) forControlEvents:UIControlEventTouchDown];
     }
     return _addButton;
@@ -124,9 +126,9 @@
 {
     if (_sendButton == nil) {
         _sendButton = [[UIButton alloc] init];
-        [_sendButton setTitle:@"发送" forState:UIControlStateNormal];
+        [_sendButton setTitle:XOChatLocalizedString(@"chat.keyboard.send") forState:UIControlStateNormal];
         [_sendButton.titleLabel setFont:[UIFont systemFontOfSize:15.0f]];
-        [_sendButton setBackgroundColor:[UIColor colorWithRed:0.1 green:0.2 blue:1.0 alpha:1.0]];
+        [_sendButton setBackgroundColor:AppTinColor];
         _sendButton.tag = -2;
         [_sendButton addTarget:self action:@selector(buttonDown:) forControlEvents:UIControlEventTouchDown];
     }

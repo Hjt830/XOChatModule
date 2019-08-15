@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface NSBundle (ChatModule)
 
 + (NSBundle *)xo_chatBundle;
++ (NSBundle *)xo_chatResourceBundle;
 + (NSString *)chat_localizedStringForKey:(NSString *)key value:(NSString *)value;
 + (NSString *)chat_localizedStringForKey:(NSString *)key;
 

@@ -34,3 +34,8 @@
 "chat.more.transfer"    = "轉賬";
 "chat.more.carte"       = "名片";
 "chat.more.file"        = "文件";
+
+"chat.keyboard.send"          = "發送";
+"chat.keyboard.sound.talk"    = "按住 說話";
+"chat.keyboard.sound.send"    = "鬆開 發送";
+"chat.keyboard.sound.cancel"  = "鬆開 取消";
