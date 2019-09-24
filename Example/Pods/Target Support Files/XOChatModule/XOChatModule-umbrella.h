@@ -22,6 +22,7 @@
 #import "ZXChatBoxView.h"
 #import "ZXChatFaceItemView.h"
 #import "ZXChatFaceMenuView.h"
+#import "XODocumentPickerViewController.h"
 #import "XOChatBoxViewController.h"
 #import "XOChatMessageController.h"
 #import "XOChatViewController.h"

@@ -161,7 +161,7 @@ static XOChatClient *__chatClient = nil;
 {
     XOLog(@"=================================\n=================================\n收到新消息条数: %lu \n收到新消息: %@\n=================================\n=================================", (unsigned long)msgs.count, msgs);
     if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnForceOffline)]) {
-        [_multiDelegate xoOnForceOffline];
+        [_multiDelegate xoOnNewMessage:msgs];
     }
 }
 

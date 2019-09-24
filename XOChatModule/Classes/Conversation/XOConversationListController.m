@@ -317,7 +317,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
         [self reloadHeaderView];
     }];
 }
-// 网络连接断开（断线只是通知用户，不需要重新登陆，重连以后会自动上线）
+// 网络连接断开（断线只是通知用户，不需要重新登录，重连以后会自动上线）
 - (void)xoOnDisconnect:(int)code err:(NSString*)err
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -329,7 +329,11 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 // 连接中
 - (void)xoOnConnecting
 {
-    
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        self.isDisConnect = YES;
+        self.title = @"Inbox (connecting)";
+        [self reloadHeaderView];
+    }];
 }
 
 #pragma mark ========================= XOMessageDelegate =========================

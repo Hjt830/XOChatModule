@@ -41,6 +41,7 @@
 		2E6607D7A3689FF2CCDFC079 /* Pods_XOChatModule_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XOChatModule_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		32AB2CC07E3638844E4EF99D /* XOChatModule.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = XOChatModule.podspec; path = ../XOChatModule.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		555AECD12302942A0037C961 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
+		5564220D2333559A00AB47FA /* libmp3lame.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmp3lame.a; path = ../XOChatModule/Classes/Lib/lame/libmp3lame.a; sourceTree = "<group>"; };
 		557D9F9322CF501B00846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		557D9F9422CF501B00846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		557D9F9522CF501C00846F0D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -138,6 +139,7 @@
 				6003F58F195388D20070C39A /* CoreGraphics.framework */,
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
+				5564220D2333559A00AB47FA /* libmp3lame.a */,
 				5F5E934AFF24DDDD4E38B285 /* Pods_XOChatModule_Example.framework */,
 				2E6607D7A3689FF2CCDFC079 /* Pods_XOChatModule_Tests.framework */,
 			);

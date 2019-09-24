@@ -9,6 +9,7 @@
 #import "XOChatViewController.h"
 #import "XOChatBoxViewController.h"
 #import "XOChatMessageController.h"
+#import "XODocumentPickerViewController.h"
 
 #import "XOChatModule.h"
 
@@ -134,7 +135,35 @@
 // 发送消息
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMessage:(NSString *)content
 {
-    
+    TIMFriendRequest *req = [[TIMFriendRequest alloc] init];
+    req.identifier = @"user0";
+//    req.addSource = @"AddSource_Type_1";
+    [[TIMManager sharedInstance].friendshipManager addFriend:req succ:^(TIMFriendResult *result) {
+        
+//        if ( result.result_code) {
+//
+//        }
+        TIMTextElem *textElem = [[TIMTextElem alloc] init];
+        textElem.text = content;
+        
+        TIMMessage *textMsg = [[TIMMessage alloc] init];
+        [textMsg addElem:textElem];
+        
+        TIMConversation *con = [[TIMManager sharedInstance] getConversation:TIM_C2C receiver:@"user0"];
+        [con sendMessage:textMsg succ:^{
+            
+            NSLog(@"发送成功");
+            
+        } fail:^(int code, NSString *msg) {
+            
+            NSLog(@"发送失败");
+        }];
+        
+    } fail:^(int code, NSString *msg) {
+        
+        
+        NSLog(@"发送成功");
+    }];
 }
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendImage:(NSData *)image imageSize:(CGSize)size
 {
@@ -181,7 +210,7 @@
                                @"public.source-code", @"public.script", @"public.shell-script",
                                @"com.apple.application", @"com.apple.bundle", @"com.apple.package",
                                @"public.composite-​content"];
-    UIDocumentPickerViewController *documentVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:documentTypes inMode:UIDocumentPickerModeOpen];
+    XODocumentPickerViewController *documentVC = [[XODocumentPickerViewController alloc] initWithDocumentTypes:documentTypes inMode:UIDocumentPickerModeOpen];
     if (@available(iOS 11.0, *)) {
         documentVC.allowsMultipleSelection = NO;
     }
@@ -190,6 +219,33 @@
     [self.navigationController presentViewController:documentVC animated:YES completion:nil];
 }
 
+- (void)dismissDocument:(UIButton *)sender
+{
+    NSLog(@"%@ %@", self.navigationController.topViewController, self.navigationController.presentedViewController);
+}
+
+#pragma mark ========================= XOChatMessageControllerDelegate =========================
+
+// 点击了聊天列表页面
+- (void) didTapChatMessageView:(XOChatMessageController *)chatMsgViewController
+{
+    
+}
+// @某人
+- (void) didAtSomeOne:(NSString *)nick userId:(NSString *)userId
+{
+    
+}
+// 拆红包
+- (void) didReadRedPacketMessage:(TIMMessage *)message indexpath:(NSIndexPath *)indexPath ChatMessageView:(XOChatMessageController *)chatMsgViewController
+{
+    
+}
+// 收转账
+- (void) didReadTransferMessage:(TIMMessage *)message indexpath:(NSIndexPath *)indexPath ChatMessageView:(XOChatMessageController *)chatMsgViewController
+{
+    
+}
 
 #pragma mark =========================== UIDocumentPickerDelegate ===========================
 

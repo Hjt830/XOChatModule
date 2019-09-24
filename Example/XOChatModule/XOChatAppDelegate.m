@@ -12,9 +12,10 @@
 #import <XOBaseLib/XOBaseLib.h>
 #import <XOChatModule/XOChatModule.h>
 
+#define Token           @"ac7295f5e92742dea25260e9a780db91"
 #define TXTIMAppID      @"1400079944"
-#define TIM_UserId      @"9590fec205b8490b934f2601b16dbd65"
-#define TIM_UserSig     @"eJw1kNFOgzAUht*FW81WSkutdw0jc4C6ZhtxVw3QApXIsKtDZnx3kbDb7zsn-zn-j7NPdous67QUmRWekc6jA5z7CavvThslstIqM2KIKQTgJrVUrdWlnhTFFJSqgADnD4iCnHqohD5wc9eXufTxvHPW1Tj8HB6DDQ9Mmhzq8xA9EaJX9C3mA-tcRym*6Chg0FVoX-XvIL3GLdvULH69SxNehIfTpcnXS8375rhl2IuWvbI7bNqq7gJ*3b5E4S1MNmJ6bIx00Xg4oRShWVr9of459jHxiefCmWdFcfpqrbBDp6Ymfv8Abv1WdQ__"
+#define TIM_UserId      @"20f63beb2dd9432393c494c7baf4aad1"
+#define TIM_UserSig     @"eJw1kF1PgzAUhv8L18YwWtrVxAsCxCx2yr5KvCL9JFU7K3YRZvzvMmS3z3NO3nPen2hPd7fce6saHhrQqeguiqObCeve20433ATdjThJSRLHV2mVPgZr7L*KDQJCi0QpAkECCJCQQIkFN5BztZh3vmw7Dq-LQ77aFHlhJM0wUmdmUP4o6if6un0QrHL9idaVt8i9cE2H6tyu2vKTvYOs9j487zNhcN6WRaolGgjRgB1St-l2ku22PV3fX8PUWzM9NkYu4Hg4JgTCWQbr9IWnaLnEyahmzqX8OB1DEwavpyZ*-wBS-1fR"
 
 @interface XOChatAppDelegate () <TIMConnListener>
 
@@ -38,7 +39,6 @@
         NSLog(@"=========== TIM msg: %@", msg);
         NSLog(@"=================================");
         NSLog(@"=================================\n");
-        
     }];
     
     // 2、登录腾讯云通信

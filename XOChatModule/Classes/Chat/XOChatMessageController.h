@@ -27,9 +27,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol XOChatMessageControllerDelegate <NSObject>
 
-
-
-
+// 点击了聊天列表页面
+- (void) didTapChatMessageView:(XOChatMessageController *)chatMsgViewController;
+// @某人
+- (void) didAtSomeOne:(NSString *)nick userId:(NSString *)userId;
+// 拆红包
+- (void) didReadRedPacketMessage:(TIMMessage *)message indexpath:(NSIndexPath *)indexPath ChatMessageView:(XOChatMessageController *)chatMsgViewController;
+// 收转账
+- (void) didReadTransferMessage:(TIMMessage *)message indexpath:(NSIndexPath *)indexPath ChatMessageView:(XOChatMessageController *)chatMsgViewController;
 
 @end
 
