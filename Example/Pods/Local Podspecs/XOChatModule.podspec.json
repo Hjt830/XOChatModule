@@ -35,7 +35,7 @@
       "~> 4.4.627"
     ],
     "XOBaseLib": [
-      "~> 0.1.5"
+      "~> 0.1.6"
     ],
     "TZImagePickerController": [
       "~> 3.2.1"
