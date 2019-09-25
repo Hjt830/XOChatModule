@@ -39,7 +39,7 @@
     
     [self.messageBackgroundImageView setImage:nil];
     // 设置图片
-    self.positionImageView.image = [UIImage imageNamed:@"placeholderImage"];
+    self.positionImageView.image = [UIImage xo_imageNamedFromChatBundle:@"placeholderImage"];
     TIMLocationElem *locationElem = (TIMLocationElem *)[message getElem:0];
 //    if (!XOIsEmptyString(imageElem.path)) {
 //        NSString *path = [DocumentPath() stringByAppendingPathComponent:message.body.thumbnailLocalPath];
@@ -142,7 +142,7 @@
 - (UIImageView *)addressPoi
 {
     if (!_addressPoi) {
-        _addressPoi = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"message_location_poi"]];
+        _addressPoi = [[UIImageView alloc] initWithImage:[UIImage xo_imageNamedFromChatBundle:@"message_location_poi"]];
         [_addressPoi setContentMode:UIViewContentModeScaleAspectFit];
     }
     return _addressPoi;

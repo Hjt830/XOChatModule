@@ -763,23 +763,37 @@ static NSTimeInterval audioRecordTime = 0.0f;
         [[PHImageManager defaultManager] requestImageDataForAsset:asset options:nil resultHandler:^(NSData *data, NSString *uti, UIImageOrientation orientation, NSDictionary *dic){
             
             if (data != nil) {
-                if (data.length > 6 * 1024 * 1024) // 图片大于6M压缩
-                {
-                    [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-                        UIImage *originImage = [UIImage imageWithData:data];
-                        CGSize scaleSize = [[XOFileManager shareInstance] getScaleImageSize:originImage];
-                        UIImage *scaleImage = [[XOFileManager shareInstance] scaleOriginImage:originImage toSize:scaleSize];
-                        __block NSData *scaleData = UIImageJPEGRepresentation(scaleImage, 0.8);
-                        
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            [self.delegate chatBoxViewController:self sendImage:scaleData imageSize:scaleSize];
+                if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendImage:imageSize:imageFormat:)]) {
+                    
+                    // 图片存储的路径
+                    NSString *imageName = [dic[@"PHImageFileURLKey"] lastPathComponent];
+                    __block NSString *path = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
+
+                    if (data.length > 6 * 1024 * 1024) // 图片大于6M压缩
+                    {
+                        [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                            UIImage *originImage = [UIImage imageWithData:data];
+                            CGSize scaleSize = [[XOFileManager shareInstance] getScaleImageSize:originImage];
+                            UIImage *scaleImage = [[XOFileManager shareInstance] scaleOriginImage:originImage toSize:scaleSize];
+                            __block NSData *scaleData = UIImageJPEGRepresentation(scaleImage, 0.8);
+                            
+                            if ([scaleData writeToFile:path atomically:YES]) {
+                                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                    [self.delegate chatBoxViewController:self sendImage:path imageSize:scaleSize imageFormat:uti];
+                                }];
+                            }
                         }];
-                    }];
-                }
-                else {
-                    if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendImage:imageSize:)]) {
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            [self.delegate chatBoxViewController:self sendImage:data imageSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight)];
+                    }
+                    else {
+                        [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                            UIImage *originImage = [UIImage imageWithData:data];
+                            __block CGSize size = originImage.size;
+                            
+                            if ([data writeToFile:path atomically:YES]) {
+                                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                    [self.delegate chatBoxViewController:self sendImage:path imageSize:size imageFormat:uti];
+                                }];
+                            }
                         }];
                     }
                 }

@@ -28,22 +28,32 @@
 - (void) layoutSubviews
 {
     [super layoutSubviews];
-    /**
-     *  Label 的位置根据头像的位置来确定
-     */
-    float y = self.avatarImageView.y + 11;
-    float x = self.avatarImageView.x + (self.message.isSelf ? - self.messageTextLabel.width - 27 : self.avatarImageView.width + 23);
-    [self.messageTextLabel setOrigin:CGPointMake(x, y)];
-    
-    x -= 18;                              // 左边距离头像5
-    y = self.avatarImageView.y - 5;       // 上边与头像对齐
-    float h = MAX(self.messageTextLabel.height + 30, self.avatarImageView.height + 10);
-    [self.messageBackgroundImageView setFrame:CGRectMake(x, y, self.messageTextLabel.width + 40, h)];
-    
+
     if (self.message.isSelf) {
-        // 发送状态图标
-        float statusWid = self.messageSendStatusImageView.height;
-        [self.messageSendStatusImageView setOrigin:CGPointMake(self.messageBackgroundImageView.x - 10 - statusWid, (self.height - statusWid)/2.0)];
+        float y = CGRectGetMaxY(self.avatarImageView.frame) - self.messageTextLabel.height - 9;
+        float x = self.avatarImageView.x - 27 - self.messageTextLabel.width;
+        [self.messageTextLabel setOrigin:CGPointMake(x, y)];
+        
+        float h = MAX(self.messageTextLabel.height + 18, self.avatarImageView.height);
+        x -= 18;
+        y = CGRectGetMaxY(self.avatarImageView.frame) - h;
+        [self.messageBackgroundImageView setFrame:CGRectMake(x, y, self.messageTextLabel.width + 40, h)];
+        
+        if (self.message.isSelf) {
+            // 发送状态图标
+            float statusWid = self.messageSendStatusImageView.height;
+            [self.messageSendStatusImageView setOrigin:CGPointMake(self.messageBackgroundImageView.x - 10 - statusWid, (self.height - statusWid)/2.0)];
+        }
+    }
+    else {
+        float y = self.avatarImageView.y + 11;
+        float x = self.avatarImageView.x + self.avatarImageView.width + 23;
+        [self.messageTextLabel setOrigin:CGPointMake(x, y)];
+        
+        x -= 18;
+        y = self.avatarImageView.y;
+        float h = MAX(self.messageTextLabel.height + 18, self.avatarImageView.height);
+        [self.messageBackgroundImageView setFrame:CGRectMake(x, y, self.messageTextLabel.width + 40, h)];
     }
 }
 
@@ -73,6 +83,12 @@
     
     CGSize size = [self.messageTextLabel sizeThatFits:CGSizeMake(KWIDTH * 0.58, MAXFLOAT)];
     self.messageTextLabel.size = size;
+    
+    if (message.isSelf) {
+        self.messageTextLabel.textColor = [UIColor whiteColor];
+    } else {
+        self.messageTextLabel.textColor = [UIColor darkTextColor];
+    }
 }
 
 - (UILabel *)messageTextLabel

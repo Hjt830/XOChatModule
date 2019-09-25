@@ -40,9 +40,7 @@ static BOOL fileProgressFinish = NO;
 {
     [super layoutSubviews];
     
-    float FileWidth = 220.0f;
-    float FileHeight = 80.0f;
-    float y = self.avatarImageView.y - 5;
+    float y = self.avatarImageView.y;
     float x = self.avatarImageView.x + (self.message.isSelf ? - (FileWidth + 16) - 5 : self.avatarImageView.width + 5);
     self.messageBackgroundImageView.frame = CGRectMake(x, y, FileWidth + 16, FileHeight + 10);
     self.messageSendStatusImageView.center = CGPointMake(x - 20, y + (FileHeight + 10)/2.0);
@@ -87,7 +85,7 @@ static BOOL fileProgressFinish = NO;
 - (UIImageView *)fileIconView
 {
     if (!_fileIconView) {
-        _fileIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"message_file"]];
+        _fileIconView = [[UIImageView alloc] initWithImage:[UIImage xo_imageNamedFromChatBundle:@"message_file"]];
         [_fileIconView setContentMode:UIViewContentModeScaleAspectFit];
         [_fileIconView setClipsToBounds:YES];
         [_fileIconView setUserInteractionEnabled:YES];
@@ -199,8 +197,6 @@ static BOOL fileProgressFinish = NO;
 
 - (CGSize)messageSize
 {
-    float FileWidth = 220.0f;
-    float FileHeight = 80.0f;
     return CGSizeMake(FileWidth + 16, FileHeight + 20);
 }
 

@@ -33,18 +33,18 @@
     [super setMessage:message];
     
     if (message.isSelf) {
-        self.audioAniImageView.image = [UIImage imageNamed:@"message_voice_sender_normal"];
-        self.audioAniImageView.animationImages = @[[UIImage imageNamed:@"message_voice_sender_playing_1"],
-                                                   [UIImage imageNamed:@"message_voice_sender_playing_2"],
-                                                   [UIImage imageNamed:@"message_voice_sender_playing_3"],
-                                                   [UIImage imageNamed:@"message_voice_sender_normal"]];
+        self.audioAniImageView.image = [UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_normal"];
+        self.audioAniImageView.animationImages = @[[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_1"],
+                                                   [UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_2"],
+                                                   [UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_3"],
+                                                   [UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_normal"]];
     }
     else {
-        self.audioAniImageView.image = [UIImage imageNamed:@"message_voice_receiver_normal"];
-        self.audioAniImageView.animationImages = @[[UIImage imageNamed:@"message_voice_receiver_playing_1"],
-                                                   [UIImage imageNamed:@"message_voice_receiver_playing_2"],
-                                                   [UIImage imageNamed:@"message_voice_receiver_playing_3"],
-                                                   [UIImage imageNamed:@"message_voice_receiver_normal"]];
+        self.audioAniImageView.image = [UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_normal"];
+        self.audioAniImageView.animationImages = @[[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_1"],
+                                                   [UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_2"],
+                                                   [UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_3"],
+                                                   [UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_normal"]];
     }
     TIMSoundElem *soundElem = (TIMSoundElem *)[message getElem:0];
     self.audioTimeLabel.text = [NSString stringWithFormat:@"%d\"", soundElem.second];

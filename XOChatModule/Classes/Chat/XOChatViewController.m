@@ -132,42 +132,34 @@
     
 }
 
-// 发送消息
+// 发送文字消息
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMessage:(NSString *)content
 {
-    TIMFriendRequest *req = [[TIMFriendRequest alloc] init];
-    req.identifier = @"user0";
-//    req.addSource = @"AddSource_Type_1";
-    [[TIMManager sharedInstance].friendshipManager addFriend:req succ:^(TIMFriendResult *result) {
-        
-//        if ( result.result_code) {
-//
-//        }
-        TIMTextElem *textElem = [[TIMTextElem alloc] init];
-        textElem.text = content;
-        
-        TIMMessage *textMsg = [[TIMMessage alloc] init];
-        [textMsg addElem:textElem];
-        
-        TIMConversation *con = [[TIMManager sharedInstance] getConversation:TIM_C2C receiver:@"user0"];
-        [con sendMessage:textMsg succ:^{
-            
-            NSLog(@"发送成功");
-            
-        } fail:^(int code, NSString *msg) {
-            
-            NSLog(@"发送失败");
-        }];
-        
-    } fail:^(int code, NSString *msg) {
-        
-        
+    TIMTextElem *textElem = [[TIMTextElem alloc] init];
+    textElem.text = content;
+    TIMMessage *textMsg = [[TIMMessage alloc] init];
+    [textMsg addElem:textElem];
+    int sendText = [self.conversation sendMessage:textMsg succ:^{
         NSLog(@"发送成功");
+    } fail:^(int code, NSString *msg) {
+        NSLog(@"发送失败");
     }];
+    if(1 == sendText) NSLog(@"发送文本消息失败!!!");
 }
-- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendImage:(NSData *)image imageSize:(CGSize)size
+// 发送图片消息
+- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendImage:(NSString *)imagePath imageSize:(CGSize)size imageFormat:(nonnull NSString *)format
 {
-    
+    TIMImageElem *imageElem = [[TIMImageElem alloc] init];
+    imageElem.path = imagePath;
+    imageElem.format = [self getImageFormat:format];
+    TIMMessage *imageMsg = [[TIMMessage alloc] init];
+    [imageMsg addElem:imageElem];
+    int sendText = [self.conversation sendMessage:imageMsg succ:^{
+        NSLog(@"发送成功");
+    } fail:^(int code, NSString *msg) {
+        NSLog(@"发送失败");
+    }];
+    if(1 == sendText) NSLog(@"发送图片消息失败!!!");
 }
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendVideo:(NSURL *)videoUrl videoDuration:(float)duration
 {
@@ -229,12 +221,15 @@
 // 点击了聊天列表页面
 - (void) didTapChatMessageView:(XOChatMessageController *)chatMsgViewController
 {
-    
+    [self.chatBoxVC resignFirstResponder];
 }
 // @某人
 - (void) didAtSomeOne:(NSString *)nick userId:(NSString *)userId
 {
-    
+    // 群聊 @nick   (可能是陌生人)
+    if (TIM_GROUP == self.chatType) {
+        [self.chatBoxVC addAtSomeOne:[NSString stringWithFormat:@"@%@ ", nick]];
+    }
 }
 // 拆红包
 - (void) didReadRedPacketMessage:(TIMMessage *)message indexpath:(NSIndexPath *)indexPath ChatMessageView:(XOChatMessageController *)chatMsgViewController
@@ -336,5 +331,28 @@
     }
 }
 
+
+#pragma mark ========================= help =========================
+
+// 获取图片的格式
+- (TIM_IMAGE_FORMAT)getImageFormat:(NSString *)format
+{
+    TIM_IMAGE_FORMAT imageFormat = TIM_IMAGE_FORMAT_UNKNOWN;
+    
+    NSString *uniteFormat = [format lowercaseString];
+    if ([uniteFormat hasSuffix:@"jpg"] || [uniteFormat hasSuffix:@"jpeg"]) {
+        imageFormat = TIM_IMAGE_FORMAT_JPG;
+    }
+    else if ([uniteFormat hasSuffix:@"png"]) {
+        imageFormat = TIM_IMAGE_FORMAT_PNG;
+    }
+    else if ([uniteFormat hasSuffix:@"gif"]) {
+        imageFormat = TIM_IMAGE_FORMAT_GIF;
+    }
+    else if ([uniteFormat hasSuffix:@"bmp"]) {
+        imageFormat = TIM_IMAGE_FORMAT_BMP;
+    }
+    return imageFormat;
+}
 
 @end

@@ -35,18 +35,20 @@ static BOOL progressFinish = NO;
     
     // 显示缩略图
     CGSize imageSize = [self messageSize];
-    float y = self.avatarImageView.y;
-    float sendY = y + imageSize.height/2.0;
     if (self.message.isSelf) {
         float x = self.avatarImageView.x - imageSize.width - 10;
-        [self.messageBackgroundImageView setFrame:CGRectMake(x, y, imageSize.width, imageSize.height)];
+        float y = CGRectGetMaxY(self.avatarImageView.frame) - imageSize.height;
+        float sendY = y + imageSize.height/2.0;
         [self.messageImageView setFrame:CGRectMake(x, y, imageSize.width, imageSize.height)];
+        [self.messageBackgroundImageView setFrame:CGRectMake(x, y, imageSize.width, imageSize.height)];
         [self.messageSendStatusImageView setCenter:CGPointMake(x - 20, sendY)];
         self.progressHud.bounds     = CGRectMake(0, 0, imageSize.width, imageSize.height);
         self.progressHud.position   = CGPointMake(imageSize.width/2.0, imageSize.height/2.0);
     }
     else {
         float x = CGRectGetMaxX(self.avatarImageView.frame) + 10;
+        float y = self.avatarImageView.y;
+        float sendY = y + imageSize.height/2.0;
         [self.messageBackgroundImageView setFrame:CGRectMake(x, y, imageSize.width, imageSize.height)];
         [self.messageImageView setFrame:CGRectMake(x, y, imageSize.width, imageSize.height)];
         [self.messageSendStatusImageView setCenter:CGPointMake(x + imageSize.width + 20, sendY)];
@@ -126,61 +128,9 @@ static BOOL progressFinish = NO;
     }
     
     // 设置图片
-    self.messageImageView.image = [UIImage imageNamed:@"placeholderImage"];
-    
-    /*
-    if (!XOIsEmptyString(message.body.thumbnailLocalPath)) {
-        NSString *path = [DocumentPath() stringByAppendingPathComponent:message.body.thumbnailLocalPath];
-        [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-            UIImage *image = [UIImage imageWithContentsOfFile:path];
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                self.messageImageView.image = image;
-            }];
-        }];
-    }
-    else if (!WXIsEmptyString(message.body.thumbnailRemotePath)) {
-        [[WXMsgFileManager shareManager] downloadMessageThumbImage:message result:^(BOOL finish, HTMessage * _Nonnull aMessage, NSError * _Nullable error) {
-            NSString *path = [DocumentPath() stringByAppendingPathComponent:message.body.thumbnailLocalPath];
-            [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-                UIImage *image = [UIImage imageWithContentsOfFile:path];
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    self.messageImageView.image = image;
-                }];
-            }];
-        }];
-    }
-    else {
-        // 如果高清图已经下载完毕，则使用高清图获取缩略图
-        NSString *localPath = [DocumentPath() stringByAppendingPathComponent:message.body.localPath];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:localPath]) {
-            [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-                UIImage *image = [UIImage imageWithContentsOfFile:localPath];
-                // 获得缩略图
-                CGSize maxSize = [[WXMsgFileManager shareManager] getScaleImageSize:image.size maxFloat:240];
-                NSData *thumbImageData = [[WXMsgFileManager shareManager] scaleImage:image maxSize:maxSize compressionQuality:0.5];
-                UIImage *thumbImage = [UIImage imageWithData:thumbImageData];
-                // 存储路径
-                NSArray *arr = [message.body.fileName componentsSeparatedByString:@"."];
-                NSString *thumbImageName = nil;
-                if (!WXIsEmptyArray(arr) && arr.count >= 1) thumbImageName = [NSString stringWithFormat:@"%@_thumb.png", arr[0]];
-                else thumbImageName = [NSString stringWithFormat:@"%@_thumb.png", message.body.fileName];
-                NSString *thumbPath = [WXMsgFileDirectory(message.msgType) stringByAppendingPathComponent:thumbImageName];
-                NSString *thumbDerctory = [DocumentPath() stringByAppendingPathComponent:thumbPath];
-                // 写入缩略图存储路径
-                if ([thumbImageData writeToFile:thumbDerctory atomically:YES]) {
-                    message.body.thumbnailLocalPath = thumbPath;
-                    [[WXMsgCoreDataManager shareManager].mainMOC MR_saveOnlySelfAndWait];
-                }
-                
-                if (image && [image isKindOfClass:[UIImage class]]) {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        self.messageImageView.image = thumbImage;
-                    }];
-                }
-            }];
-        }
-    }
-     */
+    self.messageImageView.image = [UIImage xo_imageNamedFromChatBundle:@"placeholderImage"];
+    // 加载图片
+    [self loadImageWith:message formCache:YES];
 }
 
 - (UIImageView *) messageImageView
@@ -194,22 +144,125 @@ static BOOL progressFinish = NO;
     return _messageImageView;
 }
 
+#pragma mark ========================= help =========================
+
+// 加载图片 useCache 是否从缓存中获取图片
+- (void)loadImageWith:(TIMMessage *)message formCache:(BOOL)useCache
+{
+    TIMElem *elem = [message getElem:0];
+    if ([elem isKindOfClass:[TIMImageElem class]]) {
+        TIMImageElem *imageElem = (TIMImageElem *)elem;
+        if (imageElem.imageList.count > 0) {
+            TIMImage *image = [imageElem.imageList objectAtIndex:0];
+            
+            __block NSString *thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", image.uuid, [self getImageFormat:imageElem.format]];
+            __block NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
+            
+            // 从缓存获取缩略图片
+            if (useCache && [[NSFileManager defaultManager] fileExistsAtPath:thumbImagePath]) {
+                [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                    NSData *thumbImageData = [[NSData alloc] initWithContentsOfFile:thumbImagePath];
+                    __block UIImage *thumbImage = [UIImage imageWithData:thumbImageData];
+                    // 缓存中有图片
+                    if (thumbImage != nil) {
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            self.messageImageView.image = thumbImage;
+                        }];
+                    }
+                    // 缓存中没有图片
+                    else {
+                        [self loadImageWith:message formCache:NO];
+                    }
+                }];
+            }
+            // 从网络获取图片
+            else {
+                __block NSString *imageName = [NSString stringWithFormat:@"%@.%@", image.uuid, [self getImageFormat:imageElem.format]];
+                __block NSString *imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
+                [image getImage:imagePath progress:^(NSInteger curSize, NSInteger totalSize) {
+                    float progress = curSize * 0.1/totalSize;
+                    [self updateProgress:progress effect:YES];
+                } succ:^{
+                    [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                        // 获取原图
+                        NSData *imageData = [[NSData alloc] initWithContentsOfFile:imagePath];
+                        __block UIImage *image = [UIImage imageWithData:imageData];
+                        // 根据原图获取缩略图
+                        CGSize thumbSize = [[XOFileManager shareInstance] getScaleImageSize:image];
+                        UIImage *thumbImage = [[XOFileManager shareInstance] scaleOriginImage:image toSize:thumbSize];
+                        // 显示图片
+                        if (thumbImage) {
+                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                self.messageImageView.image = thumbImage;
+                            }];
+                        }
+                        // 将缩略图写入沙盒
+                        NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 1.0);
+                        if ([thumbImageData writeToFile:thumbImagePath atomically:YES]) {
+                            NSLog(@"缓存缩略图成功");
+                        }
+                    }];
+                } fail:^(int code, NSString *msg) {
+                    NSLog(@"下载网络图片失败 ---- code: %d  msg: %@", code, msg);
+                }];
+            }
+        }
+    }
+    else if ([elem isKindOfClass:[TIMVideoElem class]]) {
+        TIMVideoElem *videoElem = (TIMVideoElem *)elem;
+        if (videoElem.snapshot) {
+            
+        }
+    }
+}
+
+
+// 获取图片的格式
+- (NSString *)getImageFormat:(TIM_IMAGE_FORMAT)imageFormat
+{
+    NSString *format = nil;
+    
+    switch (imageFormat) {
+        case TIM_IMAGE_FORMAT_PNG:
+            format = @"png";
+            break;
+        case TIM_IMAGE_FORMAT_GIF:
+            format = @"gif";
+            break;
+        case TIM_IMAGE_FORMAT_BMP:
+            format = @"bmp";
+            break;
+        default:
+            format = @"jpg";
+            break;
+    }
+    return format;
+}
+
 - (CGSize)messageSize
 {
-    float ImageWidth = 1080.0f;    // 图片的宽度
-    float ImageHeight = 1920.0;    // 图片的高度
+    float sizew = 375.0f;  // 图片的宽度
+    float sizeh = 750.0f;  // 图片的高度
+    CGSize size = CGSizeMake(sizew, sizeh);
     
-    TIMImageElem *imageElem = (TIMImageElem *)[self.message getElem:0];
-    CGSize size = CGSizeMake(ImageWidth, ImageHeight);
-    float sizew = ImageWidth;
-    float sizeh = ImageHeight;
-    if (imageElem.imageList.count > 0) {
-        TIMImage *image = [imageElem.imageList objectAtIndex:0];
-        sizew = image.width;
-        sizeh = image.height;
+    TIMElem *elem = [self.message getElem:0];
+    if ([elem isKindOfClass:[TIMImageElem class]]) {
+        TIMImageElem *imageElem = (TIMImageElem *)elem;
+        if (imageElem.imageList.count > 0) {
+            TIMImage *image = [imageElem.imageList objectAtIndex:0];
+            sizew = image.width;
+            sizeh = image.height;
+        }
+    }
+    else if ([elem isKindOfClass:[TIMVideoElem class]]) {
+        TIMVideoElem *videoElem = (TIMVideoElem *)elem;
+        if (videoElem.snapshot) {
+            sizew = videoElem.snapshot.width;
+            sizeh = videoElem.snapshot.height;
+        }
     }
     
-    float maxWid = KWIDTH * 0.5;
+    float maxWid = KWIDTH * 0.3;
     if (sizew <= maxWid) {
         size = CGSizeMake(sizew, sizeh);
     } else {
@@ -224,5 +277,6 @@ static BOOL progressFinish = NO;
     
     return size;
 }
+
 
 @end

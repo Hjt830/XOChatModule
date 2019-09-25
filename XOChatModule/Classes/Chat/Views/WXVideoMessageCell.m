@@ -31,7 +31,7 @@
     [super setMessage:message];
     
     TIMVideoElem *videoElem = (TIMVideoElem *)[message getElem:0];
-    int duration = videoElem.video.duration;
+    int duration = videoElem.video.duration/1000;
     int min = duration / 60;
     int sec = duration % 60;
     NSString *time = [NSString stringWithFormat:@"%.2d:%.2d", min, sec];
@@ -51,14 +51,14 @@
 {
     [super layoutSubviews];
     
-    self.playBtn.frame = CGRectMake((self.messageImageView.width - 50)/2, (self.messageImageView.height-50)/2, 50, 50);
+    self.playBtn.frame = CGRectMake((self.messageImageView.width - 30)/2, (self.messageImageView.height-30)/2, 30, 30);
     self.timeLabel.frame = CGRectMake(0, self.messageImageView.height - 20, self.messageImageView.width, 16);
 }
 
 - (UIImageView *)playBtn
 {
     if (!_playBtn) {
-        _playBtn = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"message_playVideo"]];
+        _playBtn = [[UIImageView alloc] initWithImage:[UIImage xo_imageNamedFromChatBundle:@"message_playVideo"]];
         _playBtn.userInteractionEnabled = YES;
     }
     return _playBtn;

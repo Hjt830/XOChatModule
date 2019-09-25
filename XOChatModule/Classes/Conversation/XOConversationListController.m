@@ -132,7 +132,9 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 
 - (void)loadConversation
 {
-    self.dataSource = [[TIMManager sharedInstance] getConversationList];
+    @synchronized (self) {
+        self.dataSource = [[TIMManager sharedInstance] getConversationList];
+    };
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.tableView reloadData];
     }];
@@ -306,6 +308,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
         self.isDisConnect = NO;
         self.title = @"Inbox";
         [self reloadHeaderView];
+        [self loadConversation];
     }];
 }
 // 网络连接失败
@@ -382,9 +385,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 
 - (void)xoOnRefresh
 {
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self loadConversation];
-    }];
+    [self loadConversation];
 }
 
 /**

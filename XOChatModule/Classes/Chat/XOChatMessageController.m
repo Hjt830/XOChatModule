@@ -36,14 +36,9 @@ static NSString * const WalletMessageCellID     = @"WalletMessageCellID";
 static NSString * const UITableViewCellID       = @"UITableViewCellID";
 static NSString * const PromptMessageCellID     = @"PromptMessageCellID";
 
-static float const ImageWidth = 1080.0f;    // 图片的宽度
-static float const ImageHeight = 1920.0;    // 图片的高度
-static float const FileWidth = 220.0f;      // 文件的宽度
-static float const FileHeight = 80.0f;      // 文件的高度
-
 @interface XOChatMessageController () <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, XOMessageDelegate, LGAudioPlayerDelegate, WXMessageCellDelegate>
 {
-    long _historyTime;  // 查询记录的开始时间
+    TIMMessage  *_earliestMsg;  // 最早的一条消息
 }
 @property (nonatomic, strong) CALayer   * chatBGLayer;
 @property (nonatomic, strong) UITableView                       *tableView;     // 会话列表
@@ -79,13 +74,13 @@ static float const FileHeight = 80.0f;      // 文件的高度
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    
     // 添加消息列表
     [self.view addSubview:self.tableView];
-    [self.tableView setMj_header:self.refreshView];
     // 添加聊天背景
     [self showPreviewChatBGImage];
     // 加载消息
-    [self.refreshView beginRefreshing];
+    [self loadMessages];
     // 设置录音播放代理
     [LGAudioPlayer sharePlayer].delegate = self;
 }
@@ -103,6 +98,19 @@ static float const FileHeight = 80.0f;      // 文件的高度
     
     self.tableView.frame = self.view.bounds;
     self.tableView.backgroundView.frame = self.tableView.bounds;
+    if (self.dataSource.count > 0) {
+        NSInteger lastSection = self.dataSource.count - 1;
+        NSArray *list = [self.dataSource[lastSection] objectForKey:MsgSectionListKey];
+        if (list.count > 0) {
+            @try {
+                [self.tableView scrollToRow:(list.count - 1) inSection:lastSection atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+            } @catch (NSException *exception) {
+                NSLog(@"%s --- 滑动到最底部异常: %@", __func__, exception);
+            } @finally {
+                
+            }
+        }
+    }
 }
 
 // 显示聊天背景页
@@ -120,84 +128,78 @@ static float const FileHeight = 80.0f;      // 文件的高度
 
 #pragma mark ====================== load message =======================
 
+// 拉取历史消息
 - (void)loadMessages
 {
+    @weakify(self);
     [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+        @strongify(self);
         
-        // 拉取历史消息
-        TIMMessage *lastMsg = self.conversation.getLastMsg;
-        [self.conversation getMessage:20 last:lastMsg succ:^(NSArray *msgs) {
-            [self.refreshView endRefreshing];
+        NSLog(@"%@  --- %@", self->_earliestMsg, self->_earliestMsg.timestamp);
+        
+        [self.conversation getMessage:20 last:self->_earliestMsg succ:^(NSArray *msgs) {
+            @strongify(self);
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self.refreshView endRefreshing];
+            }];
             
-            NSError *error = nil;
             NSArray <TIMMessage *>* array = msgs;
-            
-            // 查询消息失败
-            if (error) {
-                NSLog(@"查询消息失败");
-            }
-            else {
-                if (!XOIsEmptyArray(array)) {
-                    NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
-                    array = [array sortedArrayUsingDescriptors:@[descriptor]];
-                    
-                    __block BOOL isFirstPage = (self->_historyTime <= 0);
-                    // 处理数据
-                    NSArray *dataArray = [self handleDataSource:array];
-                    if ([self.lock tryLock]) {
-                        // 查询第一页, 清空数据源
-                        if (isFirstPage) {
-                            [self.dataSource removeAllObjects];
-                            [self.dataSource addObjectsFromArray:dataArray];
-                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-//                                [self.tableView beginUpdates];
-                                [self.tableView reloadData];
-                                
-                                // 滑动到底部
-                                if (!XOIsEmptyArray(self.dataSource)) {
-                                    NSMutableArray *mutarr = [[self.dataSource lastObject] objectForKey:MsgSectionListKey];
-                                    if (!XOIsEmptyArray(mutarr)) {
-                                        NSUInteger section = self.dataSource.count - 1;
-                                        NSUInteger row = mutarr.count - 1;
-                                        NSIndexPath *indexpath = [NSIndexPath indexPathForRow:row inSection:section];
-                                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.18 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                                            [self.tableView scrollToRowAtIndexPath:indexpath atScrollPosition:UITableViewScrollPositionBottom animated:NO];
-                                        });
-                                    }
-                                }
-//                                [self.tableView endUpdates];
-                            }];
-                        }
-                        else {
-                            __block NSMutableIndexSet *sets = [NSMutableIndexSet indexSet];
-                            [dataArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                                [sets addIndex:idx];
-                            }];
-                            [self.dataSource insertObjects:dataArray atIndexes:sets];
-                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                [self.refreshView endRefreshing];
-                                
-                                [self.tableView beginUpdates];
-                                [self.tableView insertSections:sets withRowAnimation:UITableViewRowAnimationNone];
-                                [self.tableView endUpdates];
-                            }];
-                        }
-                        
-                        // 记录查询时间
-                        self->_historyTime = (long)[[array firstObject].timestamp timeIntervalSince1970];
-                        
-                        [self.lock unlock];
-                    }
-                }
-                else {
-                    if (!XOIsEmptyArray(self.dataSource)) {
-                        [SVProgressHUD showInfoWithStatus:@"没有更多消息了"];
-                        [SVProgressHUD dismissWithDelay:0.5f];
+            if (!XOIsEmptyArray(array)) {
+                
+                NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
+                array = [array sortedArrayUsingDescriptors:@[descriptor]];
+                __block BOOL isFirstPage = (self->_earliestMsg == nil);
+                // 处理数据
+                NSArray *dataArray = [self handleDataSource:array];
+                if ([self.lock tryLock]) {
+                    // 查询第一页, 清空数据源
+                    if (isFirstPage) {
+                        [self.dataSource removeAllObjects];
+                        [self.dataSource addObjectsFromArray:dataArray];
                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            [self.refreshView endRefreshing];
-                            [self.refreshView removeFromSuperview];
+                            [self.tableView reloadData];
+                            
+                            // 滑动到底部
+                            if (self.dataSource.count > 0) {
+                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                    NSInteger lastSection = self.dataSource.count - 1;
+                                    NSArray *list = [self.dataSource[lastSection] objectForKey:MsgSectionListKey];
+                                    if (list.count > 0) {
+                                        @try {
+                                            [self.tableView scrollToRow:(list.count - 1) inSection:lastSection atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+                                        } @catch (NSException *exception) {
+                                            NSLog(@"%s --- 滑动到最底部异常: %@", __func__, exception);
+                                        } @finally {
+                                            
+                                        }
+                                    }
+                                });
+                            }
                         }];
                     }
+                    else {
+                        __block NSMutableIndexSet *sets = [NSMutableIndexSet indexSet];
+                        [dataArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                            [sets addIndex:idx];
+                        }];
+                        [self.dataSource insertObjects:dataArray atIndexes:sets];
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            
+                            [self.tableView beginUpdates];
+                            [self.tableView insertSections:sets withRowAnimation:UITableViewRowAnimationNone];
+                            [self.tableView endUpdates];
+                        }];
+                    }
+                    
+                    [self.lock unlock];
+                }
+                // 记录
+                self->_earliestMsg = [array firstObject];
+            }
+            else {
+                if (!XOIsEmptyArray(self.dataSource)) {
+                    [SVProgressHUD showInfoWithStatus:@"没有更多消息了"];
+                    [SVProgressHUD dismissWithDelay:0.5f];
                 }
             }
             
@@ -220,11 +222,11 @@ static float const FileHeight = 80.0f;      // 文件的高度
     
     // 消息间隔超过5分钟则加一个时间, 并分组
     __block NSMutableArray *dataArray = [NSMutableArray array];
-    __block long long startTime = [[array firstObject].timestamp timeIntervalSince1970];
+    __block long long startTime = [[array firstObject].timestamp timeIntervalSince1970] * 1000;
     __block NSMutableArray <TIMMessage *>* mutArr = [NSMutableArray array];
     [array enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         // 计算与 **上一个时间分组起止时间** 的间隔时间
-        long long msgTime = [obj.timestamp timeIntervalSince1970];
+        long long msgTime = [obj.timestamp timeIntervalSince1970] * 1000;
         long long timeSpace = msgTime - startTime;
         
         // 时间间隔小于5分钟时, 加入同一个分组 且 消息有内容
@@ -256,10 +258,19 @@ static float const FileHeight = 80.0f;      // 文件的高度
             mutArr = nil;
             
             // 重置 **上一个时间分组起止时间**
-            startTime = (long long)[obj.timestamp timeIntervalSince1970];
+            startTime = (long long)[obj.timestamp timeIntervalSince1970] * 1000;
             // 新建下一个分组
             mutArr = [NSMutableArray array];
             [mutArr addObject:obj];
+            
+            // 如果这是最后一条消息, 则在此处保存
+            if (idx == array.count - 1) {
+                NSDictionary *msgDict = @{MsgSectionTimeKey : @(startTime),
+                                          MsgSectionListKey : [mutArr mutableCopy]};
+                [dataArray addObject:msgDict];
+                [mutArr removeAllObjects];
+                mutArr = nil;
+            }
         }
     }];
     
@@ -312,9 +323,9 @@ static float const FileHeight = 80.0f;      // 文件的高度
         else if ([elem isKindOfClass:[TIMLocationElem class]]) {
             cell = [tableView dequeueReusableCellWithIdentifier:LocationMessageCellID forIndexPath:indexPath];
         }
-        else if ([elem isKindOfClass:[TIMFaceElem class]]) {
-            cell = [tableView dequeueReusableCellWithIdentifier:VideoMessageCellID forIndexPath:indexPath];
-        }
+//        else if ([elem isKindOfClass:[TIMFaceElem class]]) {
+//            cell = [tableView dequeueReusableCellWithIdentifier:VideoMessageCellID forIndexPath:indexPath];
+//        }
         else if ([elem isKindOfClass:[TIMGroupTipsElem class]] ||
                  [elem isKindOfClass:[TIMGroupTipsElemMemberInfo class]] ||
                  [elem isKindOfClass:[TIMGroupSystemElem class]])
@@ -361,6 +372,10 @@ static float const FileHeight = 80.0f;      // 文件的高度
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didTapChatMessageView:)]) {
+        [self.delegate didTapChatMessageView:self];
+    }
     
     TIMMessage *message = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey][indexPath.row];
     if ([message elemCount] <= 0) {
@@ -474,21 +489,16 @@ static float const FileHeight = 80.0f;      // 文件的高度
         [_tableView registerClass:[WXLocationMessageCell class] forCellReuseIdentifier:LocationMessageCellID];
         [_tableView registerClass:[WXPromptMessageCell class] forCellReuseIdentifier:PromptMessageCellID];
         [_tableView registerClass:[WXMessageHeaderFooterView class] forHeaderFooterViewReuseIdentifier:TimeMessageCellID];
-    }
-    return _tableView;
-}
-
-- (MJRefreshNormalHeader *)refreshView
-{
-    if (_refreshView == nil) {
+        
         @XOWeakify(self);
         _refreshView = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
             @XOStrongify(self);
             [self loadMessages];
         }];
         _refreshView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+        _tableView.mj_header = _refreshView;
     }
-    return _refreshView;
+    return _tableView;
 }
 
 - (CALayer *)chatBGLayer
@@ -550,8 +560,8 @@ static float const FileHeight = 80.0f;      // 文件的高度
     
     // 2、缓存中没有就计算高度
     TIMElem *elem = [message getElem:0];
-    CGSize size = CGSizeMake((KWIDTH * 0.6), 70.0f);
-    CGFloat height = 70.0f;
+    CGSize size = CGSizeMake((KWIDTH * 0.6), 56.0f);
+    CGFloat height = 56.0f;
     
     // 文字消息
     if ([elem isKindOfClass:[TIMTextElem class]] ||
@@ -574,7 +584,47 @@ static float const FileHeight = 80.0f;      // 文件的高度
         label.attributedText = text;
         size = [label sizeThatFits:CGSizeMake(KWIDTH * 0.58, MAXFLOAT)];
         
-        CGFloat relHeight = (size.height + 40 <= height) ? height : size.height + 40;
+        CGFloat relHeight = (size.height + 36 <= height) ? height : size.height + 36;
+        size = CGSizeMake(size.width, relHeight);
+    }
+    // 图片|视频消息
+    else if ([elem isKindOfClass:[TIMVideoElem class]] ||
+             [elem isKindOfClass:[TIMImageElem class]])
+    {
+        float sizew = ImageWidth;  // 图片的宽度
+        float sizeh = ImageHeight;  // 图片的高度
+        size = CGSizeMake(ImageWidth, ImageHeight);
+        
+        if ([elem isKindOfClass:[TIMImageElem class]]) {
+            TIMImageElem *imageElem = (TIMImageElem *)elem;
+            if (imageElem.imageList.count > 0) {
+                TIMImage *image = [imageElem.imageList objectAtIndex:0];
+                sizew = image.width;
+                sizeh = image.height;
+            }
+        }
+        else if ([elem isKindOfClass:[TIMVideoElem class]]) {
+            TIMVideoElem *videoElem = (TIMVideoElem *)elem;
+            if (videoElem.snapshot) {
+                sizew = videoElem.snapshot.width;
+                sizeh = videoElem.snapshot.height;
+            }
+        }
+        
+        float maxWid = KWIDTH * 0.3;
+        if (sizew <= maxWid) {
+            size = CGSizeMake(sizew, sizeh);
+        } else {
+            if (sizew > sizeh) {
+                float resizeh = (maxWid/sizew) * sizeh;
+                size = CGSizeMake(maxWid, resizeh);
+            } else {
+                float resizeW = (maxWid/sizeh) * sizew;
+                size = CGSizeMake(resizeW, maxWid);
+            }
+        }
+        
+        CGFloat relHeight = (size.height + 17 <= height) ? height : size.height + 17;
         size = CGSizeMake(size.width, relHeight);
     }
     // 文件消息
@@ -589,40 +639,6 @@ static float const FileHeight = 80.0f;      // 文件的高度
         int duration = soundElem.second;
         float width = (100 + duration * 5) < KWIDTH * 0.6 ? 100 + duration * 5 : KWIDTH * 0.6;
         size = CGSizeMake(width, 50.0f);
-    }
-    // 图片|视频消息
-    else if ([elem isKindOfClass:[TIMVideoElem class]] ||
-             [elem isKindOfClass:[TIMImageElem class]])
-    {
-        CGSize elemSize = CGSizeMake(ImageWidth, ImageHeight);
-        float sizew = ImageWidth;
-        float sizeh = ImageHeight;
-        if ([elem isKindOfClass:[TIMImageElem class]]) {
-            TIMImageElem *imageElem = (TIMImageElem *)elem;
-            if (imageElem.imageList.count > 0) {
-                TIMImage *image = [imageElem.imageList objectAtIndex:0];
-                sizew = image.width;
-                sizeh = image.height;
-            }
-        } else {
-            TIMVideoElem *videoElem = (TIMVideoElem *)elem;
-            elemSize = CGSizeMake(videoElem.snapshot.width, videoElem.snapshot.height);
-            sizew = videoElem.snapshot.width;
-            sizeh = videoElem.snapshot.height;
-        }
-        
-        float maxWid = KWIDTH * 0.5;
-        if (sizew <= maxWid) {
-            size = CGSizeMake(sizew, sizeh);
-        } else {
-            if (sizew > sizeh) {
-                float resizeh = (maxWid/sizew) * sizeh;
-                size = CGSizeMake(maxWid, resizeh);
-            } else {
-                float resizeW = (maxWid/sizeh) * sizew;
-                size = CGSizeMake(resizeW, maxWid);
-            }
-        }
     }
     // 位置消息
     else if ([elem isKindOfClass:[TIMLocationElem class]])
