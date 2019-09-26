@@ -12,10 +12,24 @@
 #import <XOBaseLib/XOBaseLib.h>
 #import <XOChatModule/XOChatModule.h>
 
-#define Token           @"ac7295f5e92742dea25260e9a780db91"
+
 #define TXTIMAppID      @"1400079944"
+
+#if 1
+
+// 13229292929
+#define Token           @"ac7295f5e92742dea25260e9a780db91"
 #define TIM_UserId      @"20f63beb2dd9432393c494c7baf4aad1"
 #define TIM_UserSig     @"eJw1kF1PgzAUhv8L18YwWtrVxAsCxCx2yr5KvCL9JFU7K3YRZvzvMmS3z3NO3nPen2hPd7fce6saHhrQqeguiqObCeve20433ATdjThJSRLHV2mVPgZr7L*KDQJCi0QpAkECCJCQQIkFN5BztZh3vmw7Dq-LQ77aFHlhJM0wUmdmUP4o6if6un0QrHL9idaVt8i9cE2H6tyu2vKTvYOs9j487zNhcN6WRaolGgjRgB1St-l2ku22PV3fX8PUWzM9NkYu4Hg4JgTCWQbr9IWnaLnEyahmzqX8OB1DEwavpyZ*-wBS-1fR"
+
+#else
+
+// 13225252525
+#define Token           @"0db1788e4d7e44adb7ccd8dfd6dfdf6c"
+#define TIM_UserId      @"fddd69261dc44ebe928bc81ebc5bf1a7"
+#define TIM_UserSig     @"eJw1kF1vgjAUhv8L18soXUG6xAtBQlxcbJ1xuhvSj1NXlzEGZeiM-32MyO3znJP3nPfibZYv96KqrC6EKx5q7T16yLsbMJwqW0MhjIO6xzikGKFRWg2ls8YOymitI4qjQCtCQALFsVRxAFKF0gRicttp7KEffs54usg3-tv7Mc1r5li7WpJWrdaq092**T2ZLPHzn3kjfG22bD2zSSIQzdhOvoa8nH8zivkW*HkHR44WNj3wALXoaRbnjnfT6RimP4rhsT4yIP3hE0oJuUlnP*GfhxElMaF45EKpr7Z0hTtXMDRx-QOoule8"
+
+#endif
 
 @interface XOChatAppDelegate () <TIMConnListener>
 

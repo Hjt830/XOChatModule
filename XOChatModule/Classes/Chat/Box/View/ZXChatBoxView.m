@@ -114,8 +114,10 @@
 
 - (void) deleteButtonDown
 {
-    [self textView:self.textView shouldChangeTextInRange:NSMakeRange(self.textView.text.length - 1, 1) replacementText:@""];
-    [self textViewDidChange:self.textView];
+    if (self.textView) {
+        [self textView:self.textView shouldChangeTextInRange:NSMakeRange(self.textView.text.length - 1, 1) replacementText:@""];
+        [self textViewDidChange:self.textView];
+    }
 }
 
 

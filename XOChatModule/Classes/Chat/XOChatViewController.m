@@ -27,6 +27,11 @@
 
 @implementation XOChatViewController
 
+- (void)dealloc
+{
+    NSLog(@"%s", __func__);
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -61,8 +66,8 @@
     
     _safeAreaTop = self.view.safeAreaInsets.top;
     _safeAreaBottom = self.view.safeAreaInsets.bottom;
-    self.chatBoxVC.view.top = self.view.height - HEIGHT_TABBAR - _safeAreaBottom;
-    [self.chatBoxVC safeAreaDidChange:self.view.safeAreaInsets];
+    _chatBoxVC.view.top = self.view.height - HEIGHT_TABBAR - _safeAreaBottom;
+    [_chatBoxVC safeAreaDidChange:self.view.safeAreaInsets];
 }
 
 - (void)initialization
@@ -139,13 +144,23 @@
     textElem.text = content;
     TIMMessage *textMsg = [[TIMMessage alloc] init];
     [textMsg addElem:textElem];
+    
+    @weakify(self);
     int sendText = [self.conversation sendMessage:textMsg succ:^{
         NSLog(@"发送成功");
+        @strongify(self);
+        [self.chatMsgVC updateMessage:textMsg];
     } fail:^(int code, NSString *msg) {
         NSLog(@"发送失败");
+        @strongify(self);
+        [self.chatMsgVC updateMessage:textMsg];
     }];
     if(1 == sendText) NSLog(@"发送文本消息失败!!!");
+    
+    // 将消息显示出来
+    [self.chatMsgVC addMessage:textMsg];
 }
+
 // 发送图片消息
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendImage:(NSString *)imagePath imageSize:(CGSize)size imageFormat:(nonnull NSString *)format
 {
@@ -154,13 +169,23 @@
     imageElem.format = [self getImageFormat:format];
     TIMMessage *imageMsg = [[TIMMessage alloc] init];
     [imageMsg addElem:imageElem];
+    
+    @weakify(self);
     int sendText = [self.conversation sendMessage:imageMsg succ:^{
         NSLog(@"发送成功");
+        @strongify(self);
+        [self.chatMsgVC updateMessage:imageMsg];
     } fail:^(int code, NSString *msg) {
         NSLog(@"发送失败");
+        @strongify(self);
+        [self.chatMsgVC updateMessage:imageMsg];
     }];
     if(1 == sendText) NSLog(@"发送图片消息失败!!!");
+    
+    // 将消息显示出来
+    [self.chatMsgVC addMessage:imageMsg];
 }
+
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendVideo:(NSURL *)videoUrl videoDuration:(float)duration
 {
     

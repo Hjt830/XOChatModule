@@ -56,6 +56,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
         dispatch_source_cancel(self->_timer);
         self->_timer = nil;
     }
+    NSLog(@"%s", __func__);
 }
 
 - (void)viewDidLoad {
@@ -703,14 +704,20 @@ static NSTimeInterval audioRecordTime = 0.0f;
         if (isSelectOriginalPhoto) {
             // 获取原图
             [[TZImageManager manager] getOriginalPhotoWithAsset:asset completion:^(UIImage *photo, NSDictionary *info) {
-                [self getImageForAsset:asset];
+                static dispatch_once_t onceToken;
+                dispatch_once(&onceToken, ^{
+                    [self getImageForAsset:asset];
+                });
             }];
         }
         // 未选择原图
         else {
             // 获取封面图
             [[TZImageManager manager] getPhotoWithAsset:asset completion:^(UIImage *photo, NSDictionary *info, BOOL isDegraded) {
-                [self getImageForAsset:asset];
+                static dispatch_once_t onceToken;
+                dispatch_once(&onceToken, ^{
+                    [self getImageForAsset:asset];
+                });
             }];
         }
     }];
@@ -767,33 +774,23 @@ static NSTimeInterval audioRecordTime = 0.0f;
                     
                     // 图片存储的路径
                     NSString *imageName = [dic[@"PHImageFileURLKey"] lastPathComponent];
-                    __block NSString *path = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
+                    NSString *imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
 
-                    if (data.length > 6 * 1024 * 1024) // 图片大于6M压缩
+                    // 图片大于6M压缩
+                    if (data.length > 6 * 1024 * 1024)
                     {
                         [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
                             UIImage *originImage = [UIImage imageWithData:data];
-                            CGSize scaleSize = [[XOFileManager shareInstance] getScaleImageSize:originImage];
-                            UIImage *scaleImage = [[XOFileManager shareInstance] scaleOriginImage:originImage toSize:scaleSize];
-                            __block NSData *scaleData = UIImageJPEGRepresentation(scaleImage, 0.8);
-                            
-                            if ([scaleData writeToFile:path atomically:YES]) {
-                                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                    [self.delegate chatBoxViewController:self sendImage:path imageSize:scaleSize imageFormat:uti];
-                                }];
-                            }
+                            CGFloat ratio = (6.0 * 1024 * 1024)/data.length;
+                            CGSize size = CGSizeMake(originImage.size.width * ratio, originImage.size.height * ratio);
+                            UIImage *image = [[XOFileManager shareInstance] scaleOriginImage:originImage toSize:size];
+                            [self handleImageWith:image imageName:imageName imagePath:imagePath uti:uti];
                         }];
                     }
                     else {
                         [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
                             UIImage *originImage = [UIImage imageWithData:data];
-                            __block CGSize size = originImage.size;
-                            
-                            if ([data writeToFile:path atomically:YES]) {
-                                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                    [self.delegate chatBoxViewController:self sendImage:path imageSize:size imageFormat:uti];
-                                }];
-                            }
+                            [self handleImageWith:originImage imageName:imageName imagePath:imagePath uti:uti];
                         }];
                     }
                 }
@@ -802,6 +799,27 @@ static NSTimeInterval audioRecordTime = 0.0f;
                 [SVProgressHUD showInfoWithStatus:NSLocalizedString(@"image.choose", @"Image size is too large, please re-select")];
                 [SVProgressHUD dismissWithDelay:1.3f];
             }
+        }];
+    }
+}
+
+- (void)handleImageWith:(UIImage *)image imageName:(NSString *)imageName imagePath:(NSString *)imagePath uti:(NSString *)uti
+{
+    NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
+    
+    // 压缩图写入沙盒
+    if ([imageData writeToFile:imagePath atomically:YES]) {
+        // 获取缩略图
+        CGSize thumbSize = [[XOFileManager shareInstance] getScaleImageSize:image];
+        UIImage *thumbImage = [[XOFileManager shareInstance] scaleOriginImage:image toSize:thumbSize];
+        NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 1.0);
+        NSString *thumbImageName = [imageName stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
+        NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
+        // 缩略图写入沙盒
+        [thumbImageData writeToFile:thumbImagePath atomically:YES];
+        
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.delegate chatBoxViewController:self sendImage:imagePath imageSize:image.size imageFormat:uti];
         }];
     }
 }

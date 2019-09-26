@@ -109,6 +109,21 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)xoOnConnecting;
 
+
+////////////// 下载文件
+
+// 消息文件下载进度回调
+- (void)message:(TIMMessage *)message downloadProgress:(float)progress;
+
+// 消息文件下载成功回调
+- (void)messageFileDownloadSuccess:(TIMMessage * _Nonnull)message fileURL:(NSURL * _Nullable)fileURL thumbImageURL:(NSURL * _Nullable)thumbImageURL;
+
+// 消息文件下载进度回调
+- (void)messageFileDownloadFail:(TIMMessage *)message failError:(NSError *)error;
+
+// 消息文件上传进度回调
+- (void)messageFileUpload:(TIMMessage *)message progress:(float)progress;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -20,6 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) TIMConversation               *conversation;
 @property (nonatomic, assign) TIMConversationType           chatType;   // 会话类型
 
+- (NSIndexPath *)addMessage:(TIMMessage *)message;
+
+- (void)deleteMessage:(TIMMessage *)message;
+
+- (void)updateMessage:(TIMMessage *)message;
+
 @end
 
 

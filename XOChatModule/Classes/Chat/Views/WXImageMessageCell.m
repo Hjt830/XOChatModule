@@ -29,6 +29,26 @@ static BOOL progressFinish = NO;
     return self;
 }
 
+#pragma mark ========================= setter =========================
+
+- (void)setMessage:(TIMMessage *)message
+{
+    [super setMessage:message];
+    
+    [self.messageBackgroundImageView setImage:nil];
+    // 设置上传或者下载进度
+    if (message.isSelf && !progressFinish) {
+        UIBezierPath *path = [self getPathWithProgress:0.00f];
+        self.progressHud.path = path.CGPath;
+        [self.messageImageView.layer addSublayer:self.progressHud];
+    } else {
+        [self.progressHud removeFromSuperlayer];
+    }
+    
+    // 加载图片
+    [self loadImageWith:message formCache:YES];
+}
+
 - (void) layoutSubviews
 {
     [super layoutSubviews];
@@ -66,6 +86,8 @@ static BOOL progressFinish = NO;
 {
     [super updateProgress:progress effect:effect];
     
+    NSLog(@"self: %p progress: %f", self, progress);
+    
     @synchronized (self) {
         
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -94,50 +116,12 @@ static BOOL progressFinish = NO;
     }
 }
 
-- (UIBezierPath *)getPathWithProgress:(float)progress
-{
-    CGSize imageSize = [self messageSize];
-    if (_radius <= 0) {
-        // 求矩形对角线长度
-        _radius = sqrt(imageSize.width * imageSize.width + imageSize.height * imageSize.height);
-    }
-    UIBezierPath * interP  = [UIBezierPath bezierPathWithArcCenter:CGPointMake(imageSize.width/2.0, imageSize.height/2.0)
-                                                            radius:(_radius/2.0)
-                                                        startAngle:0.0 * 2 * M_PI
-                                                          endAngle:progress * 2 * M_PI  // 2π
-                                                         clockwise:NO];
-    [interP addLineToPoint:CGPointMake(imageSize.width/2.0, imageSize.height/2.0)];
-    [interP closePath];
-    
-    return interP;
-}
-
-#pragma mark - Getter and Setter
-- (void)setMessage:(TIMMessage *)message
-{
-    [super setMessage:message];
-    
-    [self.messageBackgroundImageView setImage:nil];
-    // 设置上传或者下载进度
-    if (message.isSelf && !progressFinish) {
-        UIBezierPath *path = [self getPathWithProgress:0.00f];
-        self.progressHud.path = path.CGPath;
-        [self.messageImageView.layer addSublayer:self.progressHud];
-    } else {
-        [self.progressHud removeFromSuperlayer];
-    }
-    
-    // 设置图片
-    self.messageImageView.image = [UIImage xo_imageNamedFromChatBundle:@"placeholderImage"];
-    // 加载图片
-    [self loadImageWith:message formCache:YES];
-}
-
 - (UIImageView *) messageImageView
 {
     if (_messageImageView == nil) {
         _messageImageView = [[UIImageView alloc] init];
         [_messageImageView setContentMode:UIViewContentModeScaleAspectFill];
+        [_messageImageView setImage:[UIImage xo_imageNamedFromChatBundle:@"placeholderImage"]];
         [_messageImageView setClipsToBounds:YES];
         [_messageImageView.layer setMask:_layer];
     }
@@ -195,11 +179,12 @@ static BOOL progressFinish = NO;
                             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                 self.messageImageView.image = thumbImage;
                             }];
-                        }
-                        // 将缩略图写入沙盒
-                        NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 1.0);
-                        if ([thumbImageData writeToFile:thumbImagePath atomically:YES]) {
-                            NSLog(@"缓存缩略图成功");
+                            
+                            // 将缩略图写入沙盒
+                            NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 1.0);
+                            if ([thumbImageData writeToFile:thumbImagePath atomically:YES]) {
+                                NSLog(@"缓存缩略图成功");
+                            }
                         }
                     }];
                 } fail:^(int code, NSString *msg) {
@@ -211,11 +196,78 @@ static BOOL progressFinish = NO;
     else if ([elem isKindOfClass:[TIMVideoElem class]]) {
         TIMVideoElem *videoElem = (TIMVideoElem *)elem;
         if (videoElem.snapshot) {
+            TIMSnapshot *snapshot = videoElem.snapshot;
+            NSString *format = !XOIsEmptyString(snapshot.type) ? snapshot.type : @"jpg";
+            __block NSString *thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", snapshot.uuid, format];
+            __block NSString *thumbSnapshotImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
             
+            // 从缓存获取缩略图片
+            if (useCache && [[NSFileManager defaultManager] fileExistsAtPath:thumbSnapshotImagePath]) {
+                [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                    NSData *thumbImageData = [[NSData alloc] initWithContentsOfFile:thumbSnapshotImagePath];
+                    __block UIImage *thumbImage = [UIImage imageWithData:thumbImageData];
+                    // 缓存中有图片
+                    if (thumbImage != nil) {
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            self.messageImageView.image = thumbImage;
+                        }];
+                    }
+                    // 缓存中没有图片
+                    else {
+                        [self loadImageWith:message formCache:NO];
+                    }
+                }];
+            }
+            // 从网络获取图片
+            else {
+                NSString *snapshotName = [NSString stringWithFormat:@"%@.%@", snapshot.uuid, format];
+                __block NSString *snapshotPath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:snapshotName];
+                [snapshot getImage:snapshotPath  succ:^{
+                    [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                        // 获取原图
+                        NSData *snapshotImageData = [[NSData alloc] initWithContentsOfFile:snapshotPath];
+                        __block UIImage *snapshotImage = [UIImage imageWithData:snapshotImageData];
+                        // 根据原图获取缩略图
+                        CGSize thumbSnapshotSize = [[XOFileManager shareInstance] getScaleImageSize:snapshotImage];
+                        UIImage *thumbSnapshotImage = [[XOFileManager shareInstance] scaleOriginImage:snapshotImage toSize:thumbSnapshotSize];
+                        // 显示图片
+                        if (thumbSnapshotImage) {
+                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                self.messageImageView.image = thumbSnapshotImage;
+                            }];
+                            
+                            // 将缩略图写入沙盒
+                            NSData *thumbSnapshotImageData = UIImageJPEGRepresentation(thumbSnapshotImage, 1.0);
+                            if ([thumbSnapshotImageData writeToFile:thumbSnapshotImagePath atomically:YES]) {
+                                NSLog(@"缓存缩略图成功");
+                            }
+                        }
+                    }];
+                } fail:^(int code, NSString *msg) {
+                    NSLog(@"下载网络图片失败 ---- code: %d  msg: %@", code, msg);
+                }];
+            }
         }
     }
 }
 
+- (UIBezierPath *)getPathWithProgress:(float)progress
+{
+    CGSize imageSize = [self messageSize];
+    if (_radius <= 0) {
+        // 求矩形对角线长度
+        _radius = sqrt(imageSize.width * imageSize.width + imageSize.height * imageSize.height);
+    }
+    UIBezierPath * interP  = [UIBezierPath bezierPathWithArcCenter:CGPointMake(imageSize.width/2.0, imageSize.height/2.0)
+                                                            radius:(_radius/2.0)
+                                                        startAngle:0.0 * 2 * M_PI
+                                                          endAngle:progress * 2 * M_PI  // 2π
+                                                         clockwise:NO];
+    [interP addLineToPoint:CGPointMake(imageSize.width/2.0, imageSize.height/2.0)];
+    [interP closePath];
+    
+    return interP;
+}
 
 // 获取图片的格式
 - (NSString *)getImageFormat:(TIM_IMAGE_FORMAT)imageFormat
@@ -243,7 +295,7 @@ static BOOL progressFinish = NO;
 {
     float sizew = 375.0f;  // 图片的宽度
     float sizeh = 750.0f;  // 图片的高度
-    CGSize size = CGSizeMake(sizew, sizeh);
+    CGSize size = CGSizeZero;
     
     TIMElem *elem = [self.message getElem:0];
     if ([elem isKindOfClass:[TIMImageElem class]]) {

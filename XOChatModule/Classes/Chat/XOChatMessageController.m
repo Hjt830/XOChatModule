@@ -36,14 +36,16 @@ static NSString * const WalletMessageCellID     = @"WalletMessageCellID";
 static NSString * const UITableViewCellID       = @"UITableViewCellID";
 static NSString * const PromptMessageCellID     = @"PromptMessageCellID";
 
-@interface XOChatMessageController () <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, XOMessageDelegate, LGAudioPlayerDelegate, WXMessageCellDelegate>
+static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单位:分钟
+
+@interface XOChatMessageController () <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, XOChatClientProtocol, XOMessageDelegate, LGAudioPlayerDelegate, WXMessageCellDelegate>
 {
     TIMMessage  *_earliestMsg;  // 最早的一条消息
 }
 @property (nonatomic, strong) CALayer   * chatBGLayer;
 @property (nonatomic, strong) UITableView                       *tableView;     // 会话列表
 @property (nonatomic, strong) MJRefreshNormalHeader             *refreshView;   // 下拉刷新
-@property (nonatomic, strong) NSMutableArray    <NSDictionary *>*dataSource;    // 数据源
+@property (nonatomic, strong) NSMutableArray    <NSMutableDictionary <NSString *, id>* >*dataSource;    // 数据源
 @property (nonatomic, strong) NSLock                            *lock;          // 线程锁
 @property (nonatomic, assign) NSUInteger                        page;           // 数据的页数
 @property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *updateIndexDict;    // 保存更新进度时的消息位置信息
@@ -61,6 +63,7 @@ static NSString * const PromptMessageCellID     = @"PromptMessageCellID";
 {
     self = [super init];
     if (self) {
+        [[XOChatClient shareClient] addDelegate:self delegateQueue:dispatch_get_main_queue()];
         [[XOChatClient shareClient].messageManager addDelegate:self delegateQueue:dispatch_get_main_queue()];
     }
     return self;
@@ -68,7 +71,9 @@ static NSString * const PromptMessageCellID     = @"PromptMessageCellID";
 
 - (void)dealloc
 {
+    [[XOChatClient shareClient] removeDelegate:self];
     [[XOChatClient shareClient].messageManager removeDelegate:self];
+    NSLog(@"%s", __func__);
 }
 
 - (void)viewDidLoad {
@@ -213,6 +218,24 @@ static NSString * const PromptMessageCellID     = @"PromptMessageCellID";
 
 #pragma mark ====================== 数据处理 =======================
 
+// 被筛选掉的消息
+- (BOOL)filterMessage:(TIMMessage *)message
+{
+    BOOL filter = NO;
+    switch (message.status) {
+        case TIM_MSG_STATUS_HAS_DELETED:
+            filter = YES;
+            break;
+        case TIM_MSG_STATUS_LOCAL_REVOKED:
+            filter = YES;
+            break;
+        default:
+            break;
+    }
+    
+    return filter;
+}
+
 // 处理消息，根据时间分组
 - (NSArray *)handleDataSource:(NSArray <TIMMessage *>*)array
 {
@@ -225,56 +248,187 @@ static NSString * const PromptMessageCellID     = @"PromptMessageCellID";
     __block long long startTime = [[array firstObject].timestamp timeIntervalSince1970] * 1000;
     __block NSMutableArray <TIMMessage *>* mutArr = [NSMutableArray array];
     [array enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        // 计算与 **上一个时间分组起止时间** 的间隔时间
-        long long msgTime = [obj.timestamp timeIntervalSince1970] * 1000;
-        long long timeSpace = msgTime - startTime;
         
-        // 时间间隔小于5分钟时, 加入同一个分组 且 消息有内容
-        if (timeSpace < 5 * 60 * 1000 && [obj elemCount] > 0) {
-            [mutArr addObject:obj];
+        BOOL filter = [self filterMessage:obj];
+        if (filter) {
+            NSLog(@"消息被剔除, 因为该条消息已经被撤回或删除");
+        }
+        else {
+            // 计算与 **上一个时间分组起止时间** 的间隔时间
+            long long msgTime = [obj.timestamp timeIntervalSince1970] * 1000;
+            long long timeSpace = msgTime - startTime;
             
-            // 如果最后一条消息在这个分组内, 则在此处保存
-            if (idx == array.count - 1) {
+            // 时间间隔小于5分钟时, 加入同一个分组 且 消息有内容
+            if (timeSpace < MessageTimeSpaceMinute * 60 * 1000 && [obj elemCount] > 0) {
+                [mutArr addObject:obj];
+                
+                // 如果最后一条消息在这个分组内, 则在此处保存
+                if (idx == array.count - 1) {
+                    // 根据消息的本地发送时间进行分组内排序 （确保与发送端的消息顺序一致）
+                    NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
+                    [mutArr sortedArrayUsingDescriptors:@[descriptor]];
+                    NSMutableDictionary *mutMsgDict = @{MsgSectionTimeKey : @(startTime),
+                                                        MsgSectionListKey : [mutArr mutableCopy]}.mutableCopy;
+                    [dataArray addObject:mutMsgDict];
+                    [mutArr removeAllObjects];
+                    mutArr = nil;
+                }
+            }
+            // 时间间隔大于5分钟时, 保存该分组, 同时 重置 **上一个时间分组起止时间** 并 新建下一个分组
+            else {
                 // 根据消息的本地发送时间进行分组内排序 （确保与发送端的消息顺序一致）
                 NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
                 [mutArr sortedArrayUsingDescriptors:@[descriptor]];
-                NSDictionary *msgDict = @{MsgSectionTimeKey : @(startTime),
-                                          MsgSectionListKey : [mutArr mutableCopy]};
-                [dataArray addObject:msgDict];
+                // 保存该分组数据
+                NSMutableDictionary *mutMsgDict = @{MsgSectionTimeKey : @(startTime),
+                                                    MsgSectionListKey : [mutArr mutableCopy]}.mutableCopy;
+                [dataArray addObject:mutMsgDict];
                 [mutArr removeAllObjects];
                 mutArr = nil;
-            }
-        }
-        // 时间间隔大于5分钟时, 保存该分组, 同时 重置 **上一个时间分组起止时间** 并 新建下一个分组
-        else {
-            // 根据消息的本地发送时间进行分组内排序 （确保与发送端的消息顺序一致）
-            NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
-            [mutArr sortedArrayUsingDescriptors:@[descriptor]];
-            // 保存该分组数据
-            NSDictionary *msgDict = @{MsgSectionTimeKey : @(startTime),
-                                      MsgSectionListKey : [mutArr mutableCopy]};
-            [dataArray addObject:msgDict];
-            [mutArr removeAllObjects];
-            mutArr = nil;
-            
-            // 重置 **上一个时间分组起止时间**
-            startTime = (long long)[obj.timestamp timeIntervalSince1970] * 1000;
-            // 新建下一个分组
-            mutArr = [NSMutableArray array];
-            [mutArr addObject:obj];
-            
-            // 如果这是最后一条消息, 则在此处保存
-            if (idx == array.count - 1) {
-                NSDictionary *msgDict = @{MsgSectionTimeKey : @(startTime),
-                                          MsgSectionListKey : [mutArr mutableCopy]};
-                [dataArray addObject:msgDict];
-                [mutArr removeAllObjects];
-                mutArr = nil;
+                
+                // 重置 **上一个时间分组起止时间**
+                startTime = (long long)[obj.timestamp timeIntervalSince1970] * 1000;
+                // 新建下一个分组
+                mutArr = [NSMutableArray array];
+                [mutArr addObject:obj];
+                
+                // 如果这是最后一条消息, 则在此处保存
+                if (idx == array.count - 1) {
+                    NSMutableDictionary *mutMsgDict = @{MsgSectionTimeKey : @(startTime),
+                                                        MsgSectionListKey : [mutArr mutableCopy]}.mutableCopy;
+                    [dataArray addObject:mutMsgDict];
+                    [mutArr removeAllObjects];
+                    mutArr = nil;
+                }
             }
         }
     }];
     
     return dataArray;
+}
+
+// 添加消息
+- (NSIndexPath *)addMessage:(TIMMessage *)message
+{
+    __block NSIndexPath *indexpath = nil;
+    __block long long msgTime = [message.timestamp timeIntervalSince1970] * 1000;
+    long long maxTime = [[self.dataSource lastObject][MsgSectionTimeKey] unsignedIntegerValue];
+    long long maxSpace = msgTime - maxTime;
+    long long minTime = [[self.dataSource firstObject][MsgSectionTimeKey] unsignedIntegerValue];
+    long long minSpace = minTime - msgTime;
+    
+    // 1、如果插入的消息时间比最大的消息分组的时间大5分钟, 则在最后面追加一组
+    if (maxSpace > MessageTimeSpaceMinute * 60 * 1000) {
+        NSMutableArray *mutArr = [NSMutableArray array];
+        [mutArr addObject:message];
+        NSMutableDictionary *mutMsgDict = @{MsgSectionTimeKey : @(msgTime),
+                                            MsgSectionListKey : mutArr}.mutableCopy;
+        @synchronized (self) {
+            [self.dataSource addObject:mutMsgDict];
+        }
+        [self.tableView insertSection:(self.dataSource.count - 1) withRowAnimation:UITableViewRowAnimationBottom];
+        indexpath = [NSIndexPath indexPathForRow:0 inSection:(self.dataSource.count - 1)];
+    }
+    // 2、如果插入的消息时间比最小的消息分组的时间小5分钟, 则在最前面插入一组
+    else if (minSpace > 0 && minSpace > MessageTimeSpaceMinute * 60 * 1000) {
+        NSMutableArray *mutArr = [NSMutableArray array];
+        [mutArr addObject:message];
+        NSMutableDictionary *mutMsgDict = @{MsgSectionTimeKey : @(msgTime),
+                                            MsgSectionListKey : mutArr}.mutableCopy;
+        @synchronized (self) {
+            [self.dataSource insertObject:mutMsgDict atIndex:0];
+        }
+        [self.tableView insertSection:0 withRowAnimation:UITableViewRowAnimationTop];
+        indexpath = [NSIndexPath indexPathForRow:0 inSection:0];
+    }
+    // 3、如果插入的消息时间在 {最小时间, 最大时间} 范围内
+    else {
+        // 遍历消息数组, 插入消息
+        @synchronized (self) {
+            @weakify(self);
+            [self.dataSource enumerateObjectsUsingBlock:^(NSMutableDictionary <NSString *, id> * _Nonnull dict, NSUInteger idx, BOOL * _Nonnull stop) {
+                @strongify(self);
+                // 获取分组的时间
+                NSUInteger sectionTime = [dict[MsgSectionTimeKey] unsignedIntegerValue];
+                long long timeSpace = msgTime - sectionTime;
+                
+                // 如果插入的消息时间在 {上一个消息分组时间 + 5min, 当前消息分组时间}, 则新建分组并插入
+                if (timeSpace < 0) {
+                    NSMutableArray *mutArr = [NSMutableArray array];
+                    [mutArr addObject:message];
+                    NSMutableDictionary *mutMsgDict = @{MsgSectionTimeKey : @(msgTime),
+                                                        MsgSectionListKey : mutArr}.mutableCopy;
+                    @synchronized (self) {
+                        [self.dataSource insertObject:mutMsgDict atIndex:idx];
+                    }
+                    [self.tableView insertSection:idx withRowAnimation:UITableViewRowAnimationBottom];
+                    indexpath = [NSIndexPath indexPathForRow:0 inSection:idx];
+                    
+                    *stop = YES;
+                }
+                // 如果插入的消息时间在 {当前消息分组时间, 当前消息分组时间 + 5min}, 则插入到该分组
+                else if (timeSpace >= 0 && timeSpace < MessageTimeSpaceMinute * 60 * 1000) {
+                    NSMutableArray <TIMMessage *>* mutArr = dict[MsgSectionListKey];
+                    [mutArr addObject:message];
+                    NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
+                    [mutArr sortedArrayUsingDescriptors:@[descriptor]];
+                    NSUInteger row = [mutArr indexOfObject:message];
+                    [self.tableView insertRow:row inSection:idx withRowAnimation:UITableViewRowAnimationBottom];
+                    indexpath = [NSIndexPath indexPathForRow:row inSection:idx];
+                    
+                    *stop = YES;
+                }
+            }];
+        }
+    }
+    
+    return indexpath;
+}
+
+// 删除消息
+- (void)deleteMessage:(TIMMessage *)message
+{
+    @weakify(self);
+    [self.dataSource enumerateObjectsUsingBlock:^(NSMutableDictionary<NSString *,id> * _Nonnull dict, NSUInteger idx, BOOL * _Nonnull stop) {
+        @strongify(self);
+        
+        NSMutableArray <TIMMessage *>* mutArr = dict[MsgSectionListKey];
+        __block BOOL needStop = NO;
+        [mutArr enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger subIdx, BOOL * _Nonnull subStop) {
+           
+            if ([obj.msgId isEqualToString:message.msgId] && [obj.timestamp isEqual:message.timestamp]) {
+                [mutArr removeObject:obj];
+                [self.tableView deleteRow:subIdx inSection:idx withRowAnimation:UITableViewRowAnimationAutomatic];
+                
+                needStop = YES;
+                *subStop = YES;
+            }
+        }];
+        *stop = needStop;
+    }];
+}
+
+// 更新消息
+- (void)updateMessage:(TIMMessage *)message
+{
+    @weakify(self);
+    [self.dataSource enumerateObjectsUsingBlock:^(NSMutableDictionary<NSString *,id> * _Nonnull dict, NSUInteger idx, BOOL * _Nonnull stop) {
+        @strongify(self);
+        
+        NSMutableArray <TIMMessage *>* mutArr = dict[MsgSectionListKey];
+        __block BOOL needStop = NO;
+        [mutArr enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger subIdx, BOOL * _Nonnull subStop) {
+            
+            if ([obj.msgId isEqualToString:message.msgId] && [obj.timestamp isEqual:message.timestamp]) {
+                [mutArr replaceObjectAtIndex:subIdx withObject:message];
+                [self.tableView reloadRow:subIdx inSection:idx withRowAnimation:UITableViewRowAnimationAutomatic];
+                
+                needStop = YES;
+                *subStop = YES;
+            }
+        }];
+        *stop = needStop;
+    }];
 }
 
 #pragma mark ====================== UITableViewDataSource =======================
@@ -330,6 +484,9 @@ static NSString * const PromptMessageCellID     = @"PromptMessageCellID";
                  [elem isKindOfClass:[TIMGroupTipsElemMemberInfo class]] ||
                  [elem isKindOfClass:[TIMGroupSystemElem class]])
         {
+            cell = [tableView dequeueReusableCellWithIdentifier:PromptMessageCellID forIndexPath:indexPath];
+        }
+        else {
             cell = [tableView dequeueReusableCellWithIdentifier:PromptMessageCellID forIndexPath:indexPath];
         }
         
@@ -446,6 +603,69 @@ static NSString * const PromptMessageCellID     = @"PromptMessageCellID";
     }
 }
 
+#pragma mark ========================= XOChatClientProtocol =========================
+
+- (void)xoOnNewMessage:(NSArray<TIMMessage *> *)msgs
+{
+    [msgs enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        if ([obj.sender isEqualToString:[self.conversation getReceiver]]) {
+            BOOL filter = [self filterMessage:obj];
+            if (filter) {
+                NSLog(@"消息被剔除, 因为该条消息已经被撤回或删除");
+            }
+            else {
+                [self addMessage:obj];
+            }
+        }
+    }];
+}
+
+- (void)message:(TIMMessage *)message downloadProgress:(float)progress
+{
+    [self updateProgress:progress withMessage:message];
+}
+
+- (void)messageFileDownloadSuccess:(TIMMessage *)message fileURL:(NSURL *)fileURL thumbImageURL:(NSURL *)thumbImageURL
+{
+    
+}
+
+- (void)messageFileDownloadFail:(TIMMessage *)message failError:(NSError *)error
+{
+    
+}
+
+- (void)messageFileUpload:(TIMMessage *)message progress:(float)progress
+{
+    [self updateProgress:progress withMessage:message];
+}
+
+- (void)updateProgress:(float)progress withMessage:(TIMMessage *)message
+{
+    __block NSIndexPath *indexpath = nil;
+    [self.dataSource enumerateObjectsUsingBlock:^(NSMutableDictionary<NSString *,id> * _Nonnull dict, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        NSMutableArray <TIMMessage *>* mutArr = dict[MsgSectionListKey];
+        __block BOOL needStop = NO;
+        [mutArr enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger subIdx, BOOL * _Nonnull subStop) {
+            if ([obj.msgId isEqualToString:message.msgId] && [obj.timestamp isEqual:message.timestamp]) {
+                indexpath = [NSIndexPath indexPathForRow:subIdx inSection:idx];
+                needStop = YES;
+                *subStop = YES;
+            }
+        }];
+        *stop = needStop;
+    }];
+    
+    if (indexpath) {
+        WXMessageCell *cell = [self.tableView cellForRowAtIndexPath:indexpath];
+        if (cell) {
+            [cell updateProgress:progress effect:YES];
+        }
+    }
+}
+
 #pragma mark ========================= WXMessageCellDelegate =========================
 
 // 点击了用户头像
@@ -511,7 +731,7 @@ static NSString * const PromptMessageCellID     = @"PromptMessageCellID";
     return _chatBGLayer;
 }
 
-- (NSMutableArray *)dataSource
+- (NSMutableArray <NSMutableDictionary <NSString *, id>* >*)dataSource
 {
     if (!_dataSource) {
         _dataSource = [NSMutableArray array];
@@ -593,7 +813,7 @@ static NSString * const PromptMessageCellID     = @"PromptMessageCellID";
     {
         float sizew = ImageWidth;  // 图片的宽度
         float sizeh = ImageHeight;  // 图片的高度
-        size = CGSizeMake(ImageWidth, ImageHeight);
+        size = CGSizeZero;
         
         if ([elem isKindOfClass:[TIMImageElem class]]) {
             TIMImageElem *imageElem = (TIMImageElem *)elem;
