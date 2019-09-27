@@ -45,7 +45,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
 {
     self = [super init];
     if (self) {
-        self->_seconds = 0;
+        _seconds = 0;
         self.lastHeight = 0.0f;
     }
     return self;
@@ -53,9 +53,9 @@ static NSTimeInterval audioRecordTime = 0.0f;
 
 - (void)dealloc
 {
-    if (nil != self->_timer) {
-        dispatch_source_cancel(self->_timer);
-        self->_timer = nil;
+    if (nil != _timer) {
+        dispatch_source_cancel(_timer);
+        _timer = nil;
     }
     NSLog(@"%s", __func__);
 }
@@ -176,20 +176,22 @@ static NSTimeInterval audioRecordTime = 0.0f;
         uint64_t interval = (uint64_t)(1.0 * NSEC_PER_SEC); // 执行间隔时间
         dispatch_source_set_timer(_timer, start, interval, 0);
         // 设置事件回调
-        @XOWeakify(self);
+//        @weakify(self);
+        __weak XOChatBoxViewController *weakSelf = self;
         dispatch_source_set_event_handler(_timer, ^{
-            @XOStrongify(self);
+//            @strongify(self);
+            __strong XOChatBoxViewController *strongSelf = weakSelf;
             
-            self->_seconds++;
-            NSLog(@"录音时间: %d  ---  %f", self->_seconds, [LGSoundRecorder shareInstance].soundRecordTime);
+            strongSelf->_seconds++;
+            NSLog(@"录音时间: %d  ---  %f", strongSelf->_seconds, [LGSoundRecorder shareInstance].soundRecordTime);
             if ([LGSoundRecorder shareInstance].soundRecordTime >= MaxAudioRecordTime) {
                 // 结束定时器
-                dispatch_source_cancel(self->_timer);
-                self->_timer = nil;
+                dispatch_source_cancel(strongSelf->_timer);
+                strongSelf->_timer = nil;
                 // 结束录音
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     audioRecordTime = [LGSoundRecorder shareInstance].soundRecordTime;
-                    [[LGSoundRecorder shareInstance] stopSoundRecord:self.view];
+                    [[LGSoundRecorder shareInstance] stopSoundRecord:strongSelf.view];
                 }];
             }
             else if ([LGSoundRecorder shareInstance].soundRecordTime >= (MaxAudioRecordTime - 10)) {
@@ -392,7 +394,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
         // 停止播放音乐之类的
         [[LGAudioPlayer sharePlayer] stopAudioPlayer];
         // 重置时间
-        self->_seconds = 0;
+        _seconds = 0;
         // 开始倒计时
         dispatch_resume(self.timer);
         // 开始录音
@@ -419,10 +421,10 @@ static NSTimeInterval audioRecordTime = 0.0f;
 // 结束录音
 - (void)chatBoxDidEndTalking:(ZXChatBoxView *)chatBox
 {
-    if (self->_timer) {
-        dispatch_source_cancel(self->_timer);
+    if (_timer) {
+        dispatch_source_cancel(_timer);
     }
-    self->_timer = nil;
+    _timer = nil;
     
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         if ([LGSoundRecorder shareInstance].soundRecordTime < 1.0) {
@@ -436,9 +438,9 @@ static NSTimeInterval audioRecordTime = 0.0f;
 // 取消录音
 - (void)chatBoxDidCancelTalking:(ZXChatBoxView *)chatBox
 {
-    if (self->_timer) {
-        dispatch_source_cancel(self->_timer);
-        self->_timer = nil;
+    if (_timer) {
+        dispatch_source_cancel(_timer);
+        _timer = nil;
     }
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [[LGSoundRecorder shareInstance] soundRecordFailed:self.view];
@@ -663,9 +665,9 @@ static NSTimeInterval audioRecordTime = 0.0f;
 
 - (void)showSoundRecordFailed
 {
-    if (self->_timer) {
-        dispatch_source_cancel(self->_timer);
-        self->_timer = nil;
+    if (_timer) {
+        dispatch_source_cancel(_timer);
+        _timer = nil;
     }
 }
 
@@ -682,10 +684,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
         NSLog(@"录音文件不存在");
     }
     else { // 发送语音消息
-        @XOWeakify(self);
         [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-            @XOStrongify(self);
-            
             // 转码mp3格式
             if ([ConvertWavToMp3 convertToMp3WithSavePath:mp3Path sourcePath:cafPath])
             {
@@ -717,7 +716,9 @@ static NSTimeInterval audioRecordTime = 0.0f;
         // 选择了原图
         if (isSelectOriginalPhoto) {
             // 获取原图
+            @weakify(self);
             [[TZImageManager manager] getOriginalPhotoWithAsset:asset completion:^(UIImage *photo, NSDictionary *info) {
+                @strongify(self);
                 static dispatch_once_t onceToken;
                 dispatch_once(&onceToken, ^{
                     [self getImageForAsset:asset];
@@ -727,7 +728,9 @@ static NSTimeInterval audioRecordTime = 0.0f;
         // 未选择原图
         else {
             // 获取封面图
+            @weakify(self);
             [[TZImageManager manager] getPhotoWithAsset:asset completion:^(UIImage *photo, NSDictionary *info, BOOL isDegraded) {
+                @strongify(self);
                 static dispatch_once_t onceToken;
                 dispatch_once(&onceToken, ^{
                     [self getImageForAsset:asset];

@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface XOChatViewController : XOBaseViewController
 
 @property (nonatomic, assign) TIMConversationType       chatType;
-@property (nonatomic, assign) TIMConversation         * conversation;
+@property (nonatomic, strong) TIMConversation         * conversation;
 
 
 @end

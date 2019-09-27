@@ -74,6 +74,8 @@
     [self.window makeKeyAndVisible];
     
     XOConversationListController *chatListVC = [[XOConversationListController alloc] init];
+    
+#if  0
     chatListVC.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemMostViewed tag:0];
     
     UIViewController *secondVC = [[UIViewController alloc] init];
@@ -90,7 +92,7 @@
     
     UITabBarController *tabbarVC = [[UITabBarController alloc] init];
     tabbarVC.viewControllers = @[chatListVC, secondVC, thirdVC, fouthVC];
-    XOBaseNavigationController *nav = [[XOBaseNavigationController alloc] initWithRootViewController:tabbarVC];
+    XOBaseNavigationController *masterNav = [[XOBaseNavigationController alloc] initWithRootViewController:tabbarVC];
     
     XODetailViewController *detailVC = [[XODetailViewController alloc] init];
     
@@ -100,13 +102,20 @@
     splitViewController.preferredPrimaryColumnWidthFraction = 0.5;
     splitViewController.maximumPrimaryColumnWidth = 414.0;
     splitViewController.delegate = self;
-    [splitViewController addChildViewController:nav];
+    [splitViewController addChildViewController:masterNav];
     [splitViewController addChildViewController:detailVC];
+    
+    self.window.rootViewController = splitViewController;
+    
+#else
+    
+    XOBaseNavigationController *masterNav = [[XOBaseNavigationController alloc] initWithRootViewController:chatListVC];
+    self.window.rootViewController = masterNav;
+    
+#endif
     
     // 初始化表情包
     [[ChatFaceHelper sharedFaceHelper] initilizationEmoji];
-    
-    self.window.rootViewController = splitViewController;
     
     return YES;
 }

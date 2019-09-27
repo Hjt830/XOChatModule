@@ -40,12 +40,12 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 
 @interface XOChatMessageController () <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, XOChatClientProtocol, XOMessageDelegate, LGAudioPlayerDelegate, WXMessageCellDelegate>
 {
-    TIMMessage          *_earliestMsg;  // 最早的一条消息
     UIEdgeInsets        _safeInset;
 }
-@property (nonatomic, strong) CALayer   * chatBGLayer;
+
+@property (nonatomic, strong) TIMMessage                        *earliestMsg;   // 最早的一条消息
+@property (nonatomic, strong) CALayer                           * chatBGLayer;
 @property (nonatomic, strong) UITableView                       *tableView;     // 会话列表
-@property (nonatomic, strong) MJRefreshNormalHeader             *refreshView;   // 下拉刷新
 @property (nonatomic, strong) NSMutableArray    <NSMutableDictionary <NSString *, id>* >*dataSource;    // 数据源
 @property (nonatomic, strong) NSLock                            *lock;          // 线程锁
 @property (nonatomic, assign) NSUInteger                        page;           // 数据的页数
@@ -64,6 +64,7 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 {
     self = [super init];
     if (self) {
+        self.earliestMsg = nil;
         [[XOChatClient shareClient] addDelegate:self delegateQueue:dispatch_get_main_queue()];
         [[XOChatClient shareClient].messageManager addDelegate:self delegateQueue:dispatch_get_main_queue()];
     }
@@ -139,83 +140,92 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 // 拉取历史消息
 - (void)loadMessages
 {
-    @weakify(self);
     [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-        @strongify(self);
-        
-        NSLog(@"%@  --- %@", self->_earliestMsg, self->_earliestMsg.timestamp);
-        
-        [self.conversation getMessage:20 last:self->_earliestMsg succ:^(NSArray *msgs) {
-            @strongify(self);
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.refreshView endRefreshing];
+    
+        @try {
+            @weakify(self);
+            [self.conversation getMessage:20 last:self.earliestMsg succ:^(NSArray *msgs) {
+                @strongify(self);
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self.tableView.mj_header endRefreshing];
+                }];
+                
+                NSArray <TIMMessage *>* array = msgs;
+                if (!XOIsEmptyArray(array)) {
+                    
+                    NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
+                    array = [array sortedArrayUsingDescriptors:@[descriptor]];
+                    __block BOOL isFirstPage = (self.earliestMsg == nil);
+                    // 处理数据
+                    __block NSArray *dataArray = [self handleDataSource:array];
+                    if ([self.lock tryLock]) {
+                        // 查询第一页, 清空数据源
+                        if (isFirstPage) {
+                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                @synchronized (self) {
+                                    [self.dataSource removeAllObjects];
+                                    [self.dataSource addObjectsFromArray:dataArray];
+                                }
+                                [self.tableView reloadData];
+                                
+                                // 滑动到底部
+                                if (self.dataSource.count > 0) {
+                                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                        NSInteger lastSection = self.dataSource.count - 1;
+                                        NSArray *list = [self.dataSource[lastSection] objectForKey:MsgSectionListKey];
+                                        if (list.count > 0) {
+                                            @try {
+                                                [self.tableView scrollToRow:(list.count - 1) inSection:lastSection atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+                                            } @catch (NSException *exception) {
+                                                NSLog(@"%s --- 滑动到最底部异常: %@", __func__, exception);
+                                            } @finally {
+                                                
+                                            }
+                                        }
+                                    });
+                                }
+                            }];
+                        }
+                        else {
+                            __block NSMutableIndexSet *sets = [NSMutableIndexSet indexSet];
+                            [dataArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                                [sets addIndex:idx];
+                            }];
+                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                @synchronized (self) {
+                                    [self.dataSource insertObjects:dataArray atIndexes:sets];
+                                }
+                                [self.tableView beginUpdates];
+                                [self.tableView insertSections:sets withRowAnimation:UITableViewRowAnimationNone];
+                                [self.tableView endUpdates];
+                            }];
+                        }
+                        
+                        [self.lock unlock];
+                    }
+                    // 记录
+                    if ([[array firstObject] isKindOfClass:[TIMMessage class]]) {
+                        self.earliestMsg = [array firstObject];
+                    }
+                }
+                else {
+                    if (!XOIsEmptyArray(self.dataSource)) {
+                        [SVProgressHUD showInfoWithStatus:@"没有更多消息了"];
+                        [SVProgressHUD dismissWithDelay:0.5f];
+                    }
+                }
+                
+            } fail:^(int code, NSString *msg) {
+                @strongify(self);
+                [self.tableView.mj_header endRefreshing];
+                NSLog(@"---------- %s 拉取历史消息失败！！！  code: %d, msg: %@", __func__, code, msg);
             }];
             
-            NSArray <TIMMessage *>* array = msgs;
-            if (!XOIsEmptyArray(array)) {
-                
-                NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
-                array = [array sortedArrayUsingDescriptors:@[descriptor]];
-                __block BOOL isFirstPage = (self->_earliestMsg == nil);
-                // 处理数据
-                NSArray *dataArray = [self handleDataSource:array];
-                if ([self.lock tryLock]) {
-                    // 查询第一页, 清空数据源
-                    if (isFirstPage) {
-                        [self.dataSource removeAllObjects];
-                        [self.dataSource addObjectsFromArray:dataArray];
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            [self.tableView reloadData];
-                            
-                            // 滑动到底部
-                            if (self.dataSource.count > 0) {
-                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                                    NSInteger lastSection = self.dataSource.count - 1;
-                                    NSArray *list = [self.dataSource[lastSection] objectForKey:MsgSectionListKey];
-                                    if (list.count > 0) {
-                                        @try {
-                                            [self.tableView scrollToRow:(list.count - 1) inSection:lastSection atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-                                        } @catch (NSException *exception) {
-                                            NSLog(@"%s --- 滑动到最底部异常: %@", __func__, exception);
-                                        } @finally {
-                                            
-                                        }
-                                    }
-                                });
-                            }
-                        }];
-                    }
-                    else {
-                        __block NSMutableIndexSet *sets = [NSMutableIndexSet indexSet];
-                        [dataArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                            [sets addIndex:idx];
-                        }];
-                        [self.dataSource insertObjects:dataArray atIndexes:sets];
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            
-                            [self.tableView beginUpdates];
-                            [self.tableView insertSections:sets withRowAnimation:UITableViewRowAnimationNone];
-                            [self.tableView endUpdates];
-                        }];
-                    }
-                    
-                    [self.lock unlock];
-                }
-                // 记录
-                self->_earliestMsg = [array firstObject];
-            }
-            else {
-                if (!XOIsEmptyArray(self.dataSource)) {
-                    [SVProgressHUD showInfoWithStatus:@"没有更多消息了"];
-                    [SVProgressHUD dismissWithDelay:0.5f];
-                }
-            }
+        } @catch (NSException *exception) {
+            NSLog(@"exception: %@", exception);
+        } @finally {
             
-        } fail:^(int code, NSString *msg) {
-            [self.refreshView endRefreshing];
-            NSLog(@"---------- %s 拉取历史消息失败！！！  code: %d, msg: %@", __func__, code, msg);
-        }];
-        
+        }
     }];
 }
 
@@ -451,53 +461,60 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 {
     if (indexPath.section < self.dataSource.count)
     {
-        TIMMessage *message = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey][indexPath.row];
-        TIMElem *elem = [message getElem:0];
-        
-        WXMessageCell *cell = nil;
-        if ([elem isKindOfClass:[TIMTextElem class]] ||
-            [elem isKindOfClass:[TIMCustomElem class]])
-        {
-            cell = [tableView dequeueReusableCellWithIdentifier:TextMessageCellID forIndexPath:indexPath];
-            if ([elem isKindOfClass:[TIMCustomElem class]]) {
-                TIMCustomElem *customElem = (TIMCustomElem *)elem;
-                NSString *text = [[NSString alloc] initWithData:customElem.data encoding:NSUTF8StringEncoding];
-                NSLog(@"自定义消息 ============== %@", text);
+        NSArray *list = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey];
+        if (indexPath.row < list.count) {
+            TIMMessage *message = list[indexPath.row];
+            TIMElem *elem = [message getElem:0];
+            
+            WXMessageCell *cell = nil;
+            if ([elem isKindOfClass:[TIMTextElem class]] ||
+                [elem isKindOfClass:[TIMCustomElem class]])
+            {
+                cell = [tableView dequeueReusableCellWithIdentifier:TextMessageCellID forIndexPath:indexPath];
+                if ([elem isKindOfClass:[TIMCustomElem class]]) {
+                    TIMCustomElem *customElem = (TIMCustomElem *)elem;
+                    NSString *text = [[NSString alloc] initWithData:customElem.data encoding:NSUTF8StringEncoding];
+                    NSLog(@"自定义消息 ============== %@", text);
+                }
             }
-        }
-        else if ([elem isKindOfClass:[TIMImageElem class]]) {
-            cell = [tableView dequeueReusableCellWithIdentifier:ImageMessageCellID forIndexPath:indexPath];
-        }
-        else if ([elem isKindOfClass:[TIMSoundElem class]]) {
-            cell = [tableView dequeueReusableCellWithIdentifier:SoundMessageCellID forIndexPath:indexPath];
-        }
-        else if ([elem isKindOfClass:[TIMVideoElem class]]) {
-            cell = [tableView dequeueReusableCellWithIdentifier:VideoMessageCellID forIndexPath:indexPath];
-        }
-        else if ([elem isKindOfClass:[TIMFileElem class]]) {
-            cell = [tableView dequeueReusableCellWithIdentifier:FileMessageCellID forIndexPath:indexPath];
-        }
-        else if ([elem isKindOfClass:[TIMLocationElem class]]) {
-            cell = [tableView dequeueReusableCellWithIdentifier:LocationMessageCellID forIndexPath:indexPath];
-        }
-//        else if ([elem isKindOfClass:[TIMFaceElem class]]) {
-//            cell = [tableView dequeueReusableCellWithIdentifier:VideoMessageCellID forIndexPath:indexPath];
-//        }
-        else if ([elem isKindOfClass:[TIMGroupTipsElem class]] ||
-                 [elem isKindOfClass:[TIMGroupTipsElemMemberInfo class]] ||
-                 [elem isKindOfClass:[TIMGroupSystemElem class]])
-        {
-            cell = [tableView dequeueReusableCellWithIdentifier:PromptMessageCellID forIndexPath:indexPath];
+            else if ([elem isKindOfClass:[TIMImageElem class]]) {
+                cell = [tableView dequeueReusableCellWithIdentifier:ImageMessageCellID forIndexPath:indexPath];
+            }
+            else if ([elem isKindOfClass:[TIMSoundElem class]]) {
+                cell = [tableView dequeueReusableCellWithIdentifier:SoundMessageCellID forIndexPath:indexPath];
+            }
+            else if ([elem isKindOfClass:[TIMVideoElem class]]) {
+                cell = [tableView dequeueReusableCellWithIdentifier:VideoMessageCellID forIndexPath:indexPath];
+            }
+            else if ([elem isKindOfClass:[TIMFileElem class]]) {
+                cell = [tableView dequeueReusableCellWithIdentifier:FileMessageCellID forIndexPath:indexPath];
+            }
+            else if ([elem isKindOfClass:[TIMLocationElem class]]) {
+                cell = [tableView dequeueReusableCellWithIdentifier:LocationMessageCellID forIndexPath:indexPath];
+            }
+            //        else if ([elem isKindOfClass:[TIMFaceElem class]]) {
+            //            cell = [tableView dequeueReusableCellWithIdentifier:VideoMessageCellID forIndexPath:indexPath];
+            //        }
+            else if ([elem isKindOfClass:[TIMGroupTipsElem class]] ||
+                     [elem isKindOfClass:[TIMGroupTipsElemMemberInfo class]] ||
+                     [elem isKindOfClass:[TIMGroupSystemElem class]])
+            {
+                cell = [tableView dequeueReusableCellWithIdentifier:PromptMessageCellID forIndexPath:indexPath];
+            }
+            else {
+                cell = [tableView dequeueReusableCellWithIdentifier:PromptMessageCellID forIndexPath:indexPath];
+            }
+            
+            WXMessageCell *msgCell = (WXMessageCell *)cell;
+            msgCell.delegate = self;
+            msgCell.message = message;
+            
+            return cell;
         }
         else {
-            cell = [tableView dequeueReusableCellWithIdentifier:PromptMessageCellID forIndexPath:indexPath];
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:UITableViewCellID forIndexPath:indexPath];
+            return cell;
         }
-        
-        WXMessageCell *msgCell = (WXMessageCell *)cell;
-        msgCell.delegate = self;
-        msgCell.message = message;
-        
-        return cell;
     }
     else {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:UITableViewCellID forIndexPath:indexPath];
@@ -507,9 +524,17 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    TIMMessage *message = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey][indexPath.row];
-    CGFloat msgHei = [self messageSize:message].height;
-    return msgHei;
+    if (indexPath.section < self.dataSource.count)
+    {
+        NSArray *list = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey];
+        if (indexPath.row < list.count) {
+            TIMMessage *message = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey][indexPath.row];
+            CGFloat msgHei = [self messageSize:message].height;
+            return msgHei;
+        }
+        return 0.01;
+    }
+    return 0.01;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
@@ -711,15 +736,17 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         [_tableView registerClass:[WXFileMessageCell class] forCellReuseIdentifier:FileMessageCellID];
         [_tableView registerClass:[WXLocationMessageCell class] forCellReuseIdentifier:LocationMessageCellID];
         [_tableView registerClass:[WXPromptMessageCell class] forCellReuseIdentifier:PromptMessageCellID];
+        [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:UITableViewCellID];
         [_tableView registerClass:[WXMessageHeaderFooterView class] forHeaderFooterViewReuseIdentifier:TimeMessageCellID];
         
-        @XOWeakify(self);
-        _refreshView = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-            @XOStrongify(self);
+        @weakify(self);
+        MJRefreshNormalHeader *header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+            @strongify(self);
             [self loadMessages];
         }];
-        _refreshView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
-        _tableView.mj_header = _refreshView;
+        [header setTitle:@"" forState:MJRefreshStateIdle];
+        header.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+        _tableView.mj_header = header;
     }
     return _tableView;
 }

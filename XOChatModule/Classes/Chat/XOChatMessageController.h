@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id  <XOChatMessageControllerDelegate> delegate;
 
-@property (nonatomic, assign) TIMConversation               *conversation;
+@property (nonatomic, strong) TIMConversation               *conversation;
 @property (nonatomic, assign) TIMConversationType           chatType;   // 会话类型
 
 - (void)safeAreaDidChange:(UIEdgeInsets)safeAreaInset;

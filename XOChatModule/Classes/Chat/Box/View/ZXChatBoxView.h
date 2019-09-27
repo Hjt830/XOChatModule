@@ -62,7 +62,7 @@ typedef NS_ENUM(NSInteger, ZXChatBoxStatus) {
 
 @interface ZXChatBoxView : UIView
 
-@property (nonatomic, assign) id<ZXChatBoxDelegate>delegate;
+@property (nonatomic, weak)   id  <ZXChatBoxDelegate> delegate;
 @property (nonatomic, assign) ZXChatBoxStatus status;
 @property (nonatomic, assign) CGFloat curHeight;
 @property (nonatomic, assign) UIEdgeInsets safeInset;

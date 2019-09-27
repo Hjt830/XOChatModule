@@ -41,7 +41,7 @@ Pod::Spec.new do |s|
 
   s.frameworks = 'UIKit', 'Foundation'
   s.dependency 'TXIMSDK_iOS', '~> 4.4.627'
-  s.dependency 'XOBaseLib', '~> 0.1.7'
+  s.dependency 'XOBaseLib', '~> 0.1.8'
   s.dependency 'TZImagePickerController', '~> 3.2.1'
   s.dependency 'CTMediator', '~> 25'
   s.dependency 'ReactiveObjC', '~> 3.1.1'

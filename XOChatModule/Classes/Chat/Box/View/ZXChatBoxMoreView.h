@@ -19,7 +19,7 @@
 @interface ZXChatBoxMoreView : UIView
 
 
-@property (nonatomic, strong) id<ZXChatBoxMoreViewDelegate>delegate;
+@property (nonatomic, weak) id<ZXChatBoxMoreViewDelegate>delegate;
 @property (nonatomic, strong) NSMutableArray *items;
 
 @end

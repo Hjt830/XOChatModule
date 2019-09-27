@@ -282,8 +282,8 @@
 		54727C8C75692018215ECBEEB06A6B12 /* NSData+YYAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = A4AD97D04C0AD58A8CBF4AA92079C79B /* NSData+YYAdd.m */; };
 		54868DF9450C0AE135218D6020E1EDA1 /* UICollectionReusableView+RACSignalSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = B89FE4E0866C1DCCFA5E87D90FDB9C9F /* UICollectionReusableView+RACSignalSupport.m */; };
 		54AADB59F5CB3BCE4DC007534817DE3A /* UIView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A04717AF3D3DD12BFE98E0C33068444 /* UIView+WebCache.m */; };
+		5521FCC9233DFE1600100F3A /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60B10E106948FEAD378F349F87CC1D5C /* libmp3lame.a */; };
 		554CBD7224FEF6D234F1F353F9E61A30 /* YYImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = F759E95699DC203677EA0079532156E3 /* YYImageCache.m */; };
-		5597E94A233C56FF00FC7E66 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60B10E106948FEAD378F349F87CC1D5C /* libmp3lame.a */; };
 		55C37E942E339EF0B3B216D25E53379E /* XOConversationListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EA8BED6EBE0CBA9455681651C94B0139 /* XOConversationListCell.m */; };
 		560C2A8D8419109DF7040B33E0307C3E /* SDmetamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = E7628DF6180A60B51A537D6F70794FA8 /* SDmetamacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		56CEC5DF2FE9B53D14EA697B3920812E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD5B42FF7784CF6DE788ECB6369BF90F /* Foundation.framework */; };
@@ -2041,6 +2041,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5521FCC9233DFE1600100F3A /* libmp3lame.a in Frameworks */,
 				5CB2AAC0F56D8C1F4B7017BC67F21343 /* AFNetworking.framework in Frameworks */,
 				8D0D1949670C709A628AFD536CB465B3 /* CTMediator.framework in Frameworks */,
 				E28E38405E450D425495065572236025 /* Foundation.framework in Frameworks */,
@@ -2051,7 +2052,6 @@
 				C151E34B55828082838E4BFE41E803F9 /* TZImagePickerController.framework in Frameworks */,
 				B619A9B5B82C3110270C4E779BFB811C /* UIKit.framework in Frameworks */,
 				F9193DD0E54AEDD1506379216F8D5B8F /* XOBaseLib.framework in Frameworks */,
-				5597E94A233C56FF00FC7E66 /* libmp3lame.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

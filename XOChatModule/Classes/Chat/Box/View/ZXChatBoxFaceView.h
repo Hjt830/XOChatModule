@@ -18,7 +18,7 @@
 
 @interface ZXChatBoxFaceView : UIView
 
-@property (nonatomic, assign) id<ZXChatBoxFaceViewDelegate>delegate;
+@property (nonatomic, weak) id <ZXChatBoxFaceViewDelegate> delegate;
 
 
 @end

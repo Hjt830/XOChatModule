@@ -486,7 +486,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
     __block TIMConversation *conversation = [self.dataSource objectAtIndex:indexPath.row];
-    @XOWeakify(self);
+    @weakify(self);
     BOOL isTop = NO;
     NSString *topTitle = !isTop ? XOChatLocalizedString(@"conversation.unTop.title") : XOChatLocalizedString(@"conversation.top.title");
     UITableViewRowAction *topRowAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:topTitle handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull indexPath) {
@@ -495,7 +495,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
     UITableViewRowAction *deleteRowAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:XOChatLocalizedString(@"conversation.delete.title") handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
         NSString *message = XOChatLocalizedString(@"conversation.delete.alertMsg");
         [self showAlertWithTitle:nil message:message sureTitle:XOChatLocalizedString(@"sure") cancelTitle:XOChatLocalizedString(@"cancel") sureComplection:^{
-            @XOStrongify(self);
+            @strongify(self);
             if ([[TIMManager sharedInstance] deleteConversation:[conversation getType] receiver:[conversation getReceiver]]) {
                 [SVProgressHUD showErrorWithStatus:XOChatLocalizedString(@"tip.delete.success")];
                 [SVProgressHUD dismissWithDelay:1.0f];
