@@ -56,9 +56,9 @@
     float spaceY = 10;  // 上线间隔距离
     int row = (group.faceType == TLFaceTypeEmoji ? 3 : 2); // 行数
     int col = (group.faceType == TLFaceTypeEmoji ? 7 : 4); // 列数
-    float w = (KWIDTH - spaceX * 2) / col;  // 每个表情的可点击宽度
+    float w = (self.width - spaceX * 2) / col;  // 每个表情的可点击宽度
     float h = (self.height - spaceY * (row - 1)) / row; // 每个表情的可点击高度
-    float realW = (group.faceType == TLFaceTypeEmoji ? 24 : 50);  // 每个表情的实际宽度
+    float realW = (group.faceType == TLFaceTypeEmoji ? 28 : 50);  // 每个表情的实际宽度
     float realH = realW; // 每个表情的实际高度
     float x = spaceX;
     float y = spaceY;
@@ -71,7 +71,7 @@
         else
         {
             layer = [CALayer layer];
-            layer.contentsGravity = kCAGravityResizeAspect;
+            layer.contentsGravity = kCAGravityResizeAspectFill;
             [self.layer addSublayer:layer];
             [self.faceViewArray addObject:layer];
         }
@@ -110,9 +110,9 @@
         CGPoint point = [tap locationInView:self];
         
         float spaceX = 12;  // 左右间隔距离
-        float spaceY = 10;  // 上线间隔距离
+        float spaceY = 10;  // 上下间隔距离
         // 先判断超出边界
-        if (point.x < spaceX || point.x > KWIDTH - spaceX || point.y < spaceY || point.y > self.height - spaceY) {
+        if (point.x < spaceX || point.x > self.width - spaceX || point.y < spaceY || point.y > self.height - spaceY) {
             return;
         }
         // 判断点击的哪个表情

@@ -54,8 +54,21 @@
      *  开始就添加三张？
      */
     for (ZXChatFaceItemView *pageView in self.facePageViewArray) {
-        
         [self.scrollView addSubview:pageView];
+    }
+    [self reloadScrollView];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    self.topLine.width = self.width;
+    self.scrollView.width = self.width;
+    self.faceMenuView.width = self.width;
+    [self.faceMenuView setNeedsLayout];
+    for (ZXChatFaceItemView *pageView in self.facePageViewArray) {
+        pageView.width = self.width;
     }
 }
 
@@ -127,12 +140,12 @@
 - (void) scrollViewDidScroll:(UIScrollView *)scrollView
 {
     int page = scrollView.contentOffset.x / self.width;
-    if (page > _curPage && (page * KWIDTH - scrollView.contentOffset.x) < KWIDTH * 0.2) {
+    if (page > _curPage && (page * self.width - scrollView.contentOffset.x) < self.width * 0.2) {
         
         // 向右翻
         [self showFaceFageAtIndex:page];
     }
-    else if (page < _curPage && (scrollView.contentOffset.x - page * KWIDTH) < KWIDTH * 0.2) {
+    else if (page < _curPage && (scrollView.contentOffset.x - page * self.width) < self.width * 0.2) {
         
         [self showFaceFageAtIndex:page];
     }
@@ -144,7 +157,7 @@
 - (void) pageControlClicked:(UIPageControl *)pageControl
 {
     [self showFaceFageAtIndex:pageControl.currentPage];
-    [self.scrollView scrollRectToVisible:CGRectMake(pageControl.currentPage * KWIDTH, 0, KWIDTH, self.scrollView.height) animated:YES];
+    [self.scrollView scrollRectToVisible:CGRectMake(pageControl.currentPage * self.width, 0, self.width, self.scrollView.height) animated:YES];
 }
 
 /**
@@ -157,16 +170,16 @@
     /**
      *  这里是要计算表情要显示多少页，
      *  如果是emoji一页显示 20 个，
-     *  如果是gif一页显示 20 个，
-     *  这里的 page 计算，有139个emoji， 139/20 = 6   %20 = 19  7+1=8 就是8页。
-     *  这里的 page 计算，有17个gif， 139/20 = 6   %20 = 19  7+1=8 就是8页。
+     *  如果是gif一页显示 8 个，
+     *  这里的 page 计算，有139个emoji， 139/20 = 6   %20 = 19  6+1=7 就是7页。
+     *  这里的 page 计算，有16个gif， 16/8 = 2   %8 = 0  2+0=2 就是2页。
      */
     int a = (self.curGroup.facesArray.count % (self.curGroup.faceType == TLFaceTypeEmoji ? 20 : 8) == 0) ? 0 : 1;
     int page = (int)(self.curGroup.facesArray.count / (self.curGroup.faceType == TLFaceTypeEmoji ? 20 : 8)) + a;
     [self.pageControl setNumberOfPages:page];
     // KWIDTH 屏幕宽
-    [self.scrollView setContentSize:CGSizeMake(KWIDTH * page, self.scrollView.height)];
-    [self.scrollView scrollRectToVisible:CGRectMake(0, 0, KWIDTH, self.scrollView.height) animated:NO];
+    [self.scrollView setContentSize:CGSizeMake(self.width * page, self.scrollView.height)];
+    [self.scrollView scrollRectToVisible:CGRectMake(0, 0, self.width, self.scrollView.height) animated:NO];
     _curPage = -1;
     [self showFaceFageAtIndex:0];
 }
@@ -184,7 +197,7 @@
     if (_curPage == -1) {
         ZXChatFaceItemView *pageView1 = [self.facePageViewArray objectAtIndex:0];
         [pageView1 showFaceGroup:_curGroup formIndex:0 count:0];
-        [pageView1 setOrigin:CGPointMake(-KWIDTH, 0)];
+        [pageView1 setOrigin:CGPointMake(-self.width, 0)];
         
         ZXChatFaceItemView *pageView2 = [self.facePageViewArray objectAtIndex:1];
         [pageView2 showFaceGroup:_curGroup formIndex:0 count:count];
@@ -192,20 +205,20 @@
         
         ZXChatFaceItemView *pageView3 = [self.facePageViewArray objectAtIndex:2];
         [pageView3 showFaceGroup:_curGroup formIndex:count count:count];
-        [pageView3 setOrigin:CGPointMake(KWIDTH, 0)];
+        [pageView3 setOrigin:CGPointMake(self.width, 0)];
     }
     else {
         if (_curPage < index) {
             ZXChatFaceItemView *pageView1 = [self.facePageViewArray objectAtIndex:0];
             [pageView1 showFaceGroup:_curGroup formIndex:(int)(index + 1) * count count:count];
-            [pageView1 setOrigin:CGPointMake((index + 1) * KWIDTH, 0)];
+            [pageView1 setOrigin:CGPointMake((index + 1) * self.width, 0)];
             [self.facePageViewArray removeObjectAtIndex:0];
             [self.facePageViewArray addObject:pageView1];
         }
         else {
             ZXChatFaceItemView *pageView3 = [self.facePageViewArray objectAtIndex:2];
             [pageView3 showFaceGroup:_curGroup formIndex:(int)(index - 1) * count count:count];
-            [pageView3 setOrigin:CGPointMake((index - 1) * KWIDTH, 0)];
+            [pageView3 setOrigin:CGPointMake((index - 1) * self.width, 0)];
             [self.facePageViewArray removeObjectAtIndex:2];
             [self.facePageViewArray insertObject:pageView3 atIndex:0];
         }
@@ -217,8 +230,8 @@
 - (UIView *) topLine
 {
     if (_topLine == nil) {
-        _topLine = [[UIView alloc] initWithFrame:CGRectMake(0, 0, KWIDTH, 0.5)];
-        [_topLine setBackgroundColor:DEFAULT_LINE_GRAY_COLOR];
+        _topLine = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.width, 0.5)];
+        [_topLine setBackgroundColor:RGBA(230, 230, 230, 0.8)];
     }
     return _topLine;
 }
@@ -226,7 +239,7 @@
 - (ZXChatFaceMenuView *) faceMenuView
 {
     if (_faceMenuView == nil) {
-        _faceMenuView = [[ZXChatFaceMenuView alloc] initWithFrame:CGRectMake(0, self.height - HEIGHT_BOTTOM_VIEW, KWIDTH, HEIGHT_BOTTOM_VIEW)];
+        _faceMenuView = [[ZXChatFaceMenuView alloc] initWithFrame:CGRectMake(0, self.height - HEIGHT_BOTTOM_VIEW, self.width, HEIGHT_BOTTOM_VIEW)];
         [_faceMenuView setDelegate:self];
         [_faceMenuView setFaceGroupArray:[[ChatFaceHelper sharedFaceHelper] faceGroupArray]];
     }

@@ -40,7 +40,8 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 
 @interface XOChatMessageController () <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, XOChatClientProtocol, XOMessageDelegate, LGAudioPlayerDelegate, WXMessageCellDelegate>
 {
-    TIMMessage  *_earliestMsg;  // 最早的一条消息
+    TIMMessage          *_earliestMsg;  // 最早的一条消息
+    UIEdgeInsets        _safeInset;
 }
 @property (nonatomic, strong) CALayer   * chatBGLayer;
 @property (nonatomic, strong) UITableView                       *tableView;     // 会话列表
@@ -101,7 +102,9 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 {
     [super viewDidLayoutSubviews];
     
-    self.tableView.frame = self.view.bounds;
+    CGFloat tableW = self.view.width - _safeInset.left - _safeInset.right;
+    CGFloat tableH = self.view.height - _safeInset.top;
+    self.tableView.frame = CGRectMake(_safeInset.left, _safeInset.top, tableW, tableH);
     self.tableView.backgroundView.frame = self.tableView.bounds;
     if (self.dataSource.count > 0) {
         NSInteger lastSection = self.dataSource.count - 1;
@@ -763,12 +766,19 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     return _lock;
 }
 
+- (void)safeAreaDidChange:(UIEdgeInsets)safeAreaInset
+{
+    _safeInset = safeAreaInset;
+}
+
 #pragma mark ========================= help =========================
 
 - (CGSize)messageSize:(TIMMessage *)message
 {
+    CGFloat standradW = (KWIDTH < KHEIGHT) ? KWIDTH : KHEIGHT;
+    
     if (0 == [message elemCount]) {
-        return CGSizeMake(KWIDTH * 0.6, 70.0f);
+        return CGSizeMake(standradW * 0.6, 70.0f);
     }
     
     // 1、从缓存中取值
@@ -780,7 +790,7 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     
     // 2、缓存中没有就计算高度
     TIMElem *elem = [message getElem:0];
-    CGSize size = CGSizeMake((KWIDTH * 0.6), 56.0f);
+    CGSize size = CGSizeMake((standradW * 0.6), 56.0f);
     CGFloat height = 56.0f;
     
     // 文字消息
@@ -802,7 +812,7 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         paragraphStyle.lineSpacing = 3; // 调整行间距
         [text addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, [text length])];
         label.attributedText = text;
-        size = [label sizeThatFits:CGSizeMake(KWIDTH * 0.58, MAXFLOAT)];
+        size = [label sizeThatFits:CGSizeMake(standradW * 0.58, MAXFLOAT)];
         
         CGFloat relHeight = (size.height + 36 <= height) ? height : size.height + 36;
         size = CGSizeMake(size.width, relHeight);
@@ -831,7 +841,7 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
             }
         }
         
-        float maxWid = KWIDTH * 0.3;
+        float maxWid = standradW * 0.3;
         if (sizew <= maxWid) {
             size = CGSizeMake(sizew, sizeh);
         } else {
@@ -857,7 +867,7 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     {
         TIMSoundElem *soundElem = (TIMSoundElem *)elem;
         int duration = soundElem.second;
-        float width = (100 + duration * 5) < KWIDTH * 0.6 ? 100 + duration * 5 : KWIDTH * 0.6;
+        float width = (100 + duration * 5) < standradW * 0.6 ? 100 + duration * 5 : standradW * 0.6;
         size = CGSizeMake(width, 50.0f);
     }
     // 位置消息

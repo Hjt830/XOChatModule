@@ -38,21 +38,20 @@
     [self.pageControl setFrame:CGRectMake(0, self.height - 18, frame.size.width, 8)];
 }
 
-#pragma mark - Public Methods
--(void)setItems:(NSMutableArray *)items
+- (void)layoutSubviews
 {
-    _items = items;
-    NSInteger index = items.count/8 + (items.count%8 == 0 ? 0 : 1);
-    self.pageControl.numberOfPages = index;//加多一页
-    self.scrollView.contentSize = CGSizeMake(KWIDTH * index, _scrollView.height);
+    [super layoutSubviews];
+    
+    self.topLine.width = self.width;
+    self.scrollView.width = self.width;
+    self.pageControl.width = self.width;
     
     float w = self.width * 20 / 21 / 4 * 0.8;
     float space = w / 4;
     float h = (self.height - 20 - space * 2) / 2;
-    
     float x = space, y = space;
     int i = 0, page = 0;
-    for (ZXChatBoxItemView * item in _items) {
+    for (ZXChatBoxItemView * item in self.items) {
         [self.scrollView addSubview:item];
         [item setFrame:CGRectMake(x, y, w, h)];
         [item setTag:i];
@@ -62,6 +61,15 @@
         x = (i % 4 ? x + w : page * self.width) + space;
         y = (i % 8 < 4 ? space : h + space * 1.5);
     }
+}
+
+#pragma mark - Public Methods
+-(void)setItems:(NSMutableArray *)items
+{
+    _items = items;
+    NSInteger index = items.count/8 + (items.count%8 == 0 ? 0 : 1);
+    self.pageControl.numberOfPages = index;//加多一页
+    self.scrollView.contentSize = CGSizeMake(self.width * index, _scrollView.height);
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -87,7 +95,7 @@
 -(void) pageControlClicked:(UIPageControl *)pageControl
 {
     // 动画方法
-    [self.scrollView scrollRectToVisible:CGRectMake(pageControl.currentPage * KWIDTH, 0, KWIDTH, self.scrollView.height) animated:YES];
+    [self.scrollView scrollRectToVisible:CGRectMake(pageControl.currentPage * self.width, 0, self.width, self.scrollView.height) animated:YES];
 }
 
 /**
@@ -132,8 +140,8 @@
 - (UIView *) topLine
 {
     if (_topLine == nil) {
-        _topLine = [[UIView alloc] initWithFrame:CGRectMake(0, 0, KWIDTH, 0.5)];
-        [_topLine setBackgroundColor:DEFAULT_LINE_GRAY_COLOR];
+        _topLine = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.width, 0.5)];
+        [_topLine setBackgroundColor:RGBA(230, 230, 230, 0.8)];
     }
     return _topLine;
 }

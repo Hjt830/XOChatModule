@@ -68,7 +68,7 @@
             
             if (nil == image) {
                 // 没有一倍图, 取三倍图
-                image = [UIImage xo_1xImageNamed:name];
+                image = [UIImage xo_3xImageNamed:name];
             }
         }
         

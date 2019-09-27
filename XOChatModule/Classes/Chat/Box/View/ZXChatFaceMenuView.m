@@ -32,6 +32,14 @@
     return self;
 }
 
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    float w = self.height * 1.25;
+    self.sendButton.width = w * 1.2;
+    self.sendButton.x = self.width - w * 1.2;
+}
+
 #pragma mark - Public Methods
 - (void) setFaceGroupArray:(NSMutableArray *)faceGroupArray
 {

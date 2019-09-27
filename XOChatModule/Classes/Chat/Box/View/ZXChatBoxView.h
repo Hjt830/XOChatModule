@@ -65,7 +65,7 @@ typedef NS_ENUM(NSInteger, ZXChatBoxStatus) {
 @property (nonatomic, assign) id<ZXChatBoxDelegate>delegate;
 @property (nonatomic, assign) ZXChatBoxStatus status;
 @property (nonatomic, assign) CGFloat curHeight;
-@property (nonatomic, assign) CGFloat safeBottom;
+@property (nonatomic, assign) UIEdgeInsets safeInset;
 
 - (void) addAtSomeOne:(NSString *)atSomeone;
 - (void) addEmojiFace:(ChatFace *)face;

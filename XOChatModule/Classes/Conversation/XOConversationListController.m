@@ -24,7 +24,8 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 
 @interface XOConversationListController () <UITableViewDataSource, UITableViewDelegate, XOChatClientProtocol, XOMessageDelegate, XOConversationDelegate>
 {
-    dispatch_queue_t      _chatDelegate_queue;
+    dispatch_queue_t        _chatDelegate_queue;
+    UIEdgeInsets            _safeInset;
 }
 
 @property (nonatomic, weak) UITabBarItem            *chatTabbarItem;
@@ -103,7 +104,13 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
     [super viewDidLayoutSubviews];
     
     [self reloadHeaderView];
-    self.networkStateView.frame = CGRectMake(0, 0, KWIDTH, TableHeaderStateHeight);
+    self.networkStateView.frame = CGRectMake(0, 0, self.view.width, TableHeaderStateHeight);
+}
+
+- (void)viewSafeAreaInsetsDidChange
+{
+    [super viewSafeAreaInsetsDidChange];
+    _safeInset = self.view.safeAreaInsets;
 }
 
 /**
@@ -115,17 +122,17 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
     if (self.isDisConnect) {
         self.headerView.height = TableHeaderViewMaxHeight;
         self.networkStateView.hidden = NO;
-        self.systemView.frame = CGRectMake(0, self.networkStateView.bottom + Margin, KWIDTH, 70);
-        self.groupChatView.frame = CGRectMake(0, self.systemView.bottom + Margin, KWIDTH, 70);
+        self.systemView.frame = CGRectMake(_safeInset.left, self.networkStateView.bottom + Margin, self.view.width - (_safeInset.left + _safeInset.right), 70);
+        self.groupChatView.frame = CGRectMake(_safeInset.left, self.systemView.bottom + Margin, self.view.width - (_safeInset.left + _safeInset.right), 70);
     }
     // 连接状态
     else {
         self.headerView.height = TableHeaderViewMinHeight;
         self.networkStateView.hidden = YES;
-        self.systemView.frame = CGRectMake(0, 10, KWIDTH, 70);
-        self.groupChatView.frame = CGRectMake(0, self.systemView.bottom + Margin, KWIDTH, 70);
+        self.systemView.frame = CGRectMake(_safeInset.left, 10, self.view.width - (_safeInset.left + _safeInset.right), 70);
+        self.groupChatView.frame = CGRectMake(_safeInset.left, self.systemView.bottom + Margin, self.view.width - (_safeInset.left + _safeInset.right), 70);
     }
-    self.tableView.frame = CGRectMake(10, self.headerView.height + Margin, KWIDTH - 20, self.view.height - (self.headerView.height + Margin));
+    self.tableView.frame = CGRectMake(_safeInset.left + 10, self.headerView.height + Margin, self.view.width - 20 - (_safeInset.left + _safeInset.right), self.view.height - (self.headerView.height + Margin));
 }
 
 #pragma mark ====================== load data =======================
@@ -186,7 +193,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
         _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _tableView.rowHeight = UITableViewAutomaticDimension;
         _tableView.rowHeight = 70.0f;
-        _tableView.separatorColor = BG_TableSeparatorColor;
+        _tableView.separatorColor = RGBA(230, 230, 230, 1.0);
         _tableView.separatorInset = UIEdgeInsetsMake(0, _tableView.rowHeight + 10, 0, 0);
         _tableView.sectionHeaderHeight = 0.0f;
         _tableView.sectionFooterHeight = 0.0f;
@@ -410,24 +417,24 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
     XOConversationListCell *cell = [tableView dequeueReusableCellWithIdentifier:ConversationListCellID forIndexPath:indexPath];
     cell.conversation = [self.dataSource objectAtIndex:indexPath.row];
     
-    if (0 == indexPath.row && cell.layer.mask == nil) {
-        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, tableView.width, 70)
-                                                       byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight
-                                                             cornerRadii:CGSizeMake(8, 8)];
-        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-        maskLayer.frame = cell.bounds;
-        maskLayer.path = maskPath.CGPath;
-        cell.layer.mask = maskLayer;
-    }
-    else if (self.dataSource.count - 1 == indexPath.row && cell.layer.mask == nil) {
-        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, tableView.width, 70)
-                                                       byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight
-                                                             cornerRadii:CGSizeMake(8, 8)];
-        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-        maskLayer.frame = cell.bounds;
-        maskLayer.path = maskPath.CGPath;
-        cell.layer.mask = maskLayer;
-    }
+//    if (0 == indexPath.row && cell.layer.mask == nil) {
+//        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, tableView.width, 70)
+//                                                       byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight
+//                                                             cornerRadii:CGSizeMake(8, 8)];
+//        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+//        maskLayer.frame = cell.bounds;
+//        maskLayer.path = maskPath.CGPath;
+//        cell.layer.mask = maskLayer;
+//    }
+//    else if (self.dataSource.count - 1 == indexPath.row && cell.layer.mask == nil) {
+//        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, tableView.width, 70)
+//                                                       byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight
+//                                                             cornerRadii:CGSizeMake(8, 8)];
+//        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+//        maskLayer.frame = cell.bounds;
+//        maskLayer.path = maskPath.CGPath;
+//        cell.layer.mask = maskLayer;
+//    }
     
     return cell;
 }
@@ -440,11 +447,22 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     TIMConversation *conversation = [self.dataSource objectAtIndex:indexPath.row];
+    [conversation setReadMessage:nil succ:^{
+        NSLog(@"设置消息已读成功");
+        [self loadUnreadCount];
+    } fail:^(int code, NSString *msg) {
+        NSLog(@"设置消息已读失败");
+    }];
+    
     if (conversation) {
         XOChatViewController *chatVC = [[XOChatViewController alloc] init];
         chatVC.conversation = conversation;
         chatVC.chatType = [conversation getType];
-        [self.navigationController pushViewController:chatVC animated:YES];
+        if (self.splitViewController) {
+            [self.splitViewController showDetailViewController:chatVC sender:self];
+        } else {
+            [self.navigationController pushViewController:chatVC animated:YES];
+        }
     }
 }
 

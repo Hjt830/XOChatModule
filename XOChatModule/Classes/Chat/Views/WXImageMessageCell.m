@@ -293,6 +293,7 @@ static BOOL progressFinish = NO;
 
 - (CGSize)messageSize
 {
+    CGFloat standradW = (KWIDTH < KHEIGHT) ? KWIDTH : KHEIGHT;
     float sizew = 375.0f;  // 图片的宽度
     float sizeh = 750.0f;  // 图片的高度
     CGSize size = CGSizeZero;
@@ -314,7 +315,7 @@ static BOOL progressFinish = NO;
         }
     }
     
-    float maxWid = KWIDTH * 0.3;
+    float maxWid = standradW * 0.3;
     if (sizew <= maxWid) {
         size = CGSizeMake(sizew, sizeh);
     } else {

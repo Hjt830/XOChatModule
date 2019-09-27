@@ -7,11 +7,11 @@
 //
 
 #import "XOChatAppDelegate.h"
-#import "XOConversationListController.h"
-
 #import <XOBaseLib/XOBaseLib.h>
 #import <XOChatModule/XOChatModule.h>
 
+#import "XOConversationListController.h"
+#import "XODetailViewController.h"
 
 #define TXTIMAppID      @"1400079944"
 
@@ -31,7 +31,7 @@
 
 #endif
 
-@interface XOChatAppDelegate () <TIMConnListener>
+@interface XOChatAppDelegate () <TIMConnListener, UISplitViewControllerDelegate>
 
 @end
 
@@ -74,12 +74,39 @@
     [self.window makeKeyAndVisible];
     
     XOConversationListController *chatListVC = [[XOConversationListController alloc] init];
-    XOBaseNavigationController *nav = [[XOBaseNavigationController alloc] initWithRootViewController:chatListVC];
+    chatListVC.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemMostViewed tag:0];
+    
+    UIViewController *secondVC = [[UIViewController alloc] init];
+    secondVC.view.backgroundColor = [UIColor whiteColor];
+    secondVC.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemContacts tag:1];
+    
+    UIViewController *thirdVC = [[UIViewController alloc] init];
+    thirdVC.view.backgroundColor = [UIColor whiteColor];
+    thirdVC.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemTopRated tag:2];
+    
+    UIViewController *fouthVC = [[UIViewController alloc] init];
+    fouthVC.view.backgroundColor = [UIColor whiteColor];
+    fouthVC.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemBookmarks tag:2];
+    
+    UITabBarController *tabbarVC = [[UITabBarController alloc] init];
+    tabbarVC.viewControllers = @[chatListVC, secondVC, thirdVC, fouthVC];
+    XOBaseNavigationController *nav = [[XOBaseNavigationController alloc] initWithRootViewController:tabbarVC];
+    
+    XODetailViewController *detailVC = [[XODetailViewController alloc] init];
+    
+    UISplitViewController *splitViewController = [[UISplitViewController alloc] init];
+    splitViewController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
+    splitViewController.preferredPrimaryColumnWidthFraction = 0.5;
+    splitViewController.maximumPrimaryColumnWidth = 414.0;
+    splitViewController.delegate = self;
+    [splitViewController addChildViewController:nav];
+    [splitViewController addChildViewController:detailVC];
     
     // 初始化表情包
     [[ChatFaceHelper sharedFaceHelper] initilizationEmoji];
     
-    self.window.rootViewController = nav;
+    self.window.rootViewController = splitViewController;
     
     return YES;
 }
@@ -88,6 +115,9 @@
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    
+    
+    
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -110,5 +140,31 @@
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+
+- (BOOL)splitViewController:(UISplitViewController *)splitViewController collapseSecondaryViewController:(UIViewController *)secondaryViewController ontoPrimaryViewController:(UIViewController *)primaryViewController
+{
+    return YES;
+}
+
+//- (nullable UIViewController *)splitViewController:(UISplitViewController *)splitViewController separateSecondaryViewControllerFromPrimaryViewController:(UIViewController *)primaryViewController
+//{
+//    if ([primaryViewController isKindOfClass:[XOBaseNavigationController class]]) {
+//        return primaryViewController;
+//    }
+//    return nil;
+//}
+
+//- (nullable UIViewController *)splitViewController:(UISplitViewController *)splitViewController separateSecondaryViewControllerFromPrimaryViewController:(UIViewController *)primaryViewController
+//{
+//    if ([primaryViewController isKindOfClass:[XOBaseNavigationController class]]) {
+//        return primaryViewController;
+//    }
+//    return nil;
+//}
+
+//- (nullable UIViewController *)primaryViewControllerForCollapsingSplitViewController:(UISplitViewController *)splitViewController
+//{
+//    return splitViewController.viewControllers[0];
+//}
 
 @end

@@ -15,8 +15,7 @@
 
 @interface XOChatViewController () <XOChatBoxViewControllerDelegate, XOChatMessageControllerDelegate, UIDocumentPickerDelegate>
 {
-    float   _safeAreaTop;
-    float   _safeAreaBottom;
+    UIEdgeInsets   _safeInsets;
 }
 
 @property (nonatomic, copy) NSString    * receiver;
@@ -52,9 +51,9 @@
     [super viewDidLayoutSubviews];
     
     if (_chatBoxVC.view.top == 0) {
-        [_chatBoxVC.view setFrame:CGRectMake(0, self.view.height - HEIGHT_TABBAR, KWIDTH, KHEIGHT)];
+        [_chatBoxVC.view setFrame:CGRectMake(0, self.view.height - HEIGHT_TABBAR - _safeInsets.bottom, self.view.width, self.view.height)];
     } else {
-        [_chatBoxVC.view setFrame:CGRectMake(0, _chatBoxVC.view.top, KWIDTH, KHEIGHT)];
+        [_chatBoxVC.view setFrame:CGRectMake(0, _chatBoxVC.view.top, self.view.width, self.view.height)];
     }
     _chatMsgVC.view.y = 0;
     _chatMsgVC.view.height = _chatBoxVC.view.y;
@@ -64,10 +63,10 @@
 {
     [super viewSafeAreaInsetsDidChange];
     
-    _safeAreaTop = self.view.safeAreaInsets.top;
-    _safeAreaBottom = self.view.safeAreaInsets.bottom;
-    _chatBoxVC.view.top = self.view.height - HEIGHT_TABBAR - _safeAreaBottom;
+    _safeInsets = self.view.safeAreaInsets;
+    _chatBoxVC.view.top = self.view.height - HEIGHT_TABBAR - _safeInsets.bottom;
     [_chatBoxVC safeAreaDidChange:self.view.safeAreaInsets];
+    [_chatMsgVC safeAreaDidChange:self.view.safeAreaInsets];
 }
 
 - (void)initialization

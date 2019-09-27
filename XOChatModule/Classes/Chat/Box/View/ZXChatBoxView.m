@@ -31,7 +31,7 @@
 - (id)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
-        _safeBottom = 0.0f;
+        _safeInset = UIEdgeInsetsZero;
         _curHeight = frame.size.height;// 当前高度初始化为 49
         [self setBackgroundColor:DEFAULT_CHATBOX_COLOR];
         [self addSubview:self.topLine];
@@ -52,7 +52,7 @@
     _curHeight = frame.size.height;
     self.topLine.width = self.width;
     //  Voice 的高度和宽度初始化的时候都是 37 
-    float y = self.height - self.safeBottom - self.voiceButton.height - (HEIGHT_TABBAR - CHATBOX_BUTTON_WIDTH) / 2;
+    float y = self.height - self.safeInset.bottom - self.voiceButton.height - (HEIGHT_TABBAR - CHATBOX_BUTTON_WIDTH) / 2;
     if (self.voiceButton.y != y) {
         [UIView animateWithDuration:0.1 animations:^{
             // 根据 Voice 的 Y 改变 faceButton  moreButton de Y
@@ -159,7 +159,7 @@
     height = height > HEIGHT_TEXTVIEW ? height : HEIGHT_TEXTVIEW; // height大于 TextView 的高度 就取height 否则就取 TextView 的高度 --- 下限高度
     height = height < MAX_TEXTVIEW_HEIGHT ? height : textView.height;  // height 小于 textView 的最大高度 104 就取出 height 不然就取出 --- 上限高度
     
-    _curHeight = height + self.safeBottom + (HEIGHT_TABBAR - HEIGHT_TEXTVIEW);
+    _curHeight = height + self.safeInset.bottom + (HEIGHT_TABBAR - HEIGHT_TEXTVIEW);
     if (_curHeight != self.height) {
         [UIView animateWithDuration:0.05 animations:^{
             self.height = self->_curHeight;
@@ -263,7 +263,7 @@
     }
     else {
         // 显示talkButton
-        self.curHeight = HEIGHT_TABBAR + self.safeBottom;
+        self.curHeight = HEIGHT_TABBAR + self.safeInset.bottom;
         [self setHeight:self.curHeight];
         self.status = TLChatBoxStatusShowVoice;// 如果不是显示讲话的Button，就显示讲话的Button，状态也改变为 shouvoice
         [self.textView resignFirstResponder];
@@ -444,8 +444,8 @@
 - (UIView *) topLine
 {
     if (_topLine == nil) {
-        _topLine = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0.5)];
-        [_topLine setBackgroundColor:RGBA(165, 165, 165, 1.0)];
+        _topLine = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0.35)];
+        [_topLine setBackgroundColor:RGBA(178, 178, 178, 1.0)];
     }
     return _topLine;
 }
@@ -491,7 +491,7 @@
 - (UIButton *) moreButton
 {
     if (_moreButton == nil) {
-        _moreButton = [[UIButton alloc] initWithFrame:CGRectMake(KWIDTH - CHATBOX_BUTTON_WIDTH, (HEIGHT_TABBAR - CHATBOX_BUTTON_WIDTH) / 2, CHATBOX_BUTTON_WIDTH, CHATBOX_BUTTON_WIDTH)];
+        _moreButton = [[UIButton alloc] initWithFrame:CGRectMake(self.width - self.safeInset.right - CHATBOX_BUTTON_WIDTH, (HEIGHT_TABBAR - CHATBOX_BUTTON_WIDTH) / 2, CHATBOX_BUTTON_WIDTH, CHATBOX_BUTTON_WIDTH)];
         [_moreButton setImage:XOChatGetImage(@"TypeSelectorBtn_Black") forState:UIControlStateNormal];
         [_moreButton setImage:XOChatGetImage(@"TypeSelectorBtnHL_Black") forState:UIControlStateHighlighted];
         [_moreButton addTarget:self action:@selector(moreButtonDown:) forControlEvents:UIControlEventTouchUpInside];
@@ -521,6 +521,22 @@
         [_talkButton addTarget:self action:@selector(talkButtonDragEnter:) forControlEvents:UIControlEventTouchDragEnter];
     }
     return _talkButton;
+}
+
+//- (void)setSafeInset:(UIEdgeInsets)safeInset
+//{
+//    _safeInset = safeInset;
+//}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    self.topLine.width = self.width;
+    self.moreButton.x = self.width - self.safeInset.right - CHATBOX_BUTTON_WIDTH;
+    self.faceButton.x = self.moreButton.x - CHATBOX_BUTTON_WIDTH;
+    self.talkButton.width = self.faceButton.x - self.voiceButton.x - self.voiceButton.width - 8;
+    self.textView.width = self.talkButton.width;
 }
 
 

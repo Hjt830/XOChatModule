@@ -25,6 +25,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
 @interface XOChatBoxViewController () <ZXChatBoxDelegate, ZXChatBoxMoreViewDelegate, ZXChatBoxFaceViewDelegate, LGSoundRecorderDelegate, TZImagePickerControllerDelegate, UINavigationControllerDelegate>
 {
     int                 _seconds;   // 录音时间
+    UIEdgeInsets        _safeInset;
 }
 @property (nonatomic, assign) CGFloat                   lastHeight;
 @property (nonatomic, assign) CGRect                    keyboardFrame;
@@ -74,12 +75,25 @@ static NSTimeInterval audioRecordTime = 0.0f;
     [self resignFirstResponder];
 }
 
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    
+    self.chatBox.height = HEIGHT_TABBAR + _safeInset.bottom;
+    self.chatBox.width = self.view.width;
+    self.chatBoxFaceView.width = self.view.width - (_safeInset.left + _safeInset.right);
+    self.chatBoxMoreView.width = self.view.width - (_safeInset.left + _safeInset.right);
+    [self.chatBox setNeedsLayout];
+    [self.chatBoxFaceView setNeedsLayout];
+    [self.chatBoxMoreView setNeedsLayout];
+}
+
 #pragma mark ====================== lazy load =======================
 
 - (ZXChatBoxView *) chatBox
 {
     if (_chatBox == nil) {
-        _chatBox = [[ZXChatBoxView alloc] initWithFrame:CGRectMake(0, 0, KWIDTH, HEIGHT_TABBAR)];
+        _chatBox = [[ZXChatBoxView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, HEIGHT_TABBAR)];
         [_chatBox setDelegate:self];
     }
     return _chatBox;
@@ -88,7 +102,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
 - (ZXChatBoxFaceView *) chatBoxFaceView
 {
     if (_chatBoxFaceView == nil) {
-        _chatBoxFaceView = [[ZXChatBoxFaceView alloc] initWithFrame:CGRectMake(0, HEIGHT_TABBAR, KWIDTH, HEIGHT_CHATBOXVIEW)];
+        _chatBoxFaceView = [[ZXChatBoxFaceView alloc] initWithFrame:CGRectMake(0, HEIGHT_TABBAR, self.view.width, HEIGHT_CHATBOXVIEW)];
         [_chatBoxFaceView setDelegate:self];
     }
     return _chatBoxFaceView;
@@ -207,7 +221,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
     float duration = [noti.userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
     if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:didChangeChatBoxHeight:duration:)]) {
         // 改变控制器.View 的高度 键盘的高度 + 当前的 49
-        [self.delegate chatBoxViewController:self didChangeChatBoxHeight:(self.keyboardFrame.size.height + self.chatBox.curHeight - self.chatBox.safeBottom) duration:duration];
+        [self.delegate chatBoxViewController:self didChangeChatBoxHeight:(self.keyboardFrame.size.height + self.chatBox.curHeight - self.chatBox.safeInset.bottom) duration:duration];
     }
 }
 
@@ -238,8 +252,8 @@ static NSTimeInterval audioRecordTime = 0.0f;
 - (void)chatBox:(ZXChatBoxView *)chatBox changeChatBoxHeight:(CGFloat)height
 {
     if (self.lastHeight == 0 || self.lastHeight == height) {
-        self.chatBoxFaceView.y = height - self.chatBox.safeBottom;
-        self.chatBoxMoreView.y = height - self.chatBox.safeBottom;
+        self.chatBoxFaceView.y = height - self.chatBox.safeInset.bottom;
+        self.chatBoxMoreView.y = height - self.chatBox.safeInset.bottom;
     } else {
         self.chatBoxFaceView.y += (height - self.lastHeight);
         self.chatBoxMoreView.y += (height - self.lastHeight);
@@ -248,7 +262,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:didChangeChatBoxHeight:duration:)]) {
         // 改变 控制器高度
-        float h = (self.chatBox.status == TLChatBoxStatusShowFace ? HEIGHT_CHATBOXVIEW + self.chatBox.safeBottom : self.keyboardFrame.size.height) + height - self.chatBox.safeBottom;
+        float h = (self.chatBox.status == TLChatBoxStatusShowFace ? HEIGHT_CHATBOXVIEW + self.chatBox.safeInset.bottom : self.keyboardFrame.size.height) + height - self.chatBox.safeInset.bottom;
         if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:didChangeChatBoxHeight:duration:)]) {
             [self.delegate chatBoxViewController:self didChangeChatBoxHeight:h duration:0.25];
         }
@@ -284,7 +298,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
             [UIView animateWithDuration:0.25 animations:^{
                 if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:didChangeChatBoxHeight:duration:)]) {
                     
-                    [self.delegate chatBoxViewController:self didChangeChatBoxHeight:(HEIGHT_TABBAR + self.chatBox.safeBottom) duration:0.25];
+                    [self.delegate chatBoxViewController:self didChangeChatBoxHeight:(HEIGHT_TABBAR + self.chatBox.safeInset.bottom) duration:0.25];
                 }
             } completion:^(BOOL finished) {
                 
@@ -297,7 +311,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
             [UIView animateWithDuration:0.25 animations:^{
                 if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:didChangeChatBoxHeight:duration:)]) {
                     
-                    [self.delegate chatBoxViewController:self didChangeChatBoxHeight:(HEIGHT_TABBAR + self.chatBox.safeBottom) duration:0.25];
+                    [self.delegate chatBoxViewController:self didChangeChatBoxHeight:(HEIGHT_TABBAR + self.chatBox.safeInset.bottom) duration:0.25];
                 }
             }];
         }
@@ -309,7 +323,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
          */
         if (fromStatus == TLChatBoxStatusShowVoice || fromStatus == TLChatBoxStatusNothing) {
             
-            [self.chatBoxFaceView setY:self.chatBox.curHeight - self.chatBox.safeBottom];
+            [self.chatBoxFaceView setY:self.chatBox.curHeight - self.chatBox.safeInset.bottom];
             // 添加表情View
             [self.view addSubview:self.chatBoxFaceView];
             [UIView animateWithDuration:0.25 animations:^{
@@ -323,7 +337,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
             self.chatBoxFaceView.y = self.chatBox.curHeight + HEIGHT_CHATBOXVIEW;
             [self.view addSubview:self.chatBoxFaceView];
             [UIView animateWithDuration:0.25 animations:^{
-                self.chatBoxFaceView.y = self.chatBox.curHeight - self.chatBox.safeBottom;
+                self.chatBoxFaceView.y = self.chatBox.curHeight - self.chatBox.safeInset.bottom;
             } completion:^(BOOL finished) {
                 [self.chatBoxMoreView removeFromSuperview];
             }];
@@ -341,7 +355,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
     {
         // 显示更多面板
         if (fromStatus == TLChatBoxStatusShowVoice || fromStatus == TLChatBoxStatusNothing) {
-            [self.chatBoxMoreView setY:self.chatBox.curHeight - self.chatBox.safeBottom];
+            [self.chatBoxMoreView setY:self.chatBox.curHeight - self.chatBox.safeInset.bottom];
             [self.view addSubview:self.chatBoxMoreView];
             
             [UIView animateWithDuration:0.25 animations:^{
@@ -354,7 +368,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
             self.chatBoxMoreView.y = self.chatBox.curHeight + HEIGHT_CHATBOXVIEW;
             [self.view addSubview:self.chatBoxMoreView];
             [UIView animateWithDuration:0.5 animations:^{
-                self.chatBoxMoreView.y = self.chatBox.curHeight - self.chatBox.safeBottom;
+                self.chatBoxMoreView.y = self.chatBox.curHeight - self.chatBox.safeInset.bottom;
             } completion:^(BOOL finished) {
                 [self.chatBoxFaceView removeFromSuperview];
             }];
@@ -828,8 +842,8 @@ static NSTimeInterval audioRecordTime = 0.0f;
 
 - (void)safeAreaDidChange:(UIEdgeInsets)safeAreaInset
 {
-    self.chatBox.safeBottom = safeAreaInset.bottom;
-    self.chatBox.height = HEIGHT_TABBAR + safeAreaInset.bottom;
+    _safeInset = safeAreaInset;
+    self.chatBox.safeInset = _safeInset;
 }
 
 // 增加了@**
