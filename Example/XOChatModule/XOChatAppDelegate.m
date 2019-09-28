@@ -15,7 +15,7 @@
 
 #define TXTIMAppID      @"1400079944"
 
-#if 0
+#if 1
 
 // 13229292929
 #define Token           @"ac7295f5e92742dea25260e9a780db91"
