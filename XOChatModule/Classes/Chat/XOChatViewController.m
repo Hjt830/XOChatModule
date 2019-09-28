@@ -142,22 +142,28 @@
     TIMTextElem *textElem = [[TIMTextElem alloc] init];
     textElem.text = content;
     TIMMessage *textMsg = [[TIMMessage alloc] init];
-    [textMsg addElem:textElem];
+    int result = [textMsg addElem:textElem];
     
-    @weakify(self);
-    int sendText = [self.conversation sendMessage:textMsg succ:^{
-        NSLog(@"发送成功");
-        @strongify(self);
-        [self.chatMsgVC sendSuccessMessage:textMsg];
-    } fail:^(int code, NSString *msg) {
-        NSLog(@"发送失败");
-        @strongify(self);
-        [self.chatMsgVC sendFailMessage:textMsg];
-    }];
-    if(1 == sendText) NSLog(@"发送文本消息失败!!!");
-    
-    // 将消息显示出来
-    [self.chatMsgVC sendingMessage:textMsg];
+    if (result) {
+        @weakify(self);
+        int sendText = [self.conversation sendMessage:textMsg succ:^{
+            @strongify(self);
+            [self.chatMsgVC sendSuccessMessage:textMsg];
+        } fail:^(int code, NSString *msg) {
+            @strongify(self);
+            [self.chatMsgVC sendFailMessage:textMsg];
+        }];
+        
+        // 将消息显示出来
+        if(0 == sendText) {
+            [self.chatMsgVC sendingMessage:textMsg];
+        } else {
+            NSLog(@"发送文本消息失败 sendText: %d", sendText);
+        }
+    }
+    else {
+        NSLog(@"发送文本消息失败  result: %d", result);
+    }
 }
 // 发送图片消息
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendImage:(NSString *)imagePath imageSize:(CGSize)size imageFormat:(nonnull NSString *)format
@@ -166,25 +172,31 @@
     imageElem.path = imagePath;
     imageElem.format = [self getImageFormat:format];
     TIMMessage *imageMsg = [[TIMMessage alloc] init];
-    [imageMsg addElem:imageElem];
+    int result = [imageMsg addElem:imageElem];
     
-    @weakify(self);
-    int sendImage = [self.conversation sendMessage:imageMsg succ:^{
-        NSLog(@"发送成功");
-        @strongify(self);
-        [self.chatMsgVC sendSuccessMessage:imageMsg];
-    } fail:^(int code, NSString *msg) {
-        NSLog(@"发送失败");
-        @strongify(self);
-        [self.chatMsgVC sendFailMessage:imageMsg];
-    }];
-    if(1 == sendImage) NSLog(@"发送图片消息失败!!!");
-    
-    // 将消息显示出来
-    [self.chatMsgVC sendingMessage:imageMsg];
+    if (0 == result) {
+        @weakify(self);
+        int sendImage = [self.conversation sendMessage:imageMsg succ:^{
+            @strongify(self);
+            [self.chatMsgVC sendSuccessMessage:imageMsg];
+        } fail:^(int code, NSString *msg) {
+            @strongify(self);
+            [self.chatMsgVC sendFailMessage:imageMsg];
+        }];
+        
+        // 将消息显示出来
+        if (0 == sendImage) {
+            [self.chatMsgVC sendingMessage:imageMsg];
+        } else {
+            NSLog(@"发送图片消息失败 sendImage: %d", sendImage);
+        }
+    }
+    else {
+        NSLog(@"发送图片消息失败  result: %d", result);
+    }
 }
 // 发送视频消息
-- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendVideo:(NSURL *)videoUrl snapshotImage:(nonnull NSURL *)imageURL snapshotSize:(CGSize)size videoDuration:(float)duration
+- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendVideo:(NSString *)videoPath snapshotImage:(nonnull NSString *)snapshotPath snapshotSize:(CGSize)size videoDuration:(float)duration
 {
     // 视频
     TIMVideo *video = [[TIMVideo alloc] init];
@@ -197,28 +209,35 @@
     snapshot.height = size.height;
     // 视频消息 Elem
     TIMVideoElem *videoElem = [[TIMVideoElem alloc] init];
-    videoElem.videoPath = videoUrl.relativeString;
-    videoElem.snapshotPath = imageURL.relativeString;
+    videoElem.videoPath = videoPath;
+    videoElem.snapshotPath = snapshotPath;
     videoElem.video = video;
     videoElem.snapshot = snapshot;
     // 视频消息
     TIMMessage *videoMsg = [[TIMMessage alloc] init];
-    [videoMsg addElem:videoElem];
+    int result = [videoMsg addElem:videoElem];
     
-    @weakify(self);
-    int sendVideo = [self.conversation sendMessage:videoMsg succ:^{
-        NSLog(@"发送成功");
-        @strongify(self);
-        [self.chatMsgVC sendSuccessMessage:videoMsg];
-    } fail:^(int code, NSString *msg) {
-        NSLog(@"发送失败");
-        @strongify(self);
-        [self.chatMsgVC sendFailMessage:videoMsg];
-    }];
-    if(1 == sendVideo) NSLog(@"发送视频消息失败!!!");
-    
-    // 将消息显示出来
-    [self.chatMsgVC sendingMessage:videoMsg];
+    // 发送消息
+    if (0 == result) {
+        @weakify(self);
+        int sendVideo = [self.conversation sendMessage:videoMsg succ:^{
+            @strongify(self);
+            [self.chatMsgVC sendSuccessMessage:videoMsg];
+        } fail:^(int code, NSString *msg) {
+            @strongify(self);
+            [self.chatMsgVC sendFailMessage:videoMsg];
+        }];
+        
+        // 将消息显示出来
+        if(0 == sendVideo) {
+            [self.chatMsgVC sendingMessage:videoMsg];
+        } else {
+            NSLog(@"发送视频消息失败 sendVideo: %d", sendVideo);
+        }
+    }
+    else {
+        NSLog(@"发送视频消息失败: %d", result);
+    }
 }
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMp3Audio:(NSString *)mp3Path audioDuration:(NSTimeInterval)duration
 {

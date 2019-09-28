@@ -49,9 +49,10 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 @property (nonatomic, strong) NSMutableArray    <NSMutableDictionary <NSString *, id>* >*dataSource;    // 数据源
 @property (nonatomic, strong) NSLock                            *lock;          // 线程锁
 @property (nonatomic, assign) NSUInteger                        page;           // 数据的页数
-@property (nonatomic, strong) NSMutableDictionary   <NSString *, NSValue *> *cellSizeDict;          // cell的高度缓存
-@property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *sendingMsgQueue;   // 发送中消息保存列表
+@property (nonatomic, strong) NSMutableDictionary   <NSString *, NSValue *> *cellSizeDict;              // cell的高度缓存
+@property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *sendingMsgQueue;       // 发送中消息保存列表
 @property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *downloadingMsgQueue;   // 下载中消息保存列表
+@property (nonatomic, strong) NSMutableDictionary   <NSString *, TIMMessage *>  *imageVideoList;        // 图片或者视频消息
 
 @property (nonatomic, strong) AVPlayer                          *player;        // 视频播放器
 @property (nonatomic, strong) AVPlayerItem                      *playerItem;    // 视频播放器
@@ -247,6 +248,10 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
             break;
     }
     
+    if ([message elemCount] == 0) {
+        filter = YES;
+    }
+    
     return filter;
 }
 
@@ -315,10 +320,31 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
                     mutArr = nil;
                 }
             }
+            
+            // 将图片消息或者视频消息加入到数组中
+            [self addToImageVideoList:obj];
         }
     }];
     
     return dataArray;
+}
+
+// 收集多媒体消息（图片、视频）
+- (void)addToImageVideoList:(TIMMessage *)message
+{
+    if ([message elemCount] > 0) {
+        TIMElem *elem = [message getElem:0];
+        if ([elem isKindOfClass:[TIMImageElem class]] ||
+            [elem isKindOfClass:[TIMVideoElem class]])
+        {
+            NSString *msgKey = getMessageKey(message);
+            if (![self.imageVideoList containsObjectForKey:msgKey]) {
+                @synchronized (self) {
+                    [self.imageVideoList setObject:message forKey:msgKey];
+                }
+            }
+        }
+    }
 }
 
 #pragma mark ========================= public method =========================
@@ -696,7 +722,18 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
                 NSLog(@"消息被剔除, 因为该条消息已经被撤回或删除");
             }
             else {
+                // 插入新消息
                 [self addMessage:message];
+                
+                // 如果消息是图片或者视频, 加入
+                [self addToImageVideoList:message];
+                
+                // 设置消息已读
+                [self.conversation setReadMessage:message succ:^{
+                    NSLog(@"----- 设置消息已读成功");
+                } fail:^(int code, NSString *msg) {
+                    NSLog(@"----- 设置消息已读失败");
+                }];
             }
         }
     }];
@@ -835,6 +872,14 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         _downloadingMsgQueue = [NSMutableDictionary dictionaryWithCapacity:5];
     }
     return _downloadingMsgQueue;
+}
+
+- (NSMutableDictionary<NSString *,NSIndexPath *> *)imageVideoList
+{
+    if (!_imageVideoList) {
+        _imageVideoList = [NSMutableDictionary dictionaryWithCapacity:5];
+    }
+    return _imageVideoList;
 }
 
 - (NSMutableDictionary<NSString *,NSValue *> *)cellSizeDict

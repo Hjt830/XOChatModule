@@ -49,5 +49,6 @@ Pod::Spec.new do |s|
   s.dependency 'SVProgressHUD', '~> 2.2.5'
   s.dependency 'MBProgressHUD', '~> 1.1.0'
   s.dependency 'AFNetworking', '~> 3.2.1'
+  s.dependency 'MWPhotoBrowser', '~> 2.1.2'
   
 end

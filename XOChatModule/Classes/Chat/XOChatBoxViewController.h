@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 发送消息
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMessage:(NSString *)content;
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendImage:(NSString *)imagePath imageSize:(CGSize)size imageFormat:(NSString *)format;
-- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendVideo:(NSURL *)videoUrl snapshotImage:(NSURL *)imageURL snapshotSize:(CGSize)size videoDuration:(float)duration;
+- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendVideo:(NSString *)videoPath snapshotImage:(NSString *)snapshotPath snapshotSize:(CGSize)size videoDuration:(float)duration;
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMp3Audio:(NSString *)mp3Path audioDuration:(NSTimeInterval)duration;
 - (void)chatBoxViewControllerSendPosition:(XOChatBoxViewController *)chatboxViewController;
 - (void)chatBoxViewControllerSendCall:(XOChatBoxViewController *)chatboxViewController;

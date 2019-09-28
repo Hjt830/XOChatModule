@@ -770,7 +770,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
     // 1、获取视频缩略图
     UIImage *snapshotImage = [self getVideoSnapshotImage:videoAsset];
     NSString *snapshotName = [NSString stringWithFormat:@"%@_%ld_snapshot.jpg", [NSUUID UUID].UUIDString, (long)[[NSDate date] timeIntervalSince1970]];
-    NSString *snapshotPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:snapshotName];
+    __block NSString *snapshotPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:snapshotName];
     __block NSURL *snapshotURL = [NSURL fileURLWithPath:snapshotPath];
     [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
         NSData *imageData = UIImageJPEGRepresentation(snapshotImage, 1.0);
@@ -780,9 +780,9 @@ static NSTimeInterval audioRecordTime = 0.0f;
     }];
     // 2、转化视频格式为mp4
     NSString *videoName = [NSString stringWithFormat:@"%@_%ld.mp4", [NSUUID UUID].UUIDString, (long)[[NSDate date] timeIntervalSince1970]];
-    NSString *videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoName];
+    __block NSString *videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoName];
     NSURL *videoURL = [NSURL fileURLWithPath:videoPath];
-    __block CGFloat duration = CMTimeGetSeconds(videoAsset.duration);
+    __block CGFloat duration = CMTimeGetSeconds(videoAsset.duration) * 1000;
     __block CGSize snapshotSize = snapshotImage.size;
     [SVProgressHUD showWithStatus:@"处理视频中..."];
     [self convertToMP4:videoAsset videoURL:videoURL succ:^(NSURL *outputURL) {
@@ -790,7 +790,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
         
         if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendVideo:snapshotImage:snapshotSize:videoDuration:)]) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.delegate chatBoxViewController:self sendVideo:outputURL snapshotImage:snapshotURL snapshotSize:snapshotSize videoDuration:duration];
+                [self.delegate chatBoxViewController:self sendVideo:videoPath snapshotImage:snapshotPath snapshotSize:snapshotSize videoDuration:duration];
             }];
         }
     } fail:^(NSError *error) {
