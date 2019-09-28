@@ -716,25 +716,15 @@ static NSTimeInterval audioRecordTime = 0.0f;
         // 选择了原图
         if (isSelectOriginalPhoto) {
             // 获取原图
-            @weakify(self);
             [[TZImageManager manager] getOriginalPhotoWithAsset:asset completion:^(UIImage *photo, NSDictionary *info) {
-                @strongify(self);
-                static dispatch_once_t onceToken;
-                dispatch_once(&onceToken, ^{
-                    [self getImageForAsset:asset];
-                });
+                [self getImageForAsset:asset];
             }];
         }
         // 未选择原图
         else {
             // 获取封面图
-            @weakify(self);
             [[TZImageManager manager] getPhotoWithAsset:asset completion:^(UIImage *photo, NSDictionary *info, BOOL isDegraded) {
-                @strongify(self);
-                static dispatch_once_t onceToken;
-                dispatch_once(&onceToken, ^{
-                    [self getImageForAsset:asset];
-                });
+                [self getImageForAsset:asset];
             }];
         }
     }];
@@ -824,7 +814,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
 {
     NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
     
-    // 压缩图写入沙盒
+    // 原图写入沙盒
     if ([imageData writeToFile:imagePath atomically:YES]) {
         // 获取缩略图
         CGSize thumbSize = [[XOFileManager shareInstance] getScaleImageSize:image];
@@ -834,7 +824,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
         NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
         // 缩略图写入沙盒
         [thumbImageData writeToFile:thumbImagePath atomically:YES];
-        
+        // 回调代理发送图片消息
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.delegate chatBoxViewController:self sendImage:imagePath imageSize:image.size imageFormat:uti];
         }];

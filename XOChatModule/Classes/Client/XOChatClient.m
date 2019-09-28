@@ -168,16 +168,16 @@ static XOChatClient *__chatClient = nil;
 - (void)onNewMessage:(NSArray *)msgs
 {
     XOLog(@"=================================\n=================================\n收到新消息条数: %lu \n收到新消息: %@\n=================================\n=================================", (unsigned long)msgs.count, msgs);
-    // 开启下载任务
-    [msgs enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj isKindOfClass:[TIMMessage class]]) {
-            [self ScheduleDownloadTask:(TIMMessage *)obj];
-        }
-    }];
-    
+    // 回调收到新消息
     if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnForceOffline)]) {
         [_multiDelegate xoOnNewMessage:msgs];
     }
+    // 开启子线程下载任务
+    [msgs enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([message isKindOfClass:[TIMMessage class]]) {
+            [self ScheduleDownloadTask:message];
+        }
+    }];
 }
 
 #pragma mark ========================= TIMUserStatusListener =========================
@@ -411,7 +411,7 @@ static XOChatClient *__chatClient = nil;
                 } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
                     
                     // 将任务从下载队列中移除
-                    NSString *resultKey = [NSString stringWithFormat:@"%@_%ld", message.msgId, (long)[message.timestamp timeIntervalSince1970]];
+                    NSString *resultKey = getMessageKey(message);
                     @synchronized (self) {
                         [self.taskQueue removeObjectForKey:resultKey];
                     }
@@ -465,7 +465,7 @@ static XOChatClient *__chatClient = nil;
                 [task resume];
                 
                 // 将任务添加到队列中
-                NSString *taskKey = [NSString stringWithFormat:@"%@_%ld", message.msgId, (long)[message.timestamp timeIntervalSince1970]];
+                NSString *taskKey = getMessageKey(message);
                 @synchronized (self) {
                     [self.taskQueue setObject:task forKey:taskKey];
                 }
@@ -510,7 +510,7 @@ static XOChatClient *__chatClient = nil;
                 }
                 
                 // 2、将任务从下载队列中移除
-                NSString *resultKey = [NSString stringWithFormat:@"%@_%ld", message.msgId, (long)[message.timestamp timeIntervalSince1970]];
+                NSString *resultKey = getMessageKey(message);
                 @synchronized (self) {
                     [self.taskQueue removeObjectForKey:resultKey];
                 }
@@ -541,7 +541,7 @@ static XOChatClient *__chatClient = nil;
                 }
             }];
             
-            NSString *taskKey = [NSString stringWithFormat:@"%@_%ld", message.msgId, (long)[message.timestamp timeIntervalSince1970]];
+            NSString *taskKey = getMessageKey(message);
             NSURLSessionTask *task = [[NSURLSessionTask alloc] init];
             // 将任务添加到队列中
             @synchronized (self) {
@@ -585,7 +585,7 @@ static XOChatClient *__chatClient = nil;
             }
             
             // 2、将任务从下载队列中移除
-            NSString *resultKey = [NSString stringWithFormat:@"%@_%ld", message.msgId, (long)[message.timestamp timeIntervalSince1970]];
+            NSString *resultKey = getMessageKey(message);
             @synchronized (self) {
                 [self.taskQueue removeObjectForKey:resultKey];
             }
@@ -616,7 +616,7 @@ static XOChatClient *__chatClient = nil;
             }
         }];
         
-        NSString *taskKey = [NSString stringWithFormat:@"%@_%ld", message.msgId, (long)[message.timestamp timeIntervalSince1970]];
+        NSString *taskKey = getMessageKey(message);
         NSURLSessionTask *task = [[NSURLSessionTask alloc] init];
         // 将任务添加到队列中
         @synchronized (self) {
@@ -659,7 +659,7 @@ static XOChatClient *__chatClient = nil;
             }
             
             // 2、将任务从下载队列中移除
-            NSString *resultKey = [NSString stringWithFormat:@"%@_%ld", message.msgId, (long)[message.timestamp timeIntervalSince1970]];
+            NSString *resultKey = getMessageKey(message);
             @synchronized (self) {
                 [self.taskQueue removeObjectForKey:resultKey];
             }
@@ -690,7 +690,7 @@ static XOChatClient *__chatClient = nil;
             }
         }];
         
-        NSString *taskKey = [NSString stringWithFormat:@"%@_%ld", message.msgId, (long)[message.timestamp timeIntervalSince1970]];
+        NSString *taskKey = getMessageKey(message);
         NSURLSessionTask *task = [[NSURLSessionTask alloc] init];
         // 将任务添加到队列中
         @synchronized (self) {

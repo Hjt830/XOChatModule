@@ -16,16 +16,24 @@ NS_ASSUME_NONNULL_BEGIN
 @interface XOChatMessageController : XOBaseViewController
 
 @property (nonatomic, weak) id  <XOChatMessageControllerDelegate> delegate;
-
 @property (nonatomic, strong) TIMConversation               *conversation;
 @property (nonatomic, assign) TIMConversationType           chatType;   // 会话类型
 
 - (void)safeAreaDidChange:(UIEdgeInsets)safeAreaInset;
 
-- (NSIndexPath *)addMessage:(TIMMessage *)message;
+// 添加发送中的消息
+- (void)sendingMessage:(TIMMessage *)message;
 
+// 修改发送中的消息为成功
+- (void)sendSuccessMessage:(TIMMessage *)message;
+
+// 修改发送中的消息为失败
+- (void)sendFailMessage:(TIMMessage *)message;
+
+// 删除消息
 - (void)deleteMessage:(TIMMessage *)message;
 
+// 更新消息
 - (void)updateMessage:(TIMMessage *)message;
 
 @end

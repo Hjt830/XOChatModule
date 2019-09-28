@@ -49,8 +49,9 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 @property (nonatomic, strong) NSMutableArray    <NSMutableDictionary <NSString *, id>* >*dataSource;    // 数据源
 @property (nonatomic, strong) NSLock                            *lock;          // 线程锁
 @property (nonatomic, assign) NSUInteger                        page;           // 数据的页数
-@property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *updateIndexDict;    // 保存更新进度时的消息位置信息
-@property (nonatomic, strong) NSMutableDictionary   <NSString *, NSValue *> *cellSizeDict;    // 保存cell的高度
+@property (nonatomic, strong) NSMutableDictionary   <NSString *, NSValue *> *cellSizeDict;          // cell的高度缓存
+@property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *sendingMsgQueue;   // 发送中消息保存列表
+@property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *downloadingMsgQueue;   // 下载中消息保存列表
 
 @property (nonatomic, strong) AVPlayer                          *player;        // 视频播放器
 @property (nonatomic, strong) AVPlayerItem                      *playerItem;    // 视频播放器
@@ -320,6 +321,57 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     return dataArray;
 }
 
+// 添加发送中的消息
+- (void)sendingMessage:(TIMMessage *)message
+{
+    NSIndexPath *indexpath = [self addMessage:message];
+    // 缓存发送中的消息
+    if (indexpath) {
+        NSString *msgKey = getMessageKey(message);
+        @synchronized (self) {
+            [self.sendingMsgQueue setValue:indexpath forKey:msgKey];
+        }
+    }
+}
+
+// 修改发送中的消息为成功
+- (void)sendSuccessMessage:(TIMMessage *)message
+{
+    NSIndexPath *indexpath = [self findIndexPathWithSendingMessage:message];
+    if (indexpath) {
+        WXMessageCell *cell = [self.tableView cellForRowAtIndexPath:indexpath];
+        if (cell) {
+            [cell sendSuccess];
+        }
+    }
+    
+    // 从发送消息队列中移除该条消息
+    NSString *msgKey = getMessageKey(message);
+    if ([self.sendingMsgQueue containsObjectForKey:msgKey]) {
+        @synchronized (self) {
+            [self.sendingMsgQueue removeObjectForKey:msgKey];
+        }
+    }
+}
+
+- (void)sendFailMessage:(TIMMessage *)message
+{
+    NSIndexPath *indexpath = [self findIndexPathWithSendingMessage:message];
+    if (indexpath) {
+        WXMessageCell *cell = [self.tableView cellForRowAtIndexPath:indexpath];
+        if (cell) {
+            [cell sendFail];
+        }
+    }
+    // 从发送消息队列中移除该条消息
+    NSString *msgKey = getMessageKey(message);
+    if ([self.sendingMsgQueue containsObjectForKey:msgKey]) {
+        @synchronized (self) {
+            [self.sendingMsgQueue removeObjectForKey:msgKey];
+        }
+    }
+}
+
 // 添加消息
 - (NSIndexPath *)addMessage:(TIMMessage *)message
 {
@@ -394,7 +446,6 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
             }];
         }
     }
-    
     return indexpath;
 }
 
@@ -633,59 +684,59 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 
 #pragma mark ========================= XOChatClientProtocol =========================
 
+// 收到新消息
 - (void)xoOnNewMessage:(NSArray<TIMMessage *> *)msgs
 {
-    [msgs enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [msgs enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
         
-        if ([obj.sender isEqualToString:[self.conversation getReceiver]]) {
-            BOOL filter = [self filterMessage:obj];
+        if ([message.sender isEqualToString:[self.conversation getReceiver]]) {
+            BOOL filter = [self filterMessage:message];
             if (filter) {
                 NSLog(@"消息被剔除, 因为该条消息已经被撤回或删除");
             }
             else {
-                [self addMessage:obj];
+                [self addMessage:message];
             }
         }
     }];
 }
-
+// 消息下载文件进度回调
 - (void)message:(TIMMessage *)message downloadProgress:(float)progress
 {
-    [self updateProgress:progress withMessage:message];
+    NSIndexPath *indexpath = [self findIndexPathWithDownloadingMessage:message];
+    if (indexpath) {
+        WXMessageCell *cell = [self.tableView cellForRowAtIndexPath:indexpath];
+        if (cell) {
+            [cell updateProgress:progress effect:YES];
+        }
+    }
 }
-
+// 消息文件下载成功回调
 - (void)messageFileDownloadSuccess:(TIMMessage *)message fileURL:(NSURL *)fileURL thumbImageURL:(NSURL *)thumbImageURL
 {
-    
+    // 从下载消息队列中移除该条消息
+    NSString *msgKey = getMessageKey(message);
+    if ([self.downloadingMsgQueue containsObjectForKey:msgKey]) {
+        @synchronized (self) {
+            [self.downloadingMsgQueue removeObjectForKey:msgKey];
+        }
+    }
 }
-
+// 消息文件下载失败回调
 - (void)messageFileDownloadFail:(TIMMessage *)message failError:(NSError *)error
 {
-    
+    // 从下载消息队列中移除该条消息
+    NSString *msgKey = getMessageKey(message);
+    if ([self.downloadingMsgQueue containsObjectForKey:msgKey]) {
+        @synchronized (self) {
+            [self.downloadingMsgQueue removeObjectForKey:msgKey];
+        }
+    }
 }
-
+// 消息文件上传进度回调
 - (void)messageFileUpload:(TIMMessage *)message progress:(float)progress
 {
-    [self updateProgress:progress withMessage:message];
-}
-
-- (void)updateProgress:(float)progress withMessage:(TIMMessage *)message
-{
-    __block NSIndexPath *indexpath = nil;
-    [self.dataSource enumerateObjectsUsingBlock:^(NSMutableDictionary<NSString *,id> * _Nonnull dict, NSUInteger idx, BOOL * _Nonnull stop) {
-        
-        NSMutableArray <TIMMessage *>* mutArr = dict[MsgSectionListKey];
-        __block BOOL needStop = NO;
-        [mutArr enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger subIdx, BOOL * _Nonnull subStop) {
-            if ([obj.msgId isEqualToString:message.msgId] && [obj.timestamp isEqual:message.timestamp]) {
-                indexpath = [NSIndexPath indexPathForRow:subIdx inSection:idx];
-                needStop = YES;
-                *subStop = YES;
-            }
-        }];
-        *stop = needStop;
-    }];
-    
+    NSIndexPath *indexpath = [self findIndexPathWithSendingMessage:message];
     if (indexpath) {
         WXMessageCell *cell = [self.tableView cellForRowAtIndexPath:indexpath];
         if (cell) {
@@ -769,18 +820,26 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     return _dataSource;
 }
 
-- (NSMutableDictionary <NSString *, NSIndexPath *>* )updateIndexDict
+- (NSMutableDictionary <NSString *, NSIndexPath *>* )sendingMsgQueue
 {
-    if (!_updateIndexDict) {
-        _updateIndexDict = [NSMutableDictionary dictionaryWithCapacity:15];
+    if (!_sendingMsgQueue) {
+        _sendingMsgQueue = [NSMutableDictionary dictionaryWithCapacity:5];
     }
-    return _updateIndexDict;
+    return _sendingMsgQueue;
+}
+
+- (NSMutableDictionary<NSString *,NSIndexPath *> *)downloadingMsgQueue
+{
+    if (!_downloadingMsgQueue) {
+        _downloadingMsgQueue = [NSMutableDictionary dictionaryWithCapacity:5];
+    }
+    return _downloadingMsgQueue;
 }
 
 - (NSMutableDictionary<NSString *,NSValue *> *)cellSizeDict
 {
     if (!_cellSizeDict) {
-        _cellSizeDict = [NSMutableDictionary dictionaryWithCapacity:15];
+        _cellSizeDict = [NSMutableDictionary dictionaryWithCapacity:5];
     }
     return _cellSizeDict;
 }
@@ -800,6 +859,74 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 
 #pragma mark ========================= help =========================
 
+// 根据发送中的消息找到其位置indexpath
+- (NSIndexPath *)findIndexPathWithSendingMessage:(TIMMessage *)message
+{
+    __block NSIndexPath *indexpath = nil;
+    NSString *msgKey = getMessageKey(message);
+    // 从发送消息队列中找
+    if (self.sendingMsgQueue.count > 0) {
+        indexpath = [self.sendingMsgQueue objectForKey:msgKey];
+    }
+    // 如果发送消息队列中没有则从数据源中找
+    if (!indexpath) {
+        [self.dataSource enumerateObjectsUsingBlock:^(NSMutableDictionary<NSString *,id> * _Nonnull dict, NSUInteger idx, BOOL * _Nonnull stop) {
+            
+            NSMutableArray <TIMMessage *>* mutArr = dict[MsgSectionListKey];
+            __block BOOL needStop = NO;
+            [mutArr enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger subIdx, BOOL * _Nonnull subStop) {
+                if ([obj.msgId isEqualToString:message.msgId] && [obj.timestamp isEqual:message.timestamp]) {
+                    indexpath = [NSIndexPath indexPathForRow:subIdx inSection:idx];
+                    needStop = YES;
+                    *subStop = YES;
+                }
+            }];
+            *stop = needStop;
+        }];
+        // 如果找到就缓存到发送消息队列中
+        if (indexpath) {
+            @synchronized (self) {
+                [self.sendingMsgQueue setObject:indexpath forKey:msgKey];
+            }
+        }
+    }
+    return indexpath;
+}
+
+// 根据下载中的消息找到其位置indexpath
+- (NSIndexPath *)findIndexPathWithDownloadingMessage:(TIMMessage *)message
+{
+    __block NSIndexPath *indexpath = nil;
+    NSString *msgKey = getMessageKey(message);
+    // 从下载消息队列中找
+    if (self.downloadingMsgQueue.count > 0) {
+        indexpath = [self.downloadingMsgQueue objectForKey:msgKey];
+    }
+    // 如果下载消息队列中没有则从数据源中找
+    if (!indexpath) {
+        [self.dataSource enumerateObjectsUsingBlock:^(NSMutableDictionary<NSString *,id> * _Nonnull dict, NSUInteger idx, BOOL * _Nonnull stop) {
+            
+            NSMutableArray <TIMMessage *>* mutArr = dict[MsgSectionListKey];
+            __block BOOL needStop = NO;
+            [mutArr enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger subIdx, BOOL * _Nonnull subStop) {
+                if ([obj.msgId isEqualToString:message.msgId] && [obj.timestamp isEqual:message.timestamp]) {
+                    indexpath = [NSIndexPath indexPathForRow:subIdx inSection:idx];
+                    needStop = YES;
+                    *subStop = YES;
+                }
+            }];
+            *stop = needStop;
+        }];
+        // 如果找到就缓存到下载消息队列中
+        if (indexpath) {
+            @synchronized (self) {
+                [self.downloadingMsgQueue setObject:indexpath forKey:msgKey];
+            }
+        }
+    }
+    return indexpath;
+}
+
 - (CGSize)messageSize:(TIMMessage *)message
 {
     CGFloat standradW = (KWIDTH < KHEIGHT) ? KWIDTH : KHEIGHT;
@@ -809,7 +936,7 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     }
     
     // 1、从缓存中取值
-    NSString *uniqueKey = [NSString stringWithFormat:@"%@_%ld", message.msgId, (long)[message.timestamp timeIntervalSince1970]];
+    NSString *uniqueKey = getMessageKey(message);
     NSValue *sizeValueCache = [self.cellSizeDict valueForKey:uniqueKey];
     if (sizeValueCache) {
         return [sizeValueCache CGSizeValue];

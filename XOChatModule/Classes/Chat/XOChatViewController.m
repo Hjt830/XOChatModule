@@ -148,16 +148,16 @@
     int sendText = [self.conversation sendMessage:textMsg succ:^{
         NSLog(@"发送成功");
         @strongify(self);
-        [self.chatMsgVC updateMessage:textMsg];
+        [self.chatMsgVC sendSuccessMessage:textMsg];
     } fail:^(int code, NSString *msg) {
         NSLog(@"发送失败");
         @strongify(self);
-        [self.chatMsgVC updateMessage:textMsg];
+        [self.chatMsgVC sendFailMessage:textMsg];
     }];
     if(1 == sendText) NSLog(@"发送文本消息失败!!!");
     
     // 将消息显示出来
-    [self.chatMsgVC addMessage:textMsg];
+    [self.chatMsgVC sendingMessage:textMsg];
 }
 
 // 发送图片消息
@@ -173,16 +173,16 @@
     int sendText = [self.conversation sendMessage:imageMsg succ:^{
         NSLog(@"发送成功");
         @strongify(self);
-        [self.chatMsgVC updateMessage:imageMsg];
+        [self.chatMsgVC sendSuccessMessage:imageMsg];
     } fail:^(int code, NSString *msg) {
         NSLog(@"发送失败");
         @strongify(self);
-        [self.chatMsgVC updateMessage:imageMsg];
+        [self.chatMsgVC sendFailMessage:imageMsg];
     }];
     if(1 == sendText) NSLog(@"发送图片消息失败!!!");
     
     // 将消息显示出来
-    [self.chatMsgVC addMessage:imageMsg];
+    [self.chatMsgVC sendingMessage:imageMsg];
 }
 
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendVideo:(NSURL *)videoUrl videoDuration:(float)duration

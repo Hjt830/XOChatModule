@@ -46,7 +46,47 @@ static BOOL progressFinish = NO;
     }
     
     // 加载图片
-    [self loadImageWith:message formCache:YES];
+//    [self loadImageWith:message formCache:YES];
+    
+    TIMElem *elem = [message getElem:0];
+    if ([elem isKindOfClass:[TIMImageElem class]]) {
+        TIMImageElem *imageElem = (TIMImageElem *)elem;
+        if (imageElem.imageList.count > 0) {
+            TIMImage *image = [imageElem.imageList objectAtIndex:0];
+            
+            __block NSString *thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", image.uuid, [self getImageFormat:imageElem.format]];
+            __block NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
+            
+            // 自己发送的消息
+            if (message.isSelf) {
+                thumbImageName = [[imageElem.path lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
+                thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
+            }
+            // 收到的消息
+            else {
+                thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", image.uuid, [self getImageFormat:imageElem.format]];
+                thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
+            }
+            
+            [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                NSData *thumbImageData = [[NSData alloc] initWithContentsOfFile:thumbImagePath];
+                __block UIImage *thumbImage = [UIImage imageWithData:thumbImageData];
+                // 缓存中有图片
+                if (thumbImage != nil) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        self.messageImageView.image = thumbImage;
+                    }];
+                }
+                // 缓存中没有图片
+                else {
+        //            [self loadImageWith:message formCache:NO];
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [self.messageImageView setImage:[UIImage xo_imageNamedFromChatBundle:@"placeholderImage"]];
+                    }];
+                }
+            }];
+        }
+    }
 }
 
 - (void) layoutSubviews

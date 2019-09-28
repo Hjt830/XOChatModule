@@ -15,6 +15,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// 获取消息唯一的Key
+FOUNDATION_STATIC_INLINE NSString * getMessageKey(TIMMessage *message) {
+    
+    if (message) {
+        NSString *msgKey = [NSString stringWithFormat:@"%@_%ld", message.msgId, (long)[message.timestamp timeIntervalSince1970]];
+        return msgKey;
+    }
+    return nil;
+}
+
+
 @protocol XOChatClientProtocol;
 
 @interface XOChatClient : NSObject
