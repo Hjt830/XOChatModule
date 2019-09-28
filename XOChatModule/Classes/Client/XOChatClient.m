@@ -433,6 +433,9 @@ static XOChatClient *__chatClient = nil;
                         if (self.waitTaskQueue.count > 0) {
                             TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
                             [self ScheduleDownloadTask:waitMsg];
+                            @synchronized (self) {
+                                [self.waitTaskQueue removeObjectAtIndex:0];
+                            }
                         }
                     }
                     else {
@@ -459,6 +462,9 @@ static XOChatClient *__chatClient = nil;
                         if (self.waitTaskQueue.count > 0) {
                             TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
                             [self ScheduleDownloadTask:waitMsg];
+                            @synchronized (self) {
+                                [self.waitTaskQueue removeObjectAtIndex:0];
+                            }
                         }
                     }
                 }];
@@ -486,66 +492,88 @@ static XOChatClient *__chatClient = nil;
             }
         }
         else {
+            // 下载视频截图
+            TIMSnapshot *snapshot = videoElem.snapshot;
+            if (snapshot) {
+                NSString *snapshotformat = XOIsEmptyString(snapshot.type) ? @"jpg" : snapshot.type;
+                NSString *snapshotName = [NSString stringWithFormat:@"%@.%@", snapshot.uuid, snapshotformat];
+                __block NSString *snapshotPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:snapshotName];
+                [snapshot getImage:snapshotPath succ:^{
+                    NSLog(@"下载视频截图成功: %@", snapshotPath);
+                } fail:^(int code, NSString *msg) {
+                    NSLog(@"下载视频截图失败: %@", snapshotPath);
+                }];
+            }
+            // 下载视频
             TIMVideo *timVideo = videoElem.video;
-            __block NSString *videoFomat = !XOIsEmptyString(timVideo.type) ? timVideo.type : @"mp4";
-            __block NSString *videoName = [NSString stringWithFormat:@"%@.%@", timVideo.uuid, videoFomat];
-            __block NSString *videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoName];
-            
-            [timVideo getVideo:videoPath progress:^(NSInteger curSize, NSInteger totalSize) {
+            if (timVideo) {
+                __block NSString *videoFomat = !XOIsEmptyString(timVideo.type) ? timVideo.type : @"mp4";
+                __block NSString *videoName = [NSString stringWithFormat:@"%@.%@", timVideo.uuid, videoFomat];
+                __block NSString *videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoName];
                 
-                // 回调代理下载进度
-                float progress = (curSize * 1.0)/totalSize;
-                if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(message:downloadProgress:)]) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [self->_multiDelegate message:message downloadProgress:progress];
-                    });
-                }
+                [timVideo getVideo:videoPath progress:^(NSInteger curSize, NSInteger totalSize) {
+                    
+                    // 回调代理下载进度
+                    float progress = (curSize * 1.0)/totalSize;
+                    if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(message:downloadProgress:)]) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self->_multiDelegate message:message downloadProgress:progress];
+                        });
+                    }
+                    
+                } succ:^{
+                    // 1、回调代理下载成功
+                    if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(messageFileDownloadSuccess:fileURL:thumbImageURL:)]) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            NSURL *videoURL = [NSURL fileURLWithPath:videoPath];
+                            [self->_multiDelegate messageFileDownloadSuccess:message fileURL:videoURL thumbImageURL:nil];
+                        });
+                    }
+                    
+                    // 2、将任务从下载队列中移除
+                    NSString *resultKey = getMessageKey(message);
+                    @synchronized (self) {
+                        [self.taskQueue removeObjectForKey:resultKey];
+                    }
+                    
+                    // 3、取一个等待下载的消息出来, 开始下载任务
+                    if (self.waitTaskQueue.count > 0) {
+                        TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
+                        [self ScheduleDownloadTask:waitMsg];
+                        @synchronized (self) {
+                            [self.waitTaskQueue removeObjectAtIndex:0];
+                        }
+                    }
+                    
+                } fail:^(int code, NSString *msg) {
+                    
+                    // 1、回调代理下载失败
+                    if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(messageFileDownloadFail:failError:)]) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain code:code userInfo:@{@"msg": msg}];
+                            [self->_multiDelegate messageFileDownloadFail:message failError:error];
+                        });
+                    }
+                    // 2、将下载失败的消息加入到等待下载队列的最后一个
+                    @synchronized (self) {
+                        [self.waitTaskQueue addObject:message];
+                    }
+                    // 3、取一个等待下载的消息出来, 开始下载任务
+                    if (self.waitTaskQueue.count > 0) {
+                        TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
+                        [self ScheduleDownloadTask:waitMsg];
+                        @synchronized (self) {
+                            [self.waitTaskQueue removeObjectAtIndex:0];
+                        }
+                    }
+                }];
                 
-            } succ:^{
-                // 1、回调代理下载成功
-                if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(messageFileDownloadSuccess:fileURL:thumbImageURL:)]) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [self->_multiDelegate messageFileDownloadSuccess:message fileURL:videoPath thumbImageURL:nil];
-                    });
-                }
-                
-                // 2、将任务从下载队列中移除
-                NSString *resultKey = getMessageKey(message);
+                NSString *taskKey = getMessageKey(message);
+                NSURLSessionTask *task = [[NSURLSessionTask alloc] init];
+                // 将任务添加到队列中
                 @synchronized (self) {
-                    [self.taskQueue removeObjectForKey:resultKey];
+                    [self.taskQueue setObject:task forKey:taskKey];
                 }
-                
-                // 3、取一个等待下载的消息出来, 开始下载任务
-                if (self.waitTaskQueue.count > 0) {
-                    TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
-                    [self ScheduleDownloadTask:waitMsg];
-                }
-                
-            } fail:^(int code, NSString *msg) {
-                
-                // 1、回调代理下载失败
-                if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(messageFileDownloadFail:failError:)]) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain code:code userInfo:@{@"msg": msg}];
-                        [self->_multiDelegate messageFileDownloadFail:message failError:error];
-                    });
-                }
-                // 2、将下载失败的消息加入到等待下载队列的最后一个
-                @synchronized (self) {
-                    [self.waitTaskQueue addObject:message];
-                }
-                // 3、取一个等待下载的消息出来, 开始下载任务
-                if (self.waitTaskQueue.count > 0) {
-                    TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
-                    [self ScheduleDownloadTask:waitMsg];
-                }
-            }];
-            
-            NSString *taskKey = getMessageKey(message);
-            NSURLSessionTask *task = [[NSURLSessionTask alloc] init];
-            // 将任务添加到队列中
-            @synchronized (self) {
-                [self.taskQueue setObject:task forKey:taskKey];
             }
         }
     }
@@ -579,7 +607,7 @@ static XOChatClient *__chatClient = nil;
             // 1、回调代理下载成功
             if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(messageFileDownloadSuccess:fileURL:thumbImageURL:)]) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    NSURL *fileURL = [NSURL URLWithString:soundPath];
+                    NSURL *fileURL = [NSURL fileURLWithPath:soundPath];
                     [self->_multiDelegate messageFileDownloadSuccess:message fileURL:fileURL thumbImageURL:nil];
                 });
             }
@@ -594,6 +622,9 @@ static XOChatClient *__chatClient = nil;
             if (self.waitTaskQueue.count > 0) {
                 TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
                 [self ScheduleDownloadTask:waitMsg];
+                @synchronized (self) {
+                    [self.waitTaskQueue removeObjectAtIndex:0];
+                }
             }
             
         } fail:^(int code, NSString *msg) {
@@ -613,6 +644,9 @@ static XOChatClient *__chatClient = nil;
             if (self.waitTaskQueue.count > 0) {
                 TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
                 [self ScheduleDownloadTask:waitMsg];
+                @synchronized (self) {
+                    [self.waitTaskQueue removeObjectAtIndex:0];
+                }
             }
         }];
         
@@ -653,7 +687,7 @@ static XOChatClient *__chatClient = nil;
             // 1、回调代理下载成功
             if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(messageFileDownloadSuccess:fileURL:thumbImageURL:)]) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    NSURL *fileURL = [NSURL URLWithString:filePath];
+                    NSURL *fileURL = [NSURL fileURLWithPath:filePath];
                     [self->_multiDelegate messageFileDownloadSuccess:message fileURL:fileURL thumbImageURL:nil];
                 });
             }
@@ -668,6 +702,9 @@ static XOChatClient *__chatClient = nil;
             if (self.waitTaskQueue.count > 0) {
                 TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
                 [self ScheduleDownloadTask:waitMsg];
+                @synchronized (self) {
+                    [self.waitTaskQueue removeObjectAtIndex:0];
+                }
             }
             
         } fail:^(int code, NSString *msg) {
@@ -687,6 +724,9 @@ static XOChatClient *__chatClient = nil;
             if (self.waitTaskQueue.count > 0) {
                 TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
                 [self ScheduleDownloadTask:waitMsg];
+                @synchronized (self) {
+                    [self.waitTaskQueue removeObjectAtIndex:0];
+                }
             }
         }];
         

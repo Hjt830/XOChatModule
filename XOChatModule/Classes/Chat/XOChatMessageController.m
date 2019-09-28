@@ -321,6 +321,8 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     return dataArray;
 }
 
+#pragma mark ========================= public method =========================
+
 // 添加发送中的消息
 - (void)sendingMessage:(TIMMessage *)message
 {
@@ -333,7 +335,6 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         }
     }
 }
-
 // 修改发送中的消息为成功
 - (void)sendSuccessMessage:(TIMMessage *)message
 {
@@ -353,7 +354,7 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         }
     }
 }
-
+// 修改发送中的消息为失败
 - (void)sendFailMessage:(TIMMessage *)message
 {
     NSIndexPath *indexpath = [self findIndexPathWithSendingMessage:message];
@@ -371,7 +372,6 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         }
     }
 }
-
 // 添加消息
 - (NSIndexPath *)addMessage:(TIMMessage *)message
 {
@@ -553,7 +553,8 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
                 cell = [tableView dequeueReusableCellWithIdentifier:PromptMessageCellID forIndexPath:indexPath];
             }
             else {
-                cell = [tableView dequeueReusableCellWithIdentifier:PromptMessageCellID forIndexPath:indexPath];
+                UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:UITableViewCellID forIndexPath:indexPath];
+                return cell;
             }
             
             WXMessageCell *msgCell = (WXMessageCell *)cell;

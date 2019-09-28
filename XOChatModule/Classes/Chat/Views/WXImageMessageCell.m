@@ -46,27 +46,19 @@ static BOOL progressFinish = NO;
     }
     
     // 加载图片
-//    [self loadImageWith:message formCache:YES];
-    
     TIMElem *elem = [message getElem:0];
     if ([elem isKindOfClass:[TIMImageElem class]]) {
         TIMImageElem *imageElem = (TIMImageElem *)elem;
         if (imageElem.imageList.count > 0) {
             TIMImage *image = [imageElem.imageList objectAtIndex:0];
             
-            __block NSString *thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", image.uuid, [self getImageFormat:imageElem.format]];
-            __block NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
-            
-            // 自己发送的消息
-            if (message.isSelf) {
+            NSString *thumbImageName = nil;
+            if (message.isSelf) {   // 自己发送的消息
                 thumbImageName = [[imageElem.path lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
-                thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
-            }
-            // 收到的消息
-            else {
+            } else {                // 收到的消息
                 thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", image.uuid, [self getImageFormat:imageElem.format]];
-                thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
             }
+            __block NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
             
             [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
                 NSData *thumbImageData = [[NSData alloc] initWithContentsOfFile:thumbImagePath];
@@ -79,13 +71,42 @@ static BOOL progressFinish = NO;
                 }
                 // 缓存中没有图片
                 else {
-        //            [self loadImageWith:message formCache:NO];
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                         [self.messageImageView setImage:[UIImage xo_imageNamedFromChatBundle:@"placeholderImage"]];
                     }];
                 }
             }];
         }
+    }
+    else if ([elem isKindOfClass:[TIMVideoElem class]]) {
+        TIMVideoElem *videoElem = (TIMVideoElem *)elem;
+        TIMSnapshot *snapshot = videoElem.snapshot;
+        
+        NSString *snapshotName = nil;
+        if (message.isSelf) {   // 自己发送的消息
+            snapshotName = [videoElem.snapshotPath lastPathComponent];
+        } else {                // 收到的消息
+            NSString *snapshotFormat = XOIsEmptyString(snapshot.type) ? @"jpg" : snapshot.type;
+            snapshotName = [NSString stringWithFormat:@"%@.%@", snapshot.uuid, snapshotFormat];
+        }
+        __block NSString *snapshotPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:snapshotName];
+        
+        [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+            NSData *snapshotImageData = [[NSData alloc] initWithContentsOfFile:snapshotPath];
+            __block UIImage *snapshotImage = [UIImage imageWithData:snapshotImageData];
+            // 缓存中有图片
+            if (snapshotImage != nil) {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    self.messageImageView.image = snapshotImage;
+                }];
+            }
+            // 缓存中没有图片
+            else {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self.messageImageView setImage:[UIImage xo_imageNamedFromChatBundle:@"placeholderImage"]];
+                }];
+            }
+        }];
     }
 }
 

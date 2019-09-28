@@ -22,7 +22,7 @@
 static NSTimeInterval MaxAudioRecordTime = 60.0f;
 static NSTimeInterval audioRecordTime = 0.0f;
 
-@interface XOChatBoxViewController () <ZXChatBoxDelegate, ZXChatBoxMoreViewDelegate, ZXChatBoxFaceViewDelegate, LGSoundRecorderDelegate, TZImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface XOChatBoxViewController () <ZXChatBoxDelegate, ZXChatBoxMoreViewDelegate, ZXChatBoxFaceViewDelegate, LGSoundRecorderDelegate, TZImagePickerControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 {
     int                 _seconds;   // 录音时间
     UIEdgeInsets        _safeInset;
@@ -33,6 +33,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
 @property (nonatomic, strong) ZXChatBoxMoreView         *chatBoxMoreView;
 @property (nonatomic, strong) ZXChatBoxFaceView         *chatBoxFaceView;
 @property (nonatomic, strong) TZImagePickerController   *TZImagePicker;
+@property (nonatomic, strong) UIImagePickerController   *imagePicker;
 @property (nonatomic, strong) dispatch_source_t         timer; // 定时器
 
 @end
@@ -143,10 +144,11 @@ static NSTimeInterval audioRecordTime = 0.0f;
         _TZImagePicker.maxImagesCount = 9;
         _TZImagePicker.videoMaximumDuration = 15;
         // 2. 在这里设置imagePickerVc的外观
-         _TZImagePicker.navigationBar.barTintColor = MainPurpleLightColor;
+        _TZImagePicker.iconThemeColor = AppTinColor;
+        _TZImagePicker.navigationBar.barTintColor = AppTinColor;
         _TZImagePicker.navigationBar.tintColor = [UIColor whiteColor];
-         _TZImagePicker.oKButtonTitleColorDisabled = [UIColor lightGrayColor];
-         _TZImagePicker.oKButtonTitleColorNormal = [UIColor whiteColor];
+        _TZImagePicker.oKButtonTitleColorDisabled = MainPurpleLightColor;
+        _TZImagePicker.oKButtonTitleColorNormal = AppTinColor;
         // 3. 设置是否可以选择视频/图片/原图
         _TZImagePicker.allowPickingOriginalPhoto = YES;
         // 4. 照片排列按修改时间升序
@@ -166,6 +168,18 @@ static NSTimeInterval audioRecordTime = 0.0f;
     return _TZImagePicker;
 }
 
+- (UIImagePickerController *)imagePicker
+{
+    if (!_imagePicker) {
+        _imagePicker = [[UIImagePickerController alloc] init];
+        _imagePicker.modalPresentationStyle = UIModalPresentationOverFullScreen;
+        _imagePicker.delegate = self;
+        _imagePicker.navigationBar.barTintColor = AppTinColor;
+        _imagePicker.navigationBar.tintColor = [UIColor whiteColor];
+    }
+    return _imagePicker;
+}
+
 - (dispatch_source_t)timer
 {
     if (!_timer) {
@@ -176,22 +190,19 @@ static NSTimeInterval audioRecordTime = 0.0f;
         uint64_t interval = (uint64_t)(1.0 * NSEC_PER_SEC); // 执行间隔时间
         dispatch_source_set_timer(_timer, start, interval, 0);
         // 设置事件回调
-//        @weakify(self);
-        __weak XOChatBoxViewController *weakSelf = self;
+        @weakify(self);
         dispatch_source_set_event_handler(_timer, ^{
-//            @strongify(self);
-            __strong XOChatBoxViewController *strongSelf = weakSelf;
+            @strongify(self);
             
-            strongSelf->_seconds++;
-            NSLog(@"录音时间: %d  ---  %f", strongSelf->_seconds, [LGSoundRecorder shareInstance].soundRecordTime);
+            self->_seconds++;
             if ([LGSoundRecorder shareInstance].soundRecordTime >= MaxAudioRecordTime) {
                 // 结束定时器
-                dispatch_source_cancel(strongSelf->_timer);
-                strongSelf->_timer = nil;
+                dispatch_source_cancel(self->_timer);
+                self->_timer = nil;
                 // 结束录音
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     audioRecordTime = [LGSoundRecorder shareInstance].soundRecordTime;
-                    [[LGSoundRecorder shareInstance] stopSoundRecord:strongSelf.view];
+                    [[LGSoundRecorder shareInstance] stopSoundRecord:self.view];
                 }];
             }
             else if ([LGSoundRecorder shareInstance].soundRecordTime >= (MaxAudioRecordTime - 10)) {
@@ -628,37 +639,59 @@ static NSTimeInterval audioRecordTime = 0.0f;
 }
 
 #pragma mark =========================== event ===========================
-
-- (void)takeVideo
-{
-    self.TZImagePicker.allowTakePicture = NO;   // 关闭拍照
-    self.TZImagePicker.allowPickingImage = NO;  // 关闭选照片
-    self.TZImagePicker.allowPickingGif = NO;    // 关闭选动图
-    self.TZImagePicker.allowTakeVideo = YES;    // 打开拍视频
-    self.TZImagePicker.allowPickingVideo = YES; // 打开选视频
-    self.TZImagePicker.videoMaximumDuration = 15; // 设定拍摄最大时间为15s
-    self.TZImagePicker.allowPickingMultipleVideo = NO; // 不允许多选视频
-    [self.parentViewController presentViewController:self.TZImagePicker animated:YES completion:NULL];
-}
-
+// 选照片
 - (void)pickPhotos
 {
     self.TZImagePicker.allowPickingVideo = YES;
     self.TZImagePicker.allowPickingImage = YES;
+    self.TZImagePicker.allowPickingMultipleVideo = YES;
     self.TZImagePicker.allowTakePicture = NO;
     self.TZImagePicker.allowTakeVideo = NO;
     [self.parentViewController presentViewController:self.TZImagePicker animated:YES completion:NULL];
 }
-
+// 拍照片
 - (void)takePhoto
 {
-    self.TZImagePicker.allowTakePicture = YES;   // 打开拍照
-    self.TZImagePicker.allowPickingImage = YES;  // 打开选照片
-    self.TZImagePicker.photoPreviewMaxWidth = 9; // 最多选9张
-    self.TZImagePicker.allowPickingGif = NO;     // 关闭选动图
-    self.TZImagePicker.allowTakeVideo = NO;      // 关闭拍视频
-    self.TZImagePicker.allowPickingVideo = NO;   // 关闭选视频
-    [self.parentViewController presentViewController:self.TZImagePicker animated:YES completion:NULL];
+    self.imagePicker.mediaTypes = @[(__bridge NSString *)kUTTypeImage];
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        self.imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]) {
+            self.imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+        } else if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
+            self.imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+        }
+    }
+    self.imagePicker.showsCameraControls = YES;
+    [self.parentViewController.navigationController presentViewController:self.imagePicker animated:YES completion:NULL];
+}
+// 拍视频
+- (void)takeVideo
+{
+    self.imagePicker.mediaTypes = @[(__bridge NSString *)kUTTypeMovie];
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        self.imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]) {
+            self.imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+        } else if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
+            self.imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+        }
+        self.imagePicker.videoMaximumDuration = 10;
+        if (@available(iOS 11.0, *)) {
+            self.imagePicker.videoQuality = UIImagePickerControllerQualityTypeHigh;
+        } else {
+            self.imagePicker.videoQuality = UIImagePickerControllerQualityTypeMedium;
+        }
+    }
+    [self.parentViewController.navigationController presentViewController:self.imagePicker animated:YES completion:NULL];
+}
+// 取消选中的图片或视频
+- (void)cancelSelectedImageOrVideo
+{
+    @weakify(self);
+    [self.TZImagePicker.selectedModels enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(TZAssetModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        @strongify(self);
+        [self.TZImagePicker removeSelectedModel:obj];
+    }];
 }
 
 #pragma mark =========================== LGSoundRecorderDelegate ===========================
@@ -707,67 +740,184 @@ static NSTimeInterval audioRecordTime = 0.0f;
     }
 }
 
+#pragma mark ========================= UIImagePickerControllerDelegate =========================
+// 拍完图片或者视频
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info
+{
+    [picker dismissViewControllerAnimated:YES completion:NULL];
+    NSLog(@"didFinishPickingMediaWithInfo: %@", info);
+    
+    if (picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureModePhoto) {
+        NSURL *imageURL = info[UIImagePickerControllerMediaURL];
+    }
+    else if (picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureModeVideo) {
+        NSURL *videoURL = info[UIImagePickerControllerMediaURL];
+        if (videoURL) {
+            AVURLAsset *videoAsset = [[AVURLAsset alloc] initWithURL:videoURL options:nil];
+            [self handleTakeVideo:videoAsset];
+        }
+    }
+}
+// 取消了拍摄
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+    [picker dismissViewControllerAnimated:YES completion:NULL];
+}
+
+// 处理拍摄的视频
+- (void)handleTakeVideo:(AVURLAsset *)videoAsset
+{
+    // 1、获取视频缩略图
+    UIImage *snapshotImage = [self getVideoSnapshotImage:videoAsset];
+    NSString *snapshotName = [NSString stringWithFormat:@"%@_%ld_snapshot.jpg", [NSUUID UUID].UUIDString, (long)[[NSDate date] timeIntervalSince1970]];
+    NSString *snapshotPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:snapshotName];
+    __block NSURL *snapshotURL = [NSURL fileURLWithPath:snapshotPath];
+    [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+        NSData *imageData = UIImageJPEGRepresentation(snapshotImage, 1.0);
+        if ([imageData writeToURL:snapshotURL atomically:YES]) {
+            NSLog(@"写入视频截图成功: %@", snapshotPath);
+        }
+    }];
+    // 2、转化视频格式为mp4
+    NSString *videoName = [NSString stringWithFormat:@"%@_%ld.mp4", [NSUUID UUID].UUIDString, (long)[[NSDate date] timeIntervalSince1970]];
+    NSString *videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoName];
+    NSURL *videoURL = [NSURL fileURLWithPath:videoPath];
+    __block CGFloat duration = CMTimeGetSeconds(videoAsset.duration);
+    __block CGSize snapshotSize = snapshotImage.size;
+    [SVProgressHUD showWithStatus:@"处理视频中..."];
+    [self convertToMP4:videoAsset videoURL:videoURL succ:^(NSURL *outputURL) {
+        [SVProgressHUD dismiss];
+        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendVideo:snapshotImage:snapshotSize:videoDuration:)]) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self.delegate chatBoxViewController:self sendVideo:outputURL snapshotImage:snapshotURL snapshotSize:snapshotSize videoDuration:duration];
+            }];
+        }
+    } fail:^(NSError *error) {
+        [SVProgressHUD showWithStatus:@"视频处理失败..."];
+        [SVProgressHUD dismiss];
+    }];
+}
+
+// 将MOV转为MP4格式的视频
+- (void)convertToMP4:(AVURLAsset *)avAsset
+            videoURL:(NSURL *)videoURL
+                succ:(void(^)(NSURL *outputURL))succ
+                fail:(void(^)(NSError *error))fail
+{
+    NSArray *compatiblePresets = [AVAssetExportSession exportPresetsCompatibleWithAsset:avAsset];
+    __block AVAssetExportSession *exportSession = nil;
+    if ([compatiblePresets containsObject:AVAssetExportPresetHighestQuality]) {
+        exportSession = [[AVAssetExportSession alloc]initWithAsset:avAsset presetName:AVAssetExportPresetHighestQuality];
+    } else if ([compatiblePresets containsObject:AVAssetExportPresetMediumQuality]) {
+        exportSession = [[AVAssetExportSession alloc]initWithAsset:avAsset presetName:AVAssetExportPresetMediumQuality];
+    } else if ([compatiblePresets containsObject:AVAssetExportPresetLowQuality]) {
+        exportSession = [[AVAssetExportSession alloc]initWithAsset:avAsset presetName:AVAssetExportPresetLowQuality];
+    }
+    
+    if (exportSession) {
+        [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+            exportSession.outputURL = videoURL;
+            exportSession.outputFileType = AVFileTypeMPEG4;
+            CMTime start = CMTimeMakeWithSeconds(0, avAsset.duration.timescale);
+            CMTime duration = avAsset.duration;
+            CMTimeRange range = CMTimeRangeMake(start, duration);
+            exportSession.timeRange = range;
+            [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                switch ([exportSession status]) {
+                    case AVAssetExportSessionStatusCompleted:
+                        if (succ) succ(videoURL);
+                        break;
+                    case AVAssetExportSessionStatusFailed:
+                        if (fail) fail([exportSession error]);
+                        break;
+                    case AVAssetExportSessionStatusUnknown:
+                    {
+                        NSLog(@"格式转化 -- 状态未知");
+//                         if (fail) fail([exportSession error]);
+                    }
+                        break;
+                    case AVAssetExportSessionStatusCancelled:
+                    {
+                        NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain code:400 userInfo:@{@"userinfo": @"export is cancel"}];
+                        if (fail) fail(error);
+                    }
+                        break;
+                    case AVAssetExportSessionStatusWaiting:
+                        NSLog(@"格式转化 -- 等待中");
+                        break;
+                    case AVAssetExportSessionStatusExporting:
+                        NSLog(@"格式转化 -- 转码中 %f", exportSession.progress);
+                        break;
+                }
+            }];
+        }];
+    }
+    else {
+        NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain code:400 userInfo:@{@"userinfo": @"there is no movie"}];
+        if (fail) fail(error);
+    }
+}
+
+// 获取视频截图
+- (UIImage *)getVideoSnapshotImage:(AVURLAsset *)asset
+{
+    AVAssetImageGenerator *generator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    generator.appliesPreferredTrackTransform = YES;
+    CMTime time = CMTimeMakeWithSeconds(0.0, 600);
+    NSError *error = nil;
+    CMTime actualTime;
+    CGImageRef image = [generator copyCGImageAtTime:time actualTime:&actualTime error:&error];
+    UIImage *originImage = [[UIImage alloc] initWithCGImage:image];
+    CGSize scaleSize = [[XOFileManager shareInstance] getScaleImageSize:originImage];
+    UIImage *shotImage = [[XOFileManager shareInstance] scaleOriginImage:originImage toSize:scaleSize];
+    CGImageRelease(image);
+    
+    return shotImage;
+}
+
 #pragma mark ====================== TZImagePickerControllerDelegate =======================
 
 // 选择图片、视频的回调
 - (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingPhotos:(NSArray<UIImage *> *)photos sourceAssets:(NSArray *)assets isSelectOriginalPhoto:(BOOL)isSelectOriginalPhoto infos:(NSArray<NSDictionary *> *)infos
 {
     [assets enumerateObjectsUsingBlock:^(PHAsset *asset , NSUInteger idx, BOOL *stop){
-        // 选择了原图
-        if (isSelectOriginalPhoto) {
-            // 获取原图
-            [[TZImageManager manager] getOriginalPhotoWithAsset:asset completion:^(UIImage *photo, NSDictionary *info) {
-                [self getImageForAsset:asset];
-            }];
+        
+        if (asset.mediaType == PHAssetMediaTypeImage) {
+            // 选择了原图, 获取原图
+            if (isSelectOriginalPhoto) {
+                __block NSMutableArray *mutArr = [NSMutableArray arrayWithCapacity:1];
+                [[TZImageManager manager] getOriginalPhotoWithAsset:asset completion:^(UIImage *photo, NSDictionary *info) {
+                    if (![mutArr containsObject:asset]) { // 避免同一张图重复发送
+                        [mutArr addObject:asset];
+                        [self getImageForAsset:asset];
+                    }
+                }];
+            }
+            // 未选择原图, 获取封面图
+            else {
+                __block NSMutableArray *mutArr = [NSMutableArray arrayWithCapacity:1];
+                [[TZImageManager manager] getPhotoWithAsset:asset completion:^(UIImage *photo, NSDictionary *info, BOOL isDegraded) {
+                    if (![mutArr containsObject:asset]) { // 避免同一张图重复发送
+                        [mutArr addObject:asset];
+                        [self getImageForAsset:asset];
+                    }
+                }];
+            }
         }
-        // 未选择原图
-        else {
-            // 获取封面图
-            [[TZImageManager manager] getPhotoWithAsset:asset completion:^(UIImage *photo, NSDictionary *info, BOOL isDegraded) {
-                [self getImageForAsset:asset];
+        else if (asset.mediaType == PHAssetMediaTypeVideo) {
+            PHVideoRequestOptions* options = [[PHVideoRequestOptions alloc] init];
+            options.version = PHVideoRequestOptionsVersionOriginal;
+            options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+            options.networkAccessAllowed = YES;
+            [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset* avasset, AVAudioMix* audioMix, NSDictionary* info){
+                AVURLAsset *videoAsset = (AVURLAsset *)avasset;
+                [self handleTakeVideo:videoAsset];
             }];
         }
     }];
-    
-    // 取消选中的item
-    __weak TZImagePickerController *weakPick = picker;
-    [picker.selectedModels enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(TZAssetModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        __strong TZImagePickerController *strongPick = weakPick;
-        [strongPick removeSelectedModel:obj];
-    }];
-    if (picker.viewControllers.count > 0) {
-        [picker popViewControllerAnimated:YES];
-    }
-}
-
-// 如果系统版本大于iOS8，asset是PHAsset类的对象，否则是ALAsset类的对象
-- (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingVideo:(UIImage *)coverImage sourceAssets:(id)asset;
-{
-    if (asset) {
-        PHAsset *phAsset = (PHAsset *)asset;
-        [[TZImageManager manager] getVideoWithAsset:phAsset completion:^(AVPlayerItem *playerItem, NSDictionary *info) {
-            
-        }];
-    }
-    
-    
-    PHAsset *phAsset = (PHAsset *)asset;
-    if (phAsset && PHAssetMediaTypeVideo == phAsset.mediaType) {
-        PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
-        options.version = PHImageRequestOptionsVersionCurrent;
-        options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
-        [[PHImageManager defaultManager] requestAVAssetForVideo:phAsset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-            AVURLAsset *urlAsset = (AVURLAsset *)asset;
-            __block NSURL *videoUrl = urlAsset.URL;
-            __block float duration = asset.duration.value/asset.duration.timescale;
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendVideo:videoDuration:)]) {
-                    [self.delegate chatBoxViewController:self sendVideo:videoUrl videoDuration:duration];
-                }
-            }];
-            
-        }];
-    }
+    // 反选本次所有选中的图片或者视频
+    [self cancelSelectedImageOrVideo];
 }
 
 // 获取图片
