@@ -66,6 +66,13 @@ FOUNDATION_STATIC_INLINE NSString * getMessageKey(TIMMessage *message) {
 - (void)removeDelegate:(id <XOChatClientProtocol>)delegate delegateQueue:(dispatch_queue_t)delegateQueue;
 - (void)removeDelegate:(id <XOChatClientProtocol>)delegate;
 
+
+/**
+ *  @brief 调度下载任务(常驻子线程中下载)
+ *  方法中会自动判断消息是否需要下载, 是否正在下载中, 无需额外判断
+ */
+- (void)scheduleDownloadTask:(TIMMessage *)message;
+
 @end
 
 

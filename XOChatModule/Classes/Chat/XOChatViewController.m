@@ -144,7 +144,7 @@
     TIMMessage *textMsg = [[TIMMessage alloc] init];
     int result = [textMsg addElem:textElem];
     
-    if (result) {
+    if (0 == result) {
         @weakify(self);
         int sendText = [self.conversation sendMessage:textMsg succ:^{
             @strongify(self);

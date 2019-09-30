@@ -175,7 +175,7 @@ static XOChatClient *__chatClient = nil;
     // 开启子线程下载任务
     [msgs enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([message isKindOfClass:[TIMMessage class]]) {
-            [self ScheduleDownloadTask:message];
+            [self scheduleDownloadTask:message];
         }
     }];
 }
@@ -350,26 +350,125 @@ static XOChatClient *__chatClient = nil;
 
 #pragma mark ========================= 下载任务 =========================
 
-// 调度下载任务
-- (void)ScheduleDownloadTask:(TIMMessage *)message
+// 消息的文件是否在下载中
+- (BOOL)isMessageOnDownloading:(TIMMessage *)message
 {
-    if ([message elemCount] > 0) {
+    if (!message || 0 == [message elemCount]) {
+        return NO;
+    }
+    else {
+        __block BOOL isDownloading = NO;
+        __block NSString *msgKey = getMessageKey(message);
+        
+        // 正在下载中
+        if (nil != [self.taskQueue objectForKey:msgKey]) {
+            isDownloading = YES;
+        }
+        // 正在排队等待下载中
+        else {
+            [self.waitTaskQueue enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if ([getMessageKey(obj) isEqualToString:msgKey]) {
+                    isDownloading = YES;
+                    *stop = YES;
+                }
+            }];
+        }
+        return isDownloading;
+    }
+}
+
+// 消息的文件是否需要下载
+- (BOOL)isMessageNeedDownload:(TIMMessage *)message
+{
+    // 消息为空 或者 没有内容 --- 无需下载
+    if (!message || 0 == [message elemCount]) {
+        return NO;
+    }
+    // 消息正在下载中  --- 无需重复下载
+    else if ([self isMessageOnDownloading:message]) {
+        return NO;
+    }
+    // 判断消息文件是否存在 --- 存在则无需下载 | 不存在则需要下载
+    else {
+        BOOL need = NO;
         TIMElem *elem = (TIMElem *)[message getElem:0];
         // 图片消息
         if ([elem isKindOfClass:[TIMImageElem class]]) {
-            [self performSelector:@selector(downloadImageMessage:) onThread:self.bgThread withObject:message waitUntilDone:YES];
+            TIMImageElem *imageElem = (TIMImageElem *)elem;
+            if (imageElem.imageList.count > 0) {
+                TIMImage *timImage = [imageElem.imageList objectAtIndex:0];
+                NSString *imageFomat = [self getImageFormat:imageElem.format];
+                NSString *imageName = [NSString stringWithFormat:@"%@.%@", timImage.uuid, imageFomat];
+                NSString *imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
+                if (![XOFM fileExistsAtPath:imagePath]) {
+                    need = YES;
+                }
+            }
         }
         // 视频消息
         else if ([elem isKindOfClass:[TIMVideoElem class]]) {
-            [self performSelector:@selector(downloadVideoMessage:) onThread:self.bgThread withObject:message waitUntilDone:YES];
+            TIMVideoElem *videoElem = (TIMVideoElem *)elem;
+            if (nil != videoElem.video) {
+                TIMVideo *timVideo = videoElem.video;
+                NSString *videoFomat = !XOIsEmptyString(timVideo.type) ? timVideo.type : @"mp4";
+                NSString *videoName = [NSString stringWithFormat:@"%@.%@", timVideo.uuid, videoFomat];
+                NSString *videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoName];
+                if (![XOFM fileExistsAtPath:videoPath]) {
+                    need = YES;
+                }
+            }
         }
         // 语音消息
         else if ([elem isKindOfClass:[TIMSoundElem class]]) {
-            [self performSelector:@selector(downloadSoundMessage:) onThread:self.bgThread withObject:message waitUntilDone:YES];
+            TIMSoundElem *soundElem = (TIMSoundElem *)elem;
+            NSString *soundName = [NSString stringWithFormat:@"%@.mp3", soundElem.uuid];
+            NSString *soundPath = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:soundName];
+            if (![XOFM fileExistsAtPath:soundPath]) {
+                need = YES;
+            }
         }
         // 文件消息
         else if ([elem isKindOfClass:[TIMFileElem class]]) {
-            [self performSelector:@selector(downloadFileMessage:) onThread:self.bgThread withObject:message waitUntilDone:YES];
+            TIMFileElem *fileElem = (TIMFileElem *)elem;
+            NSString *filename = !XOIsEmptyString(fileElem.filename) ? fileElem.filename : [NSString stringWithFormat:@"%@.unknow", fileElem.uuid];
+            NSString *filePath = [XOMsgFileDirectory(XOMsgFileTypeFile) stringByAppendingPathComponent:filename];
+            if (![XOFM fileExistsAtPath:filePath]) {
+                need = YES;
+            }
+        }
+        
+        return need;
+    }
+}
+
+// 调度下载任务
+- (void)scheduleDownloadTask:(TIMMessage *)message
+{
+    @autoreleasepool {
+        // 如果消息需要下载
+        if ([self isMessageNeedDownload:message]) {
+            if ([message elemCount] > 0) {
+                TIMElem *elem = (TIMElem *)[message getElem:0];
+                // 图片消息
+                if ([elem isKindOfClass:[TIMImageElem class]]) {
+                    [self performSelector:@selector(downloadImageMessage:) onThread:self.bgThread withObject:message waitUntilDone:YES];
+                }
+                // 视频消息
+                else if ([elem isKindOfClass:[TIMVideoElem class]]) {
+                    [self performSelector:@selector(downloadVideoMessage:) onThread:self.bgThread withObject:message waitUntilDone:YES];
+                }
+                // 语音消息
+                else if ([elem isKindOfClass:[TIMSoundElem class]]) {
+                    [self performSelector:@selector(downloadSoundMessage:) onThread:self.bgThread withObject:message waitUntilDone:YES];
+                }
+                // 文件消息
+                else if ([elem isKindOfClass:[TIMFileElem class]]) {
+                    [self performSelector:@selector(downloadFileMessage:) onThread:self.bgThread withObject:message waitUntilDone:YES];
+                }
+            }
+        }
+        else {
+            NSLog(@"消息没有文件需要下载 或者 消息文件已经下载过了");
         }
     }
 }
@@ -432,7 +531,7 @@ static XOChatClient *__chatClient = nil;
                         // 3、取一个等待下载的消息出来, 开始下载任务
                         if (self.waitTaskQueue.count > 0) {
                             TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
-                            [self ScheduleDownloadTask:waitMsg];
+                            [self scheduleDownloadTask:waitMsg];
                             @synchronized (self) {
                                 [self.waitTaskQueue removeObjectAtIndex:0];
                             }
@@ -461,7 +560,7 @@ static XOChatClient *__chatClient = nil;
                         // 3、取一个等待下载的消息出来, 开始下载任务
                         if (self.waitTaskQueue.count > 0) {
                             TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
-                            [self ScheduleDownloadTask:waitMsg];
+                            [self scheduleDownloadTask:waitMsg];
                             @synchronized (self) {
                                 [self.waitTaskQueue removeObjectAtIndex:0];
                             }
@@ -539,7 +638,7 @@ static XOChatClient *__chatClient = nil;
                     // 3、取一个等待下载的消息出来, 开始下载任务
                     if (self.waitTaskQueue.count > 0) {
                         TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
-                        [self ScheduleDownloadTask:waitMsg];
+                        [self scheduleDownloadTask:waitMsg];
                         @synchronized (self) {
                             [self.waitTaskQueue removeObjectAtIndex:0];
                         }
@@ -561,7 +660,7 @@ static XOChatClient *__chatClient = nil;
                     // 3、取一个等待下载的消息出来, 开始下载任务
                     if (self.waitTaskQueue.count > 0) {
                         TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
-                        [self ScheduleDownloadTask:waitMsg];
+                        [self scheduleDownloadTask:waitMsg];
                         @synchronized (self) {
                             [self.waitTaskQueue removeObjectAtIndex:0];
                         }
@@ -621,7 +720,7 @@ static XOChatClient *__chatClient = nil;
             // 3、取一个等待下载的消息出来, 开始下载任务
             if (self.waitTaskQueue.count > 0) {
                 TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
-                [self ScheduleDownloadTask:waitMsg];
+                [self scheduleDownloadTask:waitMsg];
                 @synchronized (self) {
                     [self.waitTaskQueue removeObjectAtIndex:0];
                 }
@@ -643,7 +742,7 @@ static XOChatClient *__chatClient = nil;
             // 3、取一个等待下载的消息出来, 开始下载任务
             if (self.waitTaskQueue.count > 0) {
                 TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
-                [self ScheduleDownloadTask:waitMsg];
+                [self scheduleDownloadTask:waitMsg];
                 @synchronized (self) {
                     [self.waitTaskQueue removeObjectAtIndex:0];
                 }
@@ -659,7 +758,7 @@ static XOChatClient *__chatClient = nil;
     }
 }
 
-// 3、下载文件
+// 4、下载文件
 - (void)downloadFileMessage:(TIMMessage *)message
 {
     TIMFileElem *fileElem = (TIMFileElem *)[message getElem:0];
@@ -701,7 +800,7 @@ static XOChatClient *__chatClient = nil;
             // 3、取一个等待下载的消息出来, 开始下载任务
             if (self.waitTaskQueue.count > 0) {
                 TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
-                [self ScheduleDownloadTask:waitMsg];
+                [self scheduleDownloadTask:waitMsg];
                 @synchronized (self) {
                     [self.waitTaskQueue removeObjectAtIndex:0];
                 }
@@ -723,7 +822,7 @@ static XOChatClient *__chatClient = nil;
             // 3、取一个等待下载的消息出来, 开始下载任务
             if (self.waitTaskQueue.count > 0) {
                 TIMMessage *waitMsg = [self.waitTaskQueue objectAtIndex:0];
-                [self ScheduleDownloadTask:waitMsg];
+                [self scheduleDownloadTask:waitMsg];
                 @synchronized (self) {
                     [self.waitTaskQueue removeObjectAtIndex:0];
                 }

@@ -323,6 +323,9 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
             
             // 将图片消息或者视频消息加入到数组中
             [self addToImageVideoList:obj];
+            
+            // 调度消息文件下载任务(如果需要下载的话)
+            [[XOChatClient shareClient] scheduleDownloadTask:obj];
         }
     }];
     
