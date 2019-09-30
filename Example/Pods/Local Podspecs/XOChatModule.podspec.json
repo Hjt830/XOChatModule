@@ -35,7 +35,7 @@
       "~> 4.4.627"
     ],
     "XOBaseLib": [
-      "~> 0.1.8"
+      "~> 0.2.1"
     ],
     "TZImagePickerController": [
       "~> 3.2.1"
@@ -58,8 +58,11 @@
     "AFNetworking": [
       "~> 3.2.1"
     ],
-    "MWPhotoBrowser": [
-      "~> 2.1.2"
+    "YBImageBrowser/NOSD": [
+      "~> 3.0.6"
+    ],
+    "YBImageBrowser/VideoNOSD": [
+      "~> 3.0.6"
     ]
   }
 }

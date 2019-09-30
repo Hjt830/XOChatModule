@@ -20,9 +20,10 @@
 
 #import "LGAudioKit.h"
 #import <SVProgressHUD/SVProgressHUD.h>
+#import <YBImageBrowser/YBIBVideoData.h>
 
-static NSString * const MsgSectionTimeKey = @"timeSection";
-static NSString * const MsgSectionListKey = @"messageList";
+static NSString * const MsgSectionTimeKey = @"timeSection";     // 数据源中的时间key
+static NSString * const MsgSectionListKey = @"messageList";     // 数据源中的消息key
 
 static NSString * const TimeMessageCellID       = @"TimeMessageCellID";
 static NSString * const TextMessageCellID       = @"TextMessageCellID";
@@ -38,7 +39,7 @@ static NSString * const PromptMessageCellID     = @"PromptMessageCellID";
 
 static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单位:分钟
 
-@interface XOChatMessageController () <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, XOChatClientProtocol, XOMessageDelegate, LGAudioPlayerDelegate, WXMessageCellDelegate>
+@interface XOChatMessageController () <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, XOChatClientProtocol, XOMessageDelegate, LGAudioPlayerDelegate, WXMessageCellDelegate, YBImageBrowserDelegate>
 {
     UIEdgeInsets        _safeInset;
 }
@@ -50,13 +51,12 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 @property (nonatomic, strong) NSLock                            *lock;          // 线程锁
 @property (nonatomic, assign) NSUInteger                        page;           // 数据的页数
 @property (nonatomic, strong) NSMutableDictionary   <NSString *, NSValue *> *cellSizeDict;              // cell的高度缓存
+// 上传、下载消息相关
 @property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *sendingMsgQueue;       // 发送中消息保存列表
 @property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *downloadingMsgQueue;   // 下载中消息保存列表
-@property (nonatomic, strong) NSMutableDictionary   <NSString *, TIMMessage *>  *imageVideoList;        // 图片或者视频消息
-
-@property (nonatomic, strong) AVPlayer                          *player;        // 视频播放器
-@property (nonatomic, strong) AVPlayerItem                      *playerItem;    // 视频播放器
-@property (nonatomic, strong) AVPlayerLayer                     *playerLayer;   // 视频播放器
+// 浏览图片视频相关
+@property (nonatomic, strong) NSMutableDictionary   <NSString *, TIMMessage *>  *imageVideoList;            // 图片或者视频消息
+@property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *imageVideoIndexpathList;   // 图片或者视频消息序号
 
 @end
 
@@ -114,7 +114,8 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         NSArray *list = [self.dataSource[lastSection] objectForKey:MsgSectionListKey];
         if (list.count > 0) {
             @try {
-                [self.tableView scrollToRow:(list.count - 1) inSection:lastSection atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+                NSIndexPath *indexpath = [NSIndexPath indexPathForRow:(list.count - 1) inSection:lastSection];
+                [self.tableView scrollToRowAtIndexPath:indexpath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             } @catch (NSException *exception) {
                 NSLog(@"%s --- 滑动到最底部异常: %@", __func__, exception);
             } @finally {
@@ -145,9 +146,9 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
     
         @try {
-            @weakify(self);
+            @XOWeakify(self);
             [self.conversation getMessage:20 last:self.earliestMsg succ:^(NSArray *msgs) {
-                @strongify(self);
+                @XOStrongify(self);
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [self.tableView.mj_header endRefreshing];
                 }];
@@ -160,52 +161,59 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
                     __block BOOL isFirstPage = (self.earliestMsg == nil);
                     // 处理数据
                     __block NSArray *dataArray = [self handleDataSource:array];
-                    if ([self.lock tryLock]) {
-                        // 查询第一页, 清空数据源
-                        if (isFirstPage) {
-                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                @synchronized (self) {
-                                    [self.dataSource removeAllObjects];
-                                    [self.dataSource addObjectsFromArray:dataArray];
-                                }
-                                [self.tableView reloadData];
-                                
-                                // 滑动到底部
-                                if (self.dataSource.count > 0) {
-                                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                                        NSInteger lastSection = self.dataSource.count - 1;
-                                        NSArray *list = [self.dataSource[lastSection] objectForKey:MsgSectionListKey];
-                                        if (list.count > 0) {
-                                            @try {
-                                                [self.tableView scrollToRow:(list.count - 1) inSection:lastSection atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-                                            } @catch (NSException *exception) {
-                                                NSLog(@"%s --- 滑动到最底部异常: %@", __func__, exception);
-                                            } @finally {
-                                                
-                                            }
+                    // 查询第一页, 清空数据源
+                    if (isFirstPage) {
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            if ([self.lock tryLock]) {
+                                [self.dataSource removeAllObjects];
+                                [self.dataSource addObjectsFromArray:dataArray];
+                                [self.lock unlock];
+                            }
+                            [self.tableView reloadData];
+                            
+                            // 滑动到底部
+                            if (self.dataSource.count > 0) {
+                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                    NSInteger lastSection = self.dataSource.count - 1;
+                                    NSArray *list = [self.dataSource[lastSection] objectForKey:MsgSectionListKey];
+                                    if (list.count > 0) {
+                                        @try {
+                                            NSIndexPath *indexpath = [NSIndexPath indexPathForRow:(list.count - 1) inSection:lastSection];
+                                            [self.tableView scrollToRowAtIndexPath:indexpath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+                                        } @catch (NSException *exception) {
+                                            NSLog(@"%s --- 滑动到最底部异常: %@", __func__, exception);
+                                        } @finally {
+                                            
                                         }
-                                    });
-                                }
-                            }];
-                        }
-                        else {
-                            __block NSMutableIndexSet *sets = [NSMutableIndexSet indexSet];
-                            [dataArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                                [sets addIndex:idx];
-                            }];
-                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                @synchronized (self) {
-                                    [self.dataSource insertObjects:dataArray atIndexes:sets];
-                                }
-                                [self.tableView beginUpdates];
-                                [self.tableView insertSections:sets withRowAnimation:UITableViewRowAnimationNone];
-                                [self.tableView endUpdates];
-                            }];
-                        }
-                        
-                        [self.lock unlock];
+                                    }
+                                });
+                            }
+                            
+                            // 收集图片和视频消息
+                            [self collectionImageVideoList:dataArray resfrsh:YES];
+                        }];
                     }
-                    // 记录
+                    // 拉取的更多的消息
+                    else {
+                        __block NSMutableIndexSet *sets = [NSMutableIndexSet indexSet];
+                        [dataArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                            [sets addIndex:idx];
+                        }];
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            if ([self.lock tryLock]) {
+                                [self.dataSource insertObjects:dataArray atIndexes:sets];
+                                [self.lock unlock];
+                            }
+                            [self.tableView beginUpdates];
+                            [self.tableView insertSections:sets withRowAnimation:UITableViewRowAnimationNone];
+                            [self.tableView endUpdates];
+                        }];
+                        
+                        // 收集图片和视频消息
+                        [self collectionImageVideoList:dataArray resfrsh:NO];
+                    }
+                    
+                    // 记录当前最大的消息时间
                     if ([[array firstObject] isKindOfClass:[TIMMessage class]]) {
                         self.earliestMsg = [array firstObject];
                     }
@@ -218,7 +226,7 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
                 }
                 
             } fail:^(int code, NSString *msg) {
-                @strongify(self);
+                @XOStrongify(self);
                 [self.tableView.mj_header endRefreshing];
                 NSLog(@"---------- %s 拉取历史消息失败！！！  code: %d, msg: %@", __func__, code, msg);
             }];
@@ -295,7 +303,7 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
             }
             // 时间间隔大于5分钟时, 保存该分组, 同时 重置 **上一个时间分组起止时间** 并 新建下一个分组
             else {
-                // 根据消息的本地发送时间进行分组内排序 （确保与发送端的消息顺序一致）
+                // 根据消息的发送时间进行分组内排序 （确保与发送端的消息顺序一致）
                 NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
                 [mutArr sortedArrayUsingDescriptors:@[descriptor]];
                 // 保存该分组数据
@@ -321,9 +329,6 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
                 }
             }
             
-            // 将图片消息或者视频消息加入到数组中
-            [self addToImageVideoList:obj];
-            
             // 调度消息文件下载任务(如果需要下载的话)
             [[XOChatClient shareClient] scheduleDownloadTask:obj];
         }
@@ -333,20 +338,72 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 }
 
 // 收集多媒体消息（图片、视频）
-- (void)addToImageVideoList:(TIMMessage *)message
+- (void)addToImageVideoList:(TIMMessage *)message index:(NSIndexPath *)indexpath
 {
+    if (!message || !indexpath) {
+        return;
+    }
+    
     if ([message elemCount] > 0) {
         TIMElem *elem = [message getElem:0];
         if ([elem isKindOfClass:[TIMImageElem class]] ||
             [elem isKindOfClass:[TIMVideoElem class]])
         {
             NSString *msgKey = getMessageKey(message);
-            if (![self.imageVideoList containsObjectForKey:msgKey]) {
-                @synchronized (self) {
+            if (nil == [self.imageVideoList objectForKey:msgKey]) {
+                if ([self.lock tryLock]) {
                     [self.imageVideoList setObject:message forKey:msgKey];
+                    [self.imageVideoIndexpathList setObject:indexpath forKey:msgKey];
+                    [self.lock unlock];
                 }
             }
         }
+    }
+}
+
+// 收集多媒体消息（图片、视频）
+- (void)collectionImageVideoList:(NSArray <NSMutableDictionary <NSString *, id>* >*)dataArray resfrsh:(BOOL)refresh
+{
+    if ([self.lock tryLock]) {
+        
+        if (refresh) {
+            [self.imageVideoList removeAllObjects];
+            [self.imageVideoIndexpathList removeAllObjects];
+        }
+        
+        [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+           
+            [dataArray enumerateObjectsUsingBlock:^(NSMutableDictionary <NSString *,id> * _Nonnull sectionDict, NSUInteger section, BOOL * _Nonnull stop) {
+                NSArray <TIMMessage *>* msgList = [sectionDict objectForKey:MsgSectionListKey];
+                [msgList enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull message, NSUInteger row, BOOL * _Nonnull stop) {
+                    
+                    if ([message elemCount] > 0) {
+                        TIMElem *elem = [message getElem:0];
+                        if ([elem isKindOfClass:[TIMImageElem class]] || [elem isKindOfClass:[TIMVideoElem class]])
+                        {
+                            NSString *msgKey = getMessageKey(message);
+                            if (nil == [self.imageVideoList objectForKey:msgKey]) {
+                                
+                                // 保存消息
+                                [self.imageVideoList setObject:message forKey:msgKey];
+                                NSIndexPath *indexpath = [NSIndexPath indexPathForRow:row inSection:section];
+                                // 保存消息的序列
+                                [self.imageVideoIndexpathList setObject:indexpath forKey:msgKey];
+                                // 拉取的数据 --- 之前插入的indexpath的数据全部都要增加
+                                if (!refresh) {
+                                    NSUInteger sec = dataArray.count;
+                                    [self.imageVideoIndexpathList enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSIndexPath * _Nonnull oldIndexPath, BOOL * _Nonnull stop) {
+                                        oldIndexPath = [NSIndexPath indexPathForRow:oldIndexPath.row inSection:oldIndexPath.section + sec];
+                                    }];
+                                }
+                            }
+                        }
+                    }
+                }];
+            }];
+        }];
+        
+        [self.lock unlock];
     }
 }
 
@@ -359,10 +416,14 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     // 缓存发送中的消息
     if (indexpath) {
         NSString *msgKey = getMessageKey(message);
-        @synchronized (self) {
+        if ([self.lock tryLock]){
             [self.sendingMsgQueue setValue:indexpath forKey:msgKey];
+            [self.lock unlock];
         }
     }
+    
+    // 收集多媒体消息（图片、视频）
+    [self addToImageVideoList:message index:indexpath];
 }
 // 修改发送中的消息为成功
 - (void)sendSuccessMessage:(TIMMessage *)message
@@ -377,9 +438,10 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     
     // 从发送消息队列中移除该条消息
     NSString *msgKey = getMessageKey(message);
-    if ([self.sendingMsgQueue containsObjectForKey:msgKey]) {
-        @synchronized (self) {
+    if ([self.sendingMsgQueue objectForKey:msgKey]) {
+        if ([self.lock tryLock]) {
             [self.sendingMsgQueue removeObjectForKey:msgKey];
+            [self.lock unlock];
         }
     }
 }
@@ -395,9 +457,10 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     }
     // 从发送消息队列中移除该条消息
     NSString *msgKey = getMessageKey(message);
-    if ([self.sendingMsgQueue containsObjectForKey:msgKey]) {
-        @synchronized (self) {
+    if ([self.sendingMsgQueue objectForKey:msgKey]) {
+        if ([self.lock tryLock]) {
             [self.sendingMsgQueue removeObjectForKey:msgKey];
+            [self.lock unlock];
         }
     }
 }
@@ -417,11 +480,13 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         [mutArr addObject:message];
         NSMutableDictionary *mutMsgDict = @{MsgSectionTimeKey : @(msgTime),
                                             MsgSectionListKey : mutArr}.mutableCopy;
-        @synchronized (self) {
+        if ([self.lock tryLock]) {
             [self.dataSource addObject:mutMsgDict];
+            [self.lock unlock];
         }
-        [self.tableView insertSection:(self.dataSource.count - 1) withRowAnimation:UITableViewRowAnimationBottom];
         indexpath = [NSIndexPath indexPathForRow:0 inSection:(self.dataSource.count - 1)];
+        NSIndexSet *indexset = [[NSIndexSet alloc] initWithIndex:self.dataSource.count - 1];
+        [self.tableView insertSections:indexset withRowAnimation:UITableViewRowAnimationBottom];
     }
     // 2、如果插入的消息时间比最小的消息分组的时间小5分钟, 则在最前面插入一组
     else if (minSpace > 0 && minSpace > MessageTimeSpaceMinute * 60 * 1000) {
@@ -429,19 +494,21 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         [mutArr addObject:message];
         NSMutableDictionary *mutMsgDict = @{MsgSectionTimeKey : @(msgTime),
                                             MsgSectionListKey : mutArr}.mutableCopy;
-        @synchronized (self) {
+        if ([self.lock tryLock]) {
             [self.dataSource insertObject:mutMsgDict atIndex:0];
+            [self.lock unlock];
         }
-        [self.tableView insertSection:0 withRowAnimation:UITableViewRowAnimationTop];
         indexpath = [NSIndexPath indexPathForRow:0 inSection:0];
+        NSIndexSet *indexset = [[NSIndexSet alloc] initWithIndex:0];
+        [self.tableView insertSections:indexset withRowAnimation:UITableViewRowAnimationTop];
     }
     // 3、如果插入的消息时间在 {最小时间, 最大时间} 范围内
     else {
         // 遍历消息数组, 插入消息
-        @synchronized (self) {
-            @weakify(self);
+        if ([self.lock tryLock]) {
+            @XOWeakify(self);
             [self.dataSource enumerateObjectsUsingBlock:^(NSMutableDictionary <NSString *, id> * _Nonnull dict, NSUInteger idx, BOOL * _Nonnull stop) {
-                @strongify(self);
+                @XOStrongify(self);
                 // 获取分组的时间
                 NSUInteger sectionTime = [dict[MsgSectionTimeKey] unsignedIntegerValue];
                 long long timeSpace = msgTime - sectionTime;
@@ -452,11 +519,10 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
                     [mutArr addObject:message];
                     NSMutableDictionary *mutMsgDict = @{MsgSectionTimeKey : @(msgTime),
                                                         MsgSectionListKey : mutArr}.mutableCopy;
-                    @synchronized (self) {
-                        [self.dataSource insertObject:mutMsgDict atIndex:idx];
-                    }
-                    [self.tableView insertSection:idx withRowAnimation:UITableViewRowAnimationBottom];
+                    [self.dataSource insertObject:mutMsgDict atIndex:idx];
                     indexpath = [NSIndexPath indexPathForRow:0 inSection:idx];
+                    NSIndexSet *indexset = [[NSIndexSet alloc] initWithIndex:idx];
+                    [self.tableView insertSections:indexset withRowAnimation:UITableViewRowAnimationBottom];
                     
                     *stop = YES;
                 }
@@ -467,12 +533,13 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
                     NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
                     [mutArr sortedArrayUsingDescriptors:@[descriptor]];
                     NSUInteger row = [mutArr indexOfObject:message];
-                    [self.tableView insertRow:row inSection:idx withRowAnimation:UITableViewRowAnimationBottom];
                     indexpath = [NSIndexPath indexPathForRow:row inSection:idx];
+                    [self.tableView insertRowsAtIndexPaths:@[indexpath] withRowAnimation:UITableViewRowAnimationBottom];
                     
                     *stop = YES;
                 }
             }];
+            [self.lock unlock];
         }
     }
     return indexpath;
@@ -481,9 +548,9 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 // 删除消息
 - (void)deleteMessage:(TIMMessage *)message
 {
-    @weakify(self);
+    @XOWeakify(self);
     [self.dataSource enumerateObjectsUsingBlock:^(NSMutableDictionary<NSString *,id> * _Nonnull dict, NSUInteger idx, BOOL * _Nonnull stop) {
-        @strongify(self);
+        @XOStrongify(self);
         
         NSMutableArray <TIMMessage *>* mutArr = dict[MsgSectionListKey];
         __block BOOL needStop = NO;
@@ -491,7 +558,8 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
            
             if ([obj.msgId isEqualToString:message.msgId] && [obj.timestamp isEqual:message.timestamp]) {
                 [mutArr removeObject:obj];
-                [self.tableView deleteRow:subIdx inSection:idx withRowAnimation:UITableViewRowAnimationAutomatic];
+                NSIndexPath *indexpath = [NSIndexPath indexPathForRow:subIdx inSection:idx];
+                [self.tableView deleteRowsAtIndexPaths:@[indexpath] withRowAnimation:UITableViewRowAnimationAutomatic];
                 
                 needStop = YES;
                 *subStop = YES;
@@ -504,9 +572,9 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 // 更新消息
 - (void)updateMessage:(TIMMessage *)message
 {
-    @weakify(self);
+    @XOWeakify(self);
     [self.dataSource enumerateObjectsUsingBlock:^(NSMutableDictionary<NSString *,id> * _Nonnull dict, NSUInteger idx, BOOL * _Nonnull stop) {
-        @strongify(self);
+        @XOStrongify(self);
         
         NSMutableArray <TIMMessage *>* mutArr = dict[MsgSectionListKey];
         __block BOOL needStop = NO;
@@ -514,7 +582,8 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
             
             if ([obj.msgId isEqualToString:message.msgId] && [obj.timestamp isEqual:message.timestamp]) {
                 [mutArr replaceObjectAtIndex:subIdx withObject:message];
-                [self.tableView reloadRow:subIdx inSection:idx withRowAnimation:UITableViewRowAnimationAutomatic];
+                NSIndexPath *indexpath = [NSIndexPath indexPathForRow:subIdx inSection:idx];
+                [self.tableView reloadRowsAtIndexPaths:@[indexpath] withRowAnimation:UITableViewRowAnimationAutomatic];
                 
                 needStop = YES;
                 *subStop = YES;
@@ -726,10 +795,10 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
             }
             else {
                 // 插入新消息
-                [self addMessage:message];
+                NSIndexPath *indexpath = [self addMessage:message];
                 
                 // 如果消息是图片或者视频, 加入
-                [self addToImageVideoList:message];
+                [self addToImageVideoList:message index:indexpath];
                 
                 // 设置消息已读
                 [self.conversation setReadMessage:message succ:^{
@@ -757,9 +826,10 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 {
     // 从下载消息队列中移除该条消息
     NSString *msgKey = getMessageKey(message);
-    if ([self.downloadingMsgQueue containsObjectForKey:msgKey]) {
-        @synchronized (self) {
+    if ([self.downloadingMsgQueue objectForKey:msgKey]) {
+        if ([self.lock tryLock]) {
             [self.downloadingMsgQueue removeObjectForKey:msgKey];
+            [self.lock unlock];
         }
     }
 }
@@ -768,11 +838,28 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 {
     // 从下载消息队列中移除该条消息
     NSString *msgKey = getMessageKey(message);
-    if ([self.downloadingMsgQueue containsObjectForKey:msgKey]) {
-        @synchronized (self) {
+    if ([self.downloadingMsgQueue objectForKey:msgKey]) {
+        if ([self.lock tryLock]) {
             [self.downloadingMsgQueue removeObjectForKey:msgKey];
+            [self.lock unlock];
         }
     }
+}
+// 缩略图下载成功
+- (void)messageThumbImageDownloadSuccess:(TIMMessage * _Nonnull)message thumbImagePath:(NSString * _Nullable)thumbImagePath
+{
+    NSIndexPath *indexpath = [self findIndexPathWithDownloadingMessage:message];
+    if (indexpath && indexpath.section < self.dataSource.count) {
+        NSArray *arr = [self.dataSource[indexpath.section] objectForKey:MsgSectionListKey];
+        if (indexpath.row < arr.count) {
+            [self.tableView reloadRowsAtIndexPaths:@[indexpath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
+    }
+}
+// 缩略图下载失败
+- (void)messageThumbImageDownloadFail:(TIMMessage * _Nonnull)message
+{
+    
 }
 // 消息文件上传进度回调
 - (void)messageFileUpload:(TIMMessage *)message progress:(float)progress
@@ -790,13 +877,50 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 
 // 点击了用户头像
 - (void)messageCellDidTapAvatar:(WXMessageCell *)cell message:(TIMMessage *)message
-{}
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didTapChatMessageView:)]) {
+        [self.delegate didTapChatMessageView:self];
+    }
+}
 // 长按了用户头像
 - (void)messageCellLongPressAvatar:(WXMessageCell *)cell message:(TIMMessage *)message
-{}
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didTapChatMessageView:)]) {
+        [self.delegate didTapChatMessageView:self];
+    }
+}
 // 点击了消息
 - (void)messageCellDidTapMessage:(WXMessageCell *)cell message:(TIMMessage *)message
-{}
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didTapChatMessageView:)]) {
+        [self.delegate didTapChatMessageView:self];
+    }
+
+    if ([message elemCount] > 0) {
+        TIMElem *elem = [message getElem:0];
+        if ([elem isKindOfClass:[TIMImageElem class]] ||
+            [elem isKindOfClass:[TIMVideoElem class]])
+        {
+            [self readImageMessageWith:message withCell:cell];
+        }
+        else if ([elem isKindOfClass:[TIMSoundElem class]])
+        {
+            NSLog(@"语音消息 ==============");
+        }
+        else if ([elem isKindOfClass:[TIMFileElem class]])
+        {
+            NSLog(@"文件消息 ==============");
+        }
+        else if ([elem isKindOfClass:[TIMLocationElem class]])
+        {
+            NSLog(@"位置消息 ==============");
+        }
+        else if ([elem isKindOfClass:[TIMFaceElem class]])
+        {
+            NSLog(@"表情消息 ==============");
+        }
+    }
+}
 // 长按了消息
 - (void)messageCellLongPressMessage:(WXMessageCell *)cell message:(TIMMessage *)message
 {}
@@ -831,9 +955,9 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:UITableViewCellID];
         [_tableView registerClass:[WXMessageHeaderFooterView class] forHeaderFooterViewReuseIdentifier:TimeMessageCellID];
         
-        @weakify(self);
+        @XOWeakify(self);
         MJRefreshNormalHeader *header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-            @strongify(self);
+            @XOStrongify(self);
             [self loadMessages];
         }];
         [header setTitle:@"" forState:MJRefreshStateIdle];
@@ -877,12 +1001,20 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     return _downloadingMsgQueue;
 }
 
-- (NSMutableDictionary<NSString *,NSIndexPath *> *)imageVideoList
+- (NSMutableDictionary<NSString *,TIMMessage *> *)imageVideoList
 {
     if (!_imageVideoList) {
         _imageVideoList = [NSMutableDictionary dictionaryWithCapacity:5];
     }
     return _imageVideoList;
+}
+
+- (NSMutableDictionary<NSString *, NSIndexPath *> *)imageVideoIndexpathList
+{
+    if (!_imageVideoIndexpathList) {
+        _imageVideoIndexpathList = [NSMutableDictionary dictionaryWithCapacity:5];
+    }
+    return _imageVideoIndexpathList;
 }
 
 - (NSMutableDictionary<NSString *,NSValue *> *)cellSizeDict
@@ -904,6 +1036,143 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 - (void)safeAreaDidChange:(UIEdgeInsets)safeAreaInset
 {
     _safeInset = safeAreaInset;
+}
+
+#pragma mark ========================= private method =========================
+
+// 读取图片消息
+- (void)readImageMessageWith:(TIMMessage *)message withCell:(WXMessageCell *)cell
+{
+    @autoreleasepool {
+        // 排序
+        NSArray <TIMMessage *>* msgList = [self.imageVideoList allValues];
+        NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
+        msgList = [msgList sortedArrayUsingDescriptors:@[descriptor]];
+        __block NSMutableArray <NSString *>* msgKeyList = [NSMutableArray arrayWithCapacity:5];
+        [msgList enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [msgKeyList addObject:getMessageKey(obj)];
+        }];
+        NSInteger currentPage = [msgKeyList indexOfObject:getMessageKey(message)];
+        
+        __block NSMutableArray <id <YBIBDataProtocol>>* sourceList = [NSMutableArray arrayWithCapacity:10];
+        [msgKeyList enumerateObjectsUsingBlock:^(NSString * _Nonnull key, NSUInteger idx, BOOL * _Nonnull stop) {
+            
+            TIMMessage *obj = [self.imageVideoList objectForKey:key];
+            if ([obj elemCount] > 0) {
+                TIMElem *elem = [obj getElem:0];
+                // 图片
+                if ([elem isKindOfClass:[TIMImageElem class]]) {
+                    TIMImageElem *imageElem = (TIMImageElem *)elem;
+                    if (imageElem.imageList.count > 0) {
+                        TIMImage *timImage = [imageElem.imageList objectAtIndex:0];
+                        NSString *imagePath = nil;
+                        NSURL *thumbImageURL = nil;
+                        if (obj.isSelf) {
+                            imagePath = imageElem.path;
+                            NSString *thumbImageName = [[imagePath lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
+                            NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
+                            thumbImageURL = [NSURL fileURLWithPath:thumbImagePath];
+                        }
+                        if (XOIsEmptyString(imagePath) || ![[NSFileManager defaultManager] fileExistsAtPath:imagePath]) {
+                            NSString *imageFomat = [[XOChatClient shareClient] getImageFormat:imageElem.format];
+                            NSString *imageName = [NSString stringWithFormat:@"%@.%@", timImage.uuid, imageFomat];
+                            imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
+                            NSString *thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", timImage.uuid, imageFomat];
+                            thumbImageURL = [NSURL fileURLWithPath:[XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName]];
+                        }
+                        
+                        UIImageView * translateView = nil;
+                        NSIndexPath *indexPath = [self.imageVideoIndexpathList objectForKey:key];
+                        if (indexPath && indexPath.section < self.dataSource.count) {
+                            NSArray *arr = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey];
+                            if (indexPath.row < arr.count) {
+                                WXImageMessageCell *imageCell = [self.tableView cellForRowAtIndexPath:indexPath];
+                                translateView = ((WXImageMessageCell *)imageCell).messageImageView;
+                            }
+                        }
+                        
+                        YBIBImageData *imageData = [[YBIBImageData alloc] init];
+                        imageData.imagePath = imagePath;
+                        imageData.thumbURL = thumbImageURL;
+                        imageData.projectiveView = translateView;
+                        imageData.extraData = key;
+                        [sourceList addObject:imageData];
+                    }
+                }
+                // 视频
+                else if ([elem isKindOfClass:[TIMVideoElem class]]) {
+                    TIMVideoElem *videoElem = (TIMVideoElem *)elem;
+                    UIImage *thumbImage = nil;
+                    NSURL *videoURL = nil;
+                    if (!obj.isSelf) {
+                        videoURL = [NSURL fileURLWithPath:videoElem.videoPath];
+                        thumbImage = [UIImage imageWithData:[NSData dataWithContentsOfFile:videoElem.snapshotPath]];
+                    }
+                    
+                    if (!videoURL || ![[NSFileManager defaultManager] fileExistsAtPath:videoElem.videoPath]) {
+                        TIMVideo *timVideo = videoElem.video;
+                        NSString *videoFomat = !XOIsEmptyString(timVideo.type) ? timVideo.type : @"mp4";
+                        NSString *videoName = [NSString stringWithFormat:@"%@.%@", timVideo.uuid, videoFomat];
+                        NSString *videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoName];
+                        videoURL = [NSURL fileURLWithPath:videoPath];
+                    }
+                    if (XOIsEmptyString(videoElem.snapshotPath) || ![[NSFileManager defaultManager] fileExistsAtPath:videoElem.snapshotPath]) {
+                        TIMSnapshot *snapshot = videoElem.snapshot;
+                        NSString *snapshotformat = XOIsEmptyString(snapshot.type) ? @"jpg" : snapshot.type;
+                        NSString *snapshotName = [NSString stringWithFormat:@"%@.%@", snapshot.uuid, snapshotformat];
+                        NSString *snapshotPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:snapshotName];
+                        thumbImage = [UIImage imageWithData:[NSData dataWithContentsOfFile:snapshotPath]];
+                    }
+                    
+                    UIImageView * translateView = nil;
+                    NSIndexPath *indexPath = [self.imageVideoIndexpathList objectForKey:key];
+                    if (indexPath && indexPath.section < self.dataSource.count) {
+                        NSArray *arr = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey];
+                        if (indexPath.row < arr.count) {
+                            WXVideoMessageCell *videoCell = [self.tableView cellForRowAtIndexPath:indexPath];
+                            translateView = ((WXVideoMessageCell *)videoCell).messageImageView;
+                        }
+                    }
+                    
+                    YBIBVideoData *videoData = [[YBIBVideoData alloc] init];
+                    videoData.videoURL = videoURL;
+                    videoData.thumbImage = thumbImage;
+                    videoData.projectiveView = translateView;
+                    videoData.extraData = key;
+                    [sourceList addObject:videoData];
+                }
+            }
+        }];
+        
+        if (sourceList.count > 0) {
+            YBImageBrowser *browser = [[YBImageBrowser alloc] init];
+            browser.dataSourceArray = sourceList;
+            browser.currentPage = (currentPage > 0) ? currentPage : 0;
+            browser.webImageMediator = [[XOImageBrowerMediator alloc] init];
+            browser.delegate = self;
+            [browser show];
+        }
+    }
+}
+
+/**
+ 页码变化
+ 
+ @param imageBrowser 图片浏览器
+ @param page 当前页码
+ @param data 数据
+ */
+- (void)yb_imageBrowser:(YBImageBrowser *)imageBrowser pageChanged:(NSInteger)page data:(id<YBIBDataProtocol>)data
+{
+    NSIndexPath *indexPath = [self.imageVideoIndexpathList objectForKey:(NSString *)data];
+    if (indexPath && indexPath.section < self.dataSource.count) {
+        NSArray *arr = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey];
+        if (indexPath.row < arr.count) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+            });
+        }
+    }
 }
 
 #pragma mark ========================= help =========================
@@ -934,8 +1203,9 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         }];
         // 如果找到就缓存到发送消息队列中
         if (indexpath) {
-            @synchronized (self) {
+            if ([self.lock tryLock]) {
                 [self.sendingMsgQueue setObject:indexpath forKey:msgKey];
+                [self.lock unlock];
             }
         }
     }
@@ -968,8 +1238,9 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         }];
         // 如果找到就缓存到下载消息队列中
         if (indexpath) {
-            @synchronized (self) {
+            if ([self.lock tryLock]) {
                 [self.downloadingMsgQueue setObject:indexpath forKey:msgKey];
+                [self.lock unlock];
             }
         }
     }
@@ -1098,5 +1369,71 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     return size;
 }
 
+
+@end
+
+
+
+
+#pragma mark ========================= XOImageBrowerMediator =========================
+
+@implementation XOImageBrowerMediator
+
+- (id)yb_downloadImageWithURL:(NSURL *)URL requestModifier:(nullable YBIBWebImageRequestModifierBlock)requestModifier progress:(nonnull YBIBWebImageProgressBlock)progress success:(nonnull YBIBWebImageSuccessBlock)success failed:(nonnull YBIBWebImageFailedBlock)failed
+{
+    if (!URL) return nil;
+    
+    SDWebImageContext *context = nil;
+    if (requestModifier) {
+        SDWebImageDownloaderRequestModifier *modifier = [SDWebImageDownloaderRequestModifier requestModifierWithBlock:requestModifier];
+        context = @{SDWebImageContextDownloadRequestModifier:modifier};
+    }
+    
+    SDWebImageDownloaderOptions options = SDWebImageDownloaderLowPriority | SDWebImageDownloaderAvoidDecodeImage;
+    
+    SDWebImageDownloadToken *token = [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:URL options:options context:context progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
+        if (progress) progress(receivedSize, expectedSize);
+    } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+        if (error) {
+            if (failed) failed(error, finished);
+        } else {
+            if (success) success(data, finished);
+        }
+    }];
+    return token;
+}
+
+- (void)yb_cancelTaskWithDownloadToken:(id)token
+{
+    if (token && [token isKindOfClass:SDWebImageDownloadToken.class]) {
+        [((SDWebImageDownloadToken *)token) cancel];
+    }
+}
+
+- (void)yb_storeToDiskWithImageData:(NSData *)data forKey:(NSURL *)key
+{
+    if (!key) return;
+    NSString *cacheKey = [SDWebImageManager.sharedManager cacheKeyForURL:key];
+    if (!cacheKey) return;
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        [[SDImageCache sharedImageCache] storeImageDataToDisk:data forKey:cacheKey];
+    });
+}
+
+- (void)yb_queryCacheOperationForKey:(NSURL *)key completed:(YBIBWebImageCacheQueryCompletedBlock)completed
+{
+#define QUERY_CACHE_FAILED if (completed) {completed(nil, nil); return;}
+    if (!key) QUERY_CACHE_FAILED
+        NSString *cacheKey = [SDWebImageManager.sharedManager cacheKeyForURL:key];
+    if (!cacheKey) QUERY_CACHE_FAILED
+#undef QUERY_CACHE_FAILED
+        
+        // 'NSData' of image must be read to ensure decoding correctly.
+        SDImageCacheOptions options = SDImageCacheQueryMemoryData | SDImageCacheAvoidDecodeImage;
+    [[SDImageCache sharedImageCache] queryCacheOperationForKey:cacheKey options:options done:^(UIImage * _Nullable image, NSData * _Nullable data, SDImageCacheType cacheType) {
+        if (completed) completed(image, data);
+    }];
+}
 
 @end

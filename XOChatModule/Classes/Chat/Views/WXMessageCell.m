@@ -118,7 +118,6 @@ static float const kDefaultMargin = 8.0f;
         UIEdgeInsets receiverInset = UIEdgeInsetsMake(kDefaultMargin/2, kDefaultMargin + 2, kDefaultMargin/2, kDefaultMargin/2 + 1);
         [self.messageBackgroundImageView setHidden:NO];
         [self.messageBackgroundImageView setImage:[[[UIImage xo_imageNamedFromChatBundle:@"message_receiver_background_normal"] imageWithTintColor:[UIColor whiteColor]] resizableImageWithCapInsets:receiverInset resizingMode:UIImageResizingModeStretch]];
-        [self.messageSendStatusImageView setHidden:YES];
     }
 }
 

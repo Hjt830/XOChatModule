@@ -190,9 +190,9 @@ static NSTimeInterval audioRecordTime = 0.0f;
         uint64_t interval = (uint64_t)(1.0 * NSEC_PER_SEC); // 执行间隔时间
         dispatch_source_set_timer(_timer, start, interval, 0);
         // 设置事件回调
-        @weakify(self);
+        @XOWeakify(self);
         dispatch_source_set_event_handler(_timer, ^{
-            @strongify(self);
+            @XOStrongify(self);
             
             self->_seconds++;
             if ([LGSoundRecorder shareInstance].soundRecordTime >= MaxAudioRecordTime) {
@@ -687,9 +687,9 @@ static NSTimeInterval audioRecordTime = 0.0f;
 // 取消选中的图片或视频
 - (void)cancelSelectedImageOrVideo
 {
-    @weakify(self);
+    @XOWeakify(self);
     [self.TZImagePicker.selectedModels enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(TZAssetModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        @strongify(self);
+        @XOStrongify(self);
         [self.TZImagePicker removeSelectedModel:obj];
     }];
 }
@@ -748,7 +748,34 @@ static NSTimeInterval audioRecordTime = 0.0f;
     NSLog(@"didFinishPickingMediaWithInfo: %@", info);
     
     if (picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureModePhoto) {
-        NSURL *imageURL = info[UIImagePickerControllerMediaURL];
+        UIImage *originImage = info[UIImagePickerControllerOriginalImage];
+        if (nil != originImage && self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendImage:imageSize:imageFormat:)]) {
+            // 图片存储的路径
+            NSString *uti = @"jpg";
+            NSString *imageName = [NSString stringWithFormat:@"%@.%@", [NSUUID UUID].UUIDString, uti];
+            NSString *imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
+            
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                NSData *data = UIImageJPEGRepresentation(originImage, 1.0);
+                // 图片大于6M压缩
+                if (data.length > 6 * 1024 * 1024)
+                {
+                    [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                        UIImage *originImage = [UIImage imageWithData:data];
+                        CGFloat ratio = (6.0 * 1024 * 1024)/data.length;
+                        CGSize size = CGSizeMake(originImage.size.width * ratio, originImage.size.height * ratio);
+                        UIImage *image = [[XOFileManager shareInstance] scaleOriginImage:originImage toSize:size];
+                        [self handleImageWith:image imageName:imageName imagePath:imagePath uti:uti];
+                    }];
+                }
+                else {
+                    [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                        UIImage *originImage = [UIImage imageWithData:data];
+                        [self handleImageWith:originImage imageName:imageName imagePath:imagePath uti:uti];
+                    }];
+                }
+            });
+        }
     }
     else if (picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureModeVideo) {
         NSURL *videoURL = info[UIImagePickerControllerMediaURL];
@@ -916,6 +943,13 @@ static NSTimeInterval audioRecordTime = 0.0f;
             }];
         }
     }];
+    // 反选本次所有选中的图片或者视频
+    [self cancelSelectedImageOrVideo];
+}
+
+- (void)tz_imagePickerControllerDidCancel:(TZImagePickerController *)picker
+{
+    [picker dismissViewControllerAnimated:YES completion:NULL];
     // 反选本次所有选中的图片或者视频
     [self cancelSelectedImageOrVideo];
 }

@@ -9,6 +9,7 @@
 #import "ZXChatBoxView.h"
 #import <XOBaseLib/XOBaseLib.h>
 #import "XOChatModule.h"
+#import "CommonTool.h"
 
 #define     CHATBOX_BUTTON_WIDTH        37
 #define     HEIGHT_TEXTVIEW             HEIGHT_TABBAR * 0.74
@@ -383,7 +384,7 @@
 - (void) talkButtonDown:(UIButton *)sender
 {
     [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.send") forState:UIControlStateNormal];
-    UIImage *image = [UIImage imageWithColor:RGBA(255.0 * 0.7, 255.0 * 0.7, 255.0 * 0.7, 0.5) size:CGSizeMake(1.0f, 1.0f)];
+    UIImage *image = [CommonTool imageWithColor:RGBA(255.0 * 0.7, 255.0 * 0.7, 255.0 * 0.7, 0.5) size:CGSizeMake(1.0f, 1.0f)];
     [_talkButton setBackgroundImage:image forState:UIControlStateNormal];
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxDidBeginTalking:)]) {
@@ -394,7 +395,7 @@
 - (void) talkButtonUpInside:(UIButton *)sender
 {
     [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.talk") forState:UIControlStateNormal];
-    UIImage *image = [UIImage imageWithColor:[UIColor clearColor] size:CGSizeMake(1.0f, 1.0f)];
+    UIImage *image = [CommonTool imageWithColor:[UIColor clearColor] size:CGSizeMake(1.0f, 1.0f)];
     [_talkButton setBackgroundImage:image forState:UIControlStateNormal];
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxDidEndTalking:)]) {
@@ -405,7 +406,7 @@
 - (void) talkButtonUpOutside:(UIButton *)sender
 {
     [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.talk") forState:UIControlStateNormal];
-    UIImage *image = [UIImage imageWithColor:[UIColor clearColor] size:CGSizeMake(1.0f, 1.0f)];
+    UIImage *image = [CommonTool imageWithColor:[UIColor clearColor] size:CGSizeMake(1.0f, 1.0f)];
     [_talkButton setBackgroundImage:image forState:UIControlStateNormal];
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxDidCancelTalking:)]) {
@@ -416,7 +417,7 @@
 - (void) talkButtonUpCancel:(UIButton *)sender
 {
     [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.talk") forState:UIControlStateNormal];
-    UIImage *image = [UIImage imageWithColor:[UIColor clearColor] size:CGSizeMake(1.0f, 1.0f)];
+    UIImage *image = [CommonTool imageWithColor:[UIColor clearColor] size:CGSizeMake(1.0f, 1.0f)];
     [_talkButton setBackgroundImage:image forState:UIControlStateNormal];
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxDidEndTalking:)]) {
@@ -506,7 +507,7 @@
         [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.talk") forState:UIControlStateNormal];
         [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.send") forState:UIControlStateHighlighted];
         [_talkButton setTitleColor:[UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0] forState:UIControlStateNormal];
-        [_talkButton setBackgroundImage:[UIImage imageWithColor:[UIColor colorWithRed:0.7 green:0.7 blue:0.7 alpha:0.5] size:CGSizeMake(1.0, 1.0)] forState:UIControlStateHighlighted];
+        [_talkButton setBackgroundImage:[CommonTool imageWithColor:[UIColor colorWithRed:0.7 green:0.7 blue:0.7 alpha:0.5] size:CGSizeMake(1.0, 1.0)] forState:UIControlStateHighlighted];
         [_talkButton.titleLabel setFont:[UIFont boldSystemFontOfSize:16.0f]];
         [_talkButton.layer setMasksToBounds:YES];
         [_talkButton.layer setCornerRadius:4.0f];

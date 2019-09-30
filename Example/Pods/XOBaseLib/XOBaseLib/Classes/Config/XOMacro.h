@@ -156,41 +156,45 @@
 /**
  对self在Block中强弱指针的引用转换
  Example:
-     @weakify(self)  // 强引用转弱引用
+     @XOWeakify(self)  // 强引用转弱引用
      [self doSomething^{
-        @strongify(self)  // 弱引用
+        @XOStrongify(self)  // 弱引用转强引用
         if (!self) return;
         ...
      }];
  */
 #ifndef XOWeakify
-    #define XOWeakify(...) \
-            xo_keywordify \
-            metamacro_foreach_cxt(xo_weakify_,, __weak, __VA_ARGS__)
+    #if DEBUG
+        #if __has_feature(objc_arc)
+            #define XOWeakify(object) autoreleasepool{} __weak __typeof__(object) weak##_##object = object;
+        #else
+            #define XOWeakify(object) autoreleasepool{} __block __typeof__(object) block##_##object = object;
+        #endif
+    #else
+        #if __has_feature(objc_arc)
+            #define XOWeakify(object) try{} @finally{} {} __weak __typeof__(object) weak##_##object = object;
+        #else
+            #define XOWeakify(object) try{} @finally{} {} __block __typeof__(object) block##_##object = object;
+        #endif
+    #endif
 #endif
+
 
 #ifndef XOStrongify
-    #define XOStrongify(...) \
-            xo_keywordify \
-            _Pragma("clang diagnostic push") \
-            _Pragma("clang diagnostic ignored \"-Wshadow\"") \
-            metamacro_foreach(xo_strongify_,, __VA_ARGS__) \
-            _Pragma("clang diagnostic pop")
+    #if DEBUG
+        #if __has_feature(objc_arc)
+            #define XOStrongify(object) autoreleasepool{} __typeof__(object) object = weak##_##object;
+        #else
+            #define XOStrongify(object) autoreleasepool{} __typeof__(object) object = block##_##object;
+        #endif
+    #else
+        #if __has_feature(objc_arc)
+            #define XOStrongify(object) try{} @finally{} __typeof__(object) object = weak##_##object;
+        #else
+            #define XOStrongify(object) try{} @finally{} __typeof__(object) object = block##_##object;
+        #endif
+    #endif
 #endif
-
-#if DEBUG
-    #define xo_keywordify autoreleasepool {}
-#else
-    #define xo_keywordify try {} @catch (...) {}
-#endif
-
-
-#define xo_weakify_(INDEX, CONTEXT, VAR) \
-    CONTEXT __typeof__(VAR) metamacro_concat(VAR, _weak_) = (VAR);
-
-#define xo_strongify_(INDEX, VAR) \
-    __strong __typeof__(VAR) VAR = metamacro_concat(VAR, _weak_);
-
 
 #pragma mark ====================== 打印日志(打印类名、方法名、代码行数) ======================
 

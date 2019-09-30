@@ -145,12 +145,12 @@
     int result = [textMsg addElem:textElem];
     
     if (0 == result) {
-        @weakify(self);
+        @XOWeakify(self);
         int sendText = [self.conversation sendMessage:textMsg succ:^{
-            @strongify(self);
+            @XOStrongify(self);
             [self.chatMsgVC sendSuccessMessage:textMsg];
         } fail:^(int code, NSString *msg) {
-            @strongify(self);
+            @XOStrongify(self);
             [self.chatMsgVC sendFailMessage:textMsg];
         }];
         
@@ -162,7 +162,7 @@
         }
     }
     else {
-        NSLog(@"发送文本消息失败  result: %d", result);
+        NSLog(@"添加文本消息失败  result: %d", result);
     }
 }
 // 发送图片消息
@@ -175,12 +175,12 @@
     int result = [imageMsg addElem:imageElem];
     
     if (0 == result) {
-        @weakify(self);
+        @XOWeakify(self);
         int sendImage = [self.conversation sendMessage:imageMsg succ:^{
-            @strongify(self);
+            @XOStrongify(self);
             [self.chatMsgVC sendSuccessMessage:imageMsg];
         } fail:^(int code, NSString *msg) {
-            @strongify(self);
+            @XOStrongify(self);
             [self.chatMsgVC sendFailMessage:imageMsg];
         }];
         
@@ -192,7 +192,7 @@
         }
     }
     else {
-        NSLog(@"发送图片消息失败  result: %d", result);
+        NSLog(@"添加图片消息失败  result: %d", result);
     }
 }
 // 发送视频消息
@@ -219,12 +219,12 @@
     
     // 发送消息
     if (0 == result) {
-        @weakify(self);
+        @XOWeakify(self);
         int sendVideo = [self.conversation sendMessage:videoMsg succ:^{
-            @strongify(self);
+            @XOStrongify(self);
             [self.chatMsgVC sendSuccessMessage:videoMsg];
         } fail:^(int code, NSString *msg) {
-            @strongify(self);
+            @XOStrongify(self);
             [self.chatMsgVC sendFailMessage:videoMsg];
         }];
         
@@ -236,7 +236,7 @@
         }
     }
     else {
-        NSLog(@"发送视频消息失败: %d", result);
+        NSLog(@"添加视频消息失败: %d", result);
     }
 }
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMp3Audio:(NSString *)mp3Path audioDuration:(NSTimeInterval)duration

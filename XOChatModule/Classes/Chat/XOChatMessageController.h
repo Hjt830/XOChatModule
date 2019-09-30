@@ -8,6 +8,7 @@
 
 #import <XOBaseLib/XOBaseLib.h>
 #import <ImSDK/ImSDK.h>
+#import <YBImageBrowser/YBImageBrowser.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -51,6 +52,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) didReadRedPacketMessage:(TIMMessage *)message indexpath:(NSIndexPath *)indexPath ChatMessageView:(XOChatMessageController *)chatMsgViewController;
 // 收转账
 - (void) didReadTransferMessage:(TIMMessage *)message indexpath:(NSIndexPath *)indexPath ChatMessageView:(XOChatMessageController *)chatMsgViewController;
+
+@end
+
+
+
+
+
+
+@interface XOImageBrowerMediator : NSObject <YBIBWebImageMediator>
 
 @end
 

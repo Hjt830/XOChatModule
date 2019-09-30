@@ -49,43 +49,47 @@ static BOOL progressFinish = NO;
     TIMElem *elem = [message getElem:0];
     if ([elem isKindOfClass:[TIMImageElem class]]) {
         TIMImageElem *imageElem = (TIMImageElem *)elem;
-        if (imageElem.imageList.count > 0) {
-            TIMImage *image = [imageElem.imageList objectAtIndex:0];
-            
-            NSString *thumbImageName = nil;
-            if (message.isSelf) {   // 自己发送的消息
-                thumbImageName = [[imageElem.path lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
-            } else {                // 收到的消息
-                thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", image.uuid, [self getImageFormat:imageElem.format]];
-            }
-            __block NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
-            
-            [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-                NSData *thumbImageData = [[NSData alloc] initWithContentsOfFile:thumbImagePath];
-                __block UIImage *thumbImage = [UIImage imageWithData:thumbImageData];
-                // 缓存中有图片
-                if (thumbImage != nil) {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        self.messageImageView.image = thumbImage;
-                    }];
-                }
-                // 缓存中没有图片
-                else {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        [self.messageImageView setImage:[UIImage xo_imageNamedFromChatBundle:@"placeholderImage"]];
-                    }];
-                }
-            }];
+        __block NSString *thumbImageName = nil;
+        // 自己发送的消息
+        if (message.isSelf && !XOIsEmptyString(imageElem.path) && [[NSFileManager defaultManager] fileExistsAtPath:imageElem.path]) {
+            thumbImageName = [[imageElem.path lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
         }
+        // 收到的消息
+        else if (imageElem.imageList.count > 0) {
+            TIMImage *image = [imageElem.imageList objectAtIndex:0];
+            thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", image.uuid, [self getImageFormat:imageElem.format]];
+        }
+        __block NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
+        
+        [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+            NSData *thumbImageData = [[NSData alloc] initWithContentsOfFile:thumbImagePath];
+            __block UIImage *thumbImage = [UIImage imageWithData:thumbImageData];
+            // 缓存中有图片
+            if (thumbImage != nil) {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    self.messageImageView.image = thumbImage;
+                }];
+            }
+            // 缓存中没有图片
+            else {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self.messageImageView setImage:[UIImage xo_imageNamedFromChatBundle:@"placeholderImage"]];
+                }];
+            }
+        }];
+
     }
     else if ([elem isKindOfClass:[TIMVideoElem class]]) {
         TIMVideoElem *videoElem = (TIMVideoElem *)elem;
         TIMSnapshot *snapshot = videoElem.snapshot;
         
         NSString *snapshotName = nil;
-        if (message.isSelf) {   // 自己发送的消息
+        // 自己发送的消息
+        if (message.isSelf && !XOIsEmptyString(videoElem.snapshotPath) && [[NSFileManager defaultManager] fileExistsAtPath:videoElem.snapshotPath]) {
             snapshotName = [videoElem.snapshotPath lastPathComponent];
-        } else {                // 收到的消息
+        }
+        // 收到的消息
+        else {
             NSString *snapshotFormat = XOIsEmptyString(snapshot.type) ? @"jpg" : snapshot.type;
             snapshotName = [NSString stringWithFormat:@"%@.%@", snapshot.uuid, snapshotFormat];
         }
@@ -147,7 +151,7 @@ static BOOL progressFinish = NO;
 {
     [super updateProgress:progress effect:effect];
     
-    NSLog(@"self: %p progress: %f", self, progress);
+    NSLog(@"msgId: %@ progress: %f", self.message.msgId, progress);
     
     @synchronized (self) {
         
@@ -181,6 +185,7 @@ static BOOL progressFinish = NO;
 {
     if (_messageImageView == nil) {
         _messageImageView = [[UIImageView alloc] init];
+        [_messageImageView setUserInteractionEnabled:YES];
         [_messageImageView setContentMode:UIViewContentModeScaleAspectFill];
         [_messageImageView setImage:[UIImage xo_imageNamedFromChatBundle:@"placeholderImage"]];
         [_messageImageView setClipsToBounds:YES];

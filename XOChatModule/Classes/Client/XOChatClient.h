@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 FOUNDATION_STATIC_INLINE NSString * getMessageKey(TIMMessage *message) {
     
     if (message) {
-        NSString *msgKey = [NSString stringWithFormat:@"%@_%ld", message.msgId, (long)[message.timestamp timeIntervalSince1970]];
+        NSString *msgKey = [NSString stringWithFormat:@"%ld_%@", (long)[message.timestamp timeIntervalSince1970], message.msgId];
         return msgKey;
     }
     return nil;
@@ -72,6 +72,9 @@ FOUNDATION_STATIC_INLINE NSString * getMessageKey(TIMMessage *message) {
  *  方法中会自动判断消息是否需要下载, 是否正在下载中, 无需额外判断
  */
 - (void)scheduleDownloadTask:(TIMMessage *)message;
+
+// 获取图片的格式
+- (NSString *)getImageFormat:(TIM_IMAGE_FORMAT)imageFormat;
 
 @end
 
@@ -136,11 +139,20 @@ FOUNDATION_STATIC_INLINE NSString * getMessageKey(TIMMessage *message) {
 // 消息文件下载成功回调
 - (void)messageFileDownloadSuccess:(TIMMessage * _Nonnull)message fileURL:(NSURL * _Nullable)fileURL thumbImageURL:(NSURL * _Nullable)thumbImageURL;
 
-// 消息文件下载进度回调
+// 消息文件下载失败回调
 - (void)messageFileDownloadFail:(TIMMessage *)message failError:(NSError *)error;
+
+// 缩略图下载成功
+- (void)messageThumbImageDownloadSuccess:(TIMMessage * _Nonnull)message thumbImagePath:(NSString * _Nullable)thumbImagePath;
+
+// 缩略图下载成功
+- (void)messageThumbImageDownloadFail:(TIMMessage * _Nonnull)message;
+
 
 // 消息文件上传进度回调
 - (void)messageFileUpload:(TIMMessage *)message progress:(float)progress;
+
+
 
 @end
 

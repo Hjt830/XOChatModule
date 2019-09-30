@@ -15,7 +15,7 @@
 @property (nonatomic ,strong) UIImageView   *positionImageView;
 @property (nonatomic ,strong) UILabel       *addressLabel;
 @property (nonatomic ,strong) UIImageView   *addressPoi;
-@property (nonatomic, strong) MKMapView     *mapView;
+//@property (nonatomic, strong) MKMapView     *mapView;
 
 @end
 

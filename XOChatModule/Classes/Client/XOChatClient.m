@@ -22,7 +22,7 @@
 
 @end
 
-static int MaxDownloadCount = 6; // 最大并发下载任务数
+static int MaxDownloadCount = 9; // 最大并发下载任务数
 static NSString * const XOChatClientBackgroundThreadName = @"XOChatClientBackgroundThreadName";
 static XOChatClient *__chatClient = nil;
 
@@ -482,6 +482,30 @@ static XOChatClient *__chatClient = nil;
         TIMImage *timImage = [imageElem.imageList objectAtIndex:0];
         if (!XOIsEmptyString(timImage.url)) {
             
+            // 下载缩略图
+            TIMImage *timImage = nil;
+            if (imageElem.imageList.count >= 3) {
+                timImage = [imageElem.imageList objectAtIndex:2];
+            } else if (imageElem.imageList.count >= 2) {
+                timImage = [imageElem.imageList objectAtIndex:1];
+            }
+            NSString *imageFomat = [self getImageFormat:imageElem.format];
+            NSString *thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", timImage.uuid, imageFomat];
+            __block NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
+            [timImage getImage:thumbImagePath succ:^{
+                if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(messageThumbImageDownloadSuccess:thumbImagePath:)]) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self->_multiDelegate messageThumbImageDownloadSuccess:message thumbImagePath:thumbImagePath];
+                    });
+                }
+            } fail:^(int code, NSString *msg) {
+                if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(messageThumbImageDownloadFail:)]) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self->_multiDelegate messageThumbImageDownloadFail:message];
+                    });
+                }
+            }];
+            
             // 判断下载任务是否已满
             if (self.taskQueue.count >= MaxDownloadCount) {
                 @synchronized (self) {
@@ -597,11 +621,24 @@ static XOChatClient *__chatClient = nil;
                 NSString *snapshotformat = XOIsEmptyString(snapshot.type) ? @"jpg" : snapshot.type;
                 NSString *snapshotName = [NSString stringWithFormat:@"%@.%@", snapshot.uuid, snapshotformat];
                 __block NSString *snapshotPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:snapshotName];
-                [snapshot getImage:snapshotPath succ:^{
-                    NSLog(@"下载视频截图成功: %@", snapshotPath);
-                } fail:^(int code, NSString *msg) {
-                    NSLog(@"下载视频截图失败: %@", snapshotPath);
-                }];
+                if (![[NSFileManager defaultManager] fileExistsAtPath:snapshotPath]) {
+                    [snapshot getImage:snapshotPath succ:^{
+                        NSLog(@"下载视频截图成功: %@", snapshotPath);
+                        if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(messageThumbImageDownloadSuccess:thumbImagePath:)]) {
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self->_multiDelegate messageThumbImageDownloadSuccess:message thumbImagePath:snapshotPath];
+                            });
+                        }
+                        
+                    } fail:^(int code, NSString *msg) {
+                        NSLog(@"下载视频截图失败: %@", snapshotPath);
+                        if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(messageThumbImageDownloadFail:)]) {
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self->_multiDelegate messageThumbImageDownloadFail:message];
+                            });
+                        }
+                    }];
+                }
             }
             // 下载视频
             TIMVideo *timVideo = videoElem.video;
