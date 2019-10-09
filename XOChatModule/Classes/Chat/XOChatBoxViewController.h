@@ -37,13 +37,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMessage:(NSString *)content;
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendImage:(NSString *)imagePath imageSize:(CGSize)size imageFormat:(NSString *)format;
 - (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendVideo:(NSString *)videoPath snapshotImage:(NSString *)snapshotPath snapshotSize:(CGSize)size videoDuration:(float)duration;
-- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMp3Audio:(NSString *)mp3Path audioDuration:(NSTimeInterval)duration;
+- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMp3Audio:(NSString *)mp3Path soundSize:(long)soundSize audioDuration:(NSTimeInterval)duration;
+- (void)chatBoxViewControllerSendFile:(XOChatBoxViewController *)chatboxViewController sendFile:(NSString *)filePath filename:(NSString *)filename fileSize:(int)fileSize;
 - (void)chatBoxViewControllerSendPosition:(XOChatBoxViewController *)chatboxViewController;
 - (void)chatBoxViewControllerSendCall:(XOChatBoxViewController *)chatboxViewController;
 - (void)chatBoxViewControllerSendRedPacket:(XOChatBoxViewController *)chatboxViewController;
 - (void)chatBoxViewControllerSendTransfer:(XOChatBoxViewController *)chatboxViewController;
 - (void)chatBoxViewControllerSendCarte:(XOChatBoxViewController *)chatboxViewController;
-- (void)chatBoxViewControllerSendFile:(XOChatBoxViewController *)chatboxViewController;
 
 @end
 

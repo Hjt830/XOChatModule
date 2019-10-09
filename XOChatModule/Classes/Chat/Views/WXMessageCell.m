@@ -54,12 +54,12 @@ static float const kDefaultMargin = 8.0f;
     [super layoutSubviews];
     if ([_message isSelf]) {
         // 屏幕宽 - 10 - 头像宽
-        CGPoint origin = CGPointMake(self.width - 10 - self.avatarImageView.width, self.height - 8.5 - self.avatarImageView.height);
+        CGPoint origin = CGPointMake(self.width - 10 - self.avatarImageView.width, self.height - MsgCellIconMargin - self.avatarImageView.height);
         [self.avatarImageView setOrigin:origin];
         [self.messageSendStatusImageView setHidden:NO];
     }
     else {
-        [self.avatarImageView setOrigin:CGPointMake(10, 8.5)];
+        [self.avatarImageView setOrigin:CGPointMake(10, MsgCellIconMargin)];
         [self.messageSendStatusImageView setHidden:YES];
     }
 }

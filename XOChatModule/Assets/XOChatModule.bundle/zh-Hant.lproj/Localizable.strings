@@ -35,7 +35,12 @@
 "chat.more.carte"       = "名片";
 "chat.more.file"        = "文件";
 
-"chat.keyboard.send"          = "發送";
-"chat.keyboard.sound.talk"    = "按住 說話";
-"chat.keyboard.sound.send"    = "鬆開 發送";
-"chat.keyboard.sound.cancel"  = "鬆開 取消";
+"chat.keyboard.send"                = "發送";
+"chat.keyboard.sound.talk"          = "按住 說話";
+"chat.keyboard.sound.send"          = "鬆開 發送";
+"chat.keyboard.sound.slide"         = "手指上滑，取消發送";
+"chat.keyboard.sound.release"       = "手指鬆開，取消發送";
+"chat.keyboard.sound.timeShort"     = "說話時間太短";
+"chat.keyboard.sound.time.left.%d"  = "還可以說%d秒";
+
+"chat.message.reSend"               = "重發消息嗎?";

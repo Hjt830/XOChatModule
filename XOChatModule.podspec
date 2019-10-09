@@ -47,7 +47,7 @@ Pod::Spec.new do |s|
   s.dependency 'ReactiveObjC', '~> 3.1.1'
   s.dependency 'GCDMulticastDelegate', '~> 1.0.0'
   s.dependency 'SVProgressHUD', '~> 2.2.5'
-  s.dependency 'MBProgressHUD', '~> 1.1.0'
+#  s.dependency 'MBProgressHUD', '~> 1.1.0'
   s.dependency 'AFNetworking', '~> 3.2.1'
   s.dependency 'YBImageBrowser/NOSD', '~> 3.0.6'
   s.dependency 'YBImageBrowser/VideoNOSD', '~> 3.0.6'

@@ -40,14 +40,15 @@ static BOOL fileProgressFinish = NO;
 {
     [super layoutSubviews];
     
-    float y = self.avatarImageView.y;
-    float x = self.avatarImageView.x + (self.message.isSelf ? - (FileWidth + 16) - 5 : self.avatarImageView.width + 5);
-    self.messageBackgroundImageView.frame = CGRectMake(x, y, FileWidth + 16, FileHeight + 10);
-    self.messageSendStatusImageView.center = CGPointMake(x - 20, y + (FileHeight + 10)/2.0);
+    CGSize fileSize = [self messageSize];
+    float y = self.message.isSelf ? (CGRectGetMaxY(self.avatarImageView.frame) - FileHeight) : self.avatarImageView.y;
+    float x = self.avatarImageView.x + (self.message.isSelf ? - FileWidth - 5 : self.avatarImageView.width + 5);
+    self.messageBackgroundImageView.frame = CGRectMake(x, y, FileWidth, FileHeight);
+    self.messageSendStatusImageView.center = CGPointMake(x - 20, y + fileSize.height/2.0);
     
-    self.fileIconView.frame = CGRectMake(self.messageBackgroundImageView.width - 20 - 60, (FileHeight - 50)/2.0, 60, 60);
-    self.fileNameLabel.frame = CGRectMake(20, self.fileIconView.y - 5, self.fileIconView.x - 25, 44);
-    self.fileSizeLabel.frame = CGRectMake(20, self.fileNameLabel.bottom + 5, self.fileNameLabel.width, 15);
+    self.fileIconView.frame = CGRectMake(self.messageBackgroundImageView.width - 15 - 60, (FileHeight - 60)/2.0, 60, 60);
+    self.fileNameLabel.frame = CGRectMake(15, self.fileIconView.y - 5, self.fileIconView.x - 20, 44);
+    self.fileSizeLabel.frame = CGRectMake(15, self.fileNameLabel.bottom + 5, self.fileNameLabel.width, 15);
 }
 
 - (void)setMessage:(TIMMessage *)message
@@ -197,7 +198,7 @@ static BOOL fileProgressFinish = NO;
 
 - (CGSize)messageSize
 {
-    return CGSizeMake(FileWidth + 16, FileHeight + 20);
+    return CGSizeMake(FileWidth + 16, FileHeight + MsgCellIconMargin * 2.0);
 }
 
 @end

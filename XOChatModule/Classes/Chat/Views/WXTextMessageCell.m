@@ -81,7 +81,8 @@
     [text addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, [text length])];
     self.messageTextLabel.attributedText = text;
     
-    CGSize size = [self.messageTextLabel sizeThatFits:CGSizeMake(KWIDTH * 0.58, MAXFLOAT)];
+    CGFloat maxWidth = self.contentView.width - (10 + self.avatarImageView.width + 5) * 2 - 40;
+    CGSize size = [self.messageTextLabel sizeThatFits:CGSizeMake(maxWidth, MAXFLOAT)];
     self.messageTextLabel.size = size;
     
     if (message.isSelf) {

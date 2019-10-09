@@ -35,7 +35,12 @@
 "chat.more.carte"       = "Card";
 "chat.more.file"        = "File";
 
-"chat.keyboard.send"          = "send";
-"chat.keyboard.sound.talk"    = "Hold to talk";
-"chat.keyboard.sound.send"    = "Release to send";
-"chat.keyboard.sound.cancel"  = "Release to cancel";
+"chat.keyboard.send"                = "send";
+"chat.keyboard.sound.talk"          = "Hold to talk";
+"chat.keyboard.sound.send"          = "Release to send";
+"chat.keyboard.sound.slide"         = "Sliding the finger to cancel sending";
+"chat.keyboard.sound.release"       = "Release the finger to cancel sending";
+"chat.keyboard.sound.timeShort"     = "Talking time is too short";
+"chat.keyboard.sound.time.left.%d"  = "Can also say %d seconds";
+
+"chat.message.reSend"               = "Resend the message?";

@@ -427,7 +427,7 @@
 
 - (void) talkButtonDragExit:(UIButton *)sender
 {
-    [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.cancel") forState:UIControlStateNormal];
+    [_talkButton setTitle:XOChatLocalizedString(@"chat.keyboard.sound.talk") forState:UIControlStateNormal];
     if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxWillCancelTalking:)]) {
         [self.delegate chatBoxWillCancelTalking:self];
     }

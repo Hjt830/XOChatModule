@@ -27,24 +27,27 @@
     return self;
 }
 
-
 - (void)setMessage:(TIMMessage *)message
 {
     [super setMessage:message];
     
     if (message.isSelf) {
-        self.audioAniImageView.image = [UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_normal"];
-        self.audioAniImageView.animationImages = @[[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_1"],
-                                                   [UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_2"],
-                                                   [UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_3"],
-                                                   [UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_normal"]];
+        self.audioAniImageView.image = [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_normal"] imageWithTintColor:[UIColor whiteColor]];
+        self.audioAniImageView.animationImages = @[
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_1"] imageWithTintColor:[UIColor whiteColor]],
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_2"] imageWithTintColor:[UIColor whiteColor]],
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_3"] imageWithTintColor:[UIColor whiteColor]],
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_normal"] imageWithTintColor:[UIColor whiteColor]]];
+        self.audioTimeLabel.textColor = [UIColor whiteColor];
     }
     else {
-        self.audioAniImageView.image = [UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_normal"];
-        self.audioAniImageView.animationImages = @[[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_1"],
-                                                   [UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_2"],
-                                                   [UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_3"],
-                                                   [UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_normal"]];
+        self.audioAniImageView.image = [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_normal"] imageWithTintColor:[UIColor darkTextColor]];
+        self.audioAniImageView.animationImages = @[
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_1"] imageWithTintColor:[UIColor darkTextColor]],
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_2"] imageWithTintColor:[UIColor darkTextColor]],
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_3"] imageWithTintColor:[UIColor darkTextColor]],
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_normal"] imageWithTintColor:[UIColor darkTextColor]]];
+        self.audioTimeLabel.textColor = [UIColor darkTextColor];
     }
     TIMSoundElem *soundElem = (TIMSoundElem *)[message getElem:0];
     self.audioTimeLabel.text = [NSString stringWithFormat:@"%d\"", soundElem.second];
@@ -71,15 +74,15 @@
     
     TIMSoundElem *soundElem = (TIMSoundElem *)[self.message getElem:0];
     int duration = soundElem.second;
-    float width = (100 + duration * 5) < KWIDTH * 0.6 ? 100 + duration * 5 : KWIDTH * 0.6;
-    float height = self.avatarImageView.height + 6;
-    float y = self.avatarImageView.y - 3;
+    float width = (80 + duration * 8) < KWIDTH * 0.6 ? 80 + duration * 5 : KWIDTH * 0.6;
+    float height = self.avatarImageView.height;
+    float y = self.avatarImageView.y;
     float x = self.avatarImageView.x + (self.message.isSelf ? - width - 5 : self.avatarImageView.width + 5);
     self.messageBackgroundImageView.frame = CGRectMake(x, y, width, height);
     self.messageSendStatusImageView.center = CGPointMake(self.message.isSelf ? x - 20 : x + 20, y + height/2.0);
     
-    self.audioAniImageView.size = CGSizeMake(24, 24);
-    self.audioAniImageView.origin = CGPointMake(self.message.isSelf ? width - 44 : 20, (height - 24.0)/2.0);
+    self.audioAniImageView.size = CGSizeMake(20, 20);
+    self.audioAniImageView.origin = CGPointMake(self.message.isSelf ? width - 44 : 20, (height - 20.0)/2.0);
     
     self.audioTimeLabel.height = 20;
     self.audioTimeLabel.origin = CGPointMake(self.message.isSelf ? (width - 49 - self.audioTimeLabel.width) : 49, (height - 20.0)/2.0);
@@ -101,7 +104,7 @@
     if (!_audioTimeLabel) {
         _audioTimeLabel = [[UILabel alloc] init];
         _audioTimeLabel.font = [UIFont systemFontOfSize:15];
-        _audioTimeLabel.textColor = [UIColor darkTextColor];
+        _audioTimeLabel.textColor = [UIColor whiteColor];
         _audioTimeLabel.userInteractionEnabled = YES;
     }
     return _audioTimeLabel;

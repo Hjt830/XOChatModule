@@ -37,7 +37,8 @@ static NSString * const WalletMessageCellID     = @"WalletMessageCellID";
 static NSString * const UITableViewCellID       = @"UITableViewCellID";
 static NSString * const PromptMessageCellID     = @"PromptMessageCellID";
 
-static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单位:分钟
+static int const MessageTimeSpaceMinute = 5;        // 消息时间间隔时间 单位:分钟
+static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序列
 
 @interface XOChatMessageController () <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, XOChatClientProtocol, XOMessageDelegate, LGAudioPlayerDelegate, WXMessageCellDelegate, YBImageBrowserDelegate>
 {
@@ -756,31 +757,6 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     }
 }
 
-#pragma mark =========================== LGAudioPlayerDelegate ===========================
-
-- (void)audioPlayerStateDidChanged:(LGAudioPlayerState)audioPlayerState forIndex:(NSUInteger)index
-{
-    NSUInteger section = 0, row = 0;
-    if (index < 10000) {
-        section = 0;
-        row = index;
-    } else {
-        section = index/10000;
-        row = index%10000;
-    }
-    NSIndexPath *indexpath = [NSIndexPath indexPathForRow:row inSection:section];
-    @try {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            WXSoundMessageCell *cell = [self.tableView cellForRowAtIndexPath:indexpath];
-            if (cell) cell.playState = audioPlayerState;
-        }];
-    } @catch (NSException *exception) {
-        NSLog(@"exception: %@", exception);
-    } @finally {
-        
-    }
-}
-
 #pragma mark ========================= XOChatClientProtocol =========================
 
 // 收到新消息
@@ -905,7 +881,9 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         }
         else if ([elem isKindOfClass:[TIMSoundElem class]])
         {
-            NSLog(@"语音消息 ==============");
+            NSIndexPath *indexpath = [self.tableView indexPathForCell:cell];
+            NSUInteger index = indexpath.section * MessageAudioPlayIndex + indexpath.row;
+            [self readAudioMessageWith:message withIndex:index];
         }
         else if ([elem isKindOfClass:[TIMFileElem class]])
         {
@@ -914,10 +892,6 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         else if ([elem isKindOfClass:[TIMLocationElem class]])
         {
             NSLog(@"位置消息 ==============");
-        }
-        else if ([elem isKindOfClass:[TIMFaceElem class]])
-        {
-            NSLog(@"表情消息 ==============");
         }
     }
 }
@@ -928,6 +902,38 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
 - (void)messageCellDidTapResendMessage:(WXMessageCell *)cell message:(TIMMessage *)message
 {}
 
+#pragma mark =========================== LGAudioPlayerDelegate ===========================
+
+- (void)audioPlayerStateDidChanged:(LGAudioPlayerState)audioPlayerState forIndex:(NSUInteger)index
+{
+    NSUInteger section = 0, row = 0;
+    if (index < MessageAudioPlayIndex) {
+        section = 0;
+        row = index;
+    } else {
+        section = index/MessageAudioPlayIndex;
+        row = index%MessageAudioPlayIndex;
+    }
+    if (section < self.dataSource.count) {
+        NSArray *list = [self.dataSource[section] objectForKey:MsgSectionListKey];
+        if (row < list.count) {
+            NSIndexPath *indexpath = [NSIndexPath indexPathForRow:row inSection:section];
+            @try {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    WXMessageCell *cell = [self.tableView cellForRowAtIndexPath:indexpath];
+                    if (cell && [cell isKindOfClass:[WXSoundMessageCell class]]) {
+                        WXSoundMessageCell *soundCell = (WXSoundMessageCell *)cell;
+                        soundCell.playState = audioPlayerState;
+                    }
+                }];
+            } @catch (NSException *exception) {
+                NSLog(@"exception: %@", exception);
+            } @finally {
+                
+            }
+        }
+    }
+}
 
 #pragma mark ====================== lazy load =======================
 
@@ -1086,8 +1092,10 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
                         if (indexPath && indexPath.section < self.dataSource.count) {
                             NSArray *arr = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey];
                             if (indexPath.row < arr.count) {
-                                WXImageMessageCell *imageCell = [self.tableView cellForRowAtIndexPath:indexPath];
-                                translateView = ((WXImageMessageCell *)imageCell).messageImageView;
+                                WXMessageCell *msgCell = [self.tableView cellForRowAtIndexPath:indexPath];
+                                if ([msgCell isKindOfClass:[WXImageMessageCell class]]) {
+                                    translateView = ((WXImageMessageCell *)msgCell).messageImageView;
+                                }
                             }
                         }
                         
@@ -1129,8 +1137,10 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
                     if (indexPath && indexPath.section < self.dataSource.count) {
                         NSArray *arr = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey];
                         if (indexPath.row < arr.count) {
-                            WXVideoMessageCell *videoCell = [self.tableView cellForRowAtIndexPath:indexPath];
-                            translateView = ((WXVideoMessageCell *)videoCell).messageImageView;
+                            WXMessageCell *msgCell = [self.tableView cellForRowAtIndexPath:indexPath];
+                            if ([msgCell isKindOfClass:[WXVideoMessageCell class]]) {
+                                translateView = ((WXVideoMessageCell *)msgCell).messageImageView;
+                            }
                         }
                     }
                     
@@ -1151,6 +1161,45 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
             browser.webImageMediator = [[XOImageBrowerMediator alloc] init];
             browser.delegate = self;
             [browser show];
+        }
+    }
+}
+
+// 读取语音消息
+- (void)readAudioMessageWith:(TIMMessage *)message withIndex:(NSUInteger)index
+{
+    // 静音时提示用户打开声音
+    CGFloat currentVol = [AVAudioSession sharedInstance].outputVolume;
+    if (currentVol == 0) {
+        [SVProgressHUD showInfoWithStatus:NSLocalizedString(@"chat.audio.noVolume", nil)];
+        [SVProgressHUD dismissWithDelay:1.0f];
+    }
+    
+    BOOL isMp3Exist = NO;
+    NSString *soundPath = nil;
+    TIMSoundElem *soundElem = (TIMSoundElem *)[message getElem:0];
+    if (message.isSelf) {
+        NSString *soundName = [soundElem.path lastPathComponent];
+        soundPath = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:soundName];
+    }
+    else {
+        NSString *soundName = [NSString stringWithFormat:@"%@.mp3", soundElem.uuid];
+        soundPath = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:soundName];
+    }
+    isMp3Exist = [XOFM fileExistsAtPath:soundPath];
+    
+    // 音频文件存在
+    if (isMp3Exist) {
+        [[LGAudioPlayer sharePlayer] stopAudioPlayer];
+        [[LGAudioPlayer sharePlayer] playAudioWithURLString:soundPath atIndex:index];
+    }
+    // 音频文件不存在
+    else {
+        // 是否正在下载中
+        BOOL isDownloading = [[XOChatClient shareClient] isOnDownloading:message];
+        BOOL isWaitDownload = [[XOChatClient shareClient] isWaitingDownload:message];
+        if (!isDownloading && !isWaitDownload) {
+            [[XOChatClient shareClient] scheduleDownloadTask:message];
         }
     }
 }
@@ -1252,7 +1301,7 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
     CGFloat standradW = (KWIDTH < KHEIGHT) ? KWIDTH : KHEIGHT;
     
     if (0 == [message elemCount]) {
-        return CGSizeMake(standradW * 0.6, 70.0f);
+        return CGSizeMake(standradW * 0.6, 56.0f);
     }
     
     // 1、从缓存中取值
@@ -1286,9 +1335,11 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
         paragraphStyle.lineSpacing = 3; // 调整行间距
         [text addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, [text length])];
         label.attributedText = text;
-        size = [label sizeThatFits:CGSizeMake(standradW * 0.58, MAXFLOAT)];
+        CGFloat maxWidth = standradW - (10 + 40 + 5) * 2 - 40;
+        size = [label sizeThatFits:CGSizeMake(maxWidth, MAXFLOAT)];
         
-        CGFloat relHeight = (size.height + 36 <= height) ? height : size.height + 36;
+        CGFloat aboutH = size.height + 18 + MsgCellIconMargin * 2; // label的高度加上 距离泡泡上下边距之和 和 泡泡距离cell上下边距之和
+        CGFloat relHeight = aboutH <= height ? height : aboutH;
         size = CGSizeMake(size.width, relHeight);
     }
     // 图片|视频消息
@@ -1328,26 +1379,26 @@ static int const MessageTimeSpaceMinute = 5;    // 消息时间间隔时间 单�
             }
         }
         
-        CGFloat relHeight = (size.height + 17 <= height) ? height : size.height + 17;
+        CGFloat relHeight = (size.height + MsgCellIconMargin * 2 <= height) ? height : size.height + MsgCellIconMargin * 2;
         size = CGSizeMake(size.width, relHeight);
     }
     // 文件消息
     else if ([elem isKindOfClass:[TIMFileElem class]])
     {
-        size = CGSizeMake(FileWidth + 16, FileHeight + 20);
+        size = CGSizeMake(FileWidth + 16, FileHeight + MsgCellIconMargin * 2);
     }
     // 语音消息
     else if ([elem isKindOfClass:[TIMSoundElem class]])
     {
         TIMSoundElem *soundElem = (TIMSoundElem *)elem;
         int duration = soundElem.second;
-        float width = (100 + duration * 5) < standradW * 0.6 ? 100 + duration * 5 : standradW * 0.6;
-        size = CGSizeMake(width, 50.0f);
+        float width = (80 + duration * 5) < standradW * 0.6 ? 80 + duration * 5 : standradW * 0.6;
+        size = CGSizeMake(width, 40 + MsgCellIconMargin * 2);
     }
     // 位置消息
     else if ([elem isKindOfClass:[TIMLocationElem class]])
     {
-        size = CGSizeMake(FileWidth + 16, FileHeight + 20);
+        size = CGSizeMake(FileWidth + 16, FileHeight + MsgCellIconMargin * 2);
     }
     // 表情消息
     else if ([elem isKindOfClass:[TIMFaceElem class]])

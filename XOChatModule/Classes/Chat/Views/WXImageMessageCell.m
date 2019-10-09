@@ -51,8 +51,11 @@ static BOOL progressFinish = NO;
         TIMImageElem *imageElem = (TIMImageElem *)elem;
         __block NSString *thumbImageName = nil;
         // 自己发送的消息
-        if (message.isSelf && !XOIsEmptyString(imageElem.path) && [[NSFileManager defaultManager] fileExistsAtPath:imageElem.path]) {
-            thumbImageName = [[imageElem.path lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
+        if (message.isSelf) {
+            NSString *imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageElem.path.lastPathComponent];
+            if (!XOIsEmptyString(imagePath) && [[NSFileManager defaultManager] fileExistsAtPath:imagePath]) {
+                thumbImageName = [[imageElem.path lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
+            }
         }
         // 收到的消息
         else if (imageElem.imageList.count > 0) {
@@ -85,8 +88,11 @@ static BOOL progressFinish = NO;
         
         NSString *snapshotName = nil;
         // 自己发送的消息
-        if (message.isSelf && !XOIsEmptyString(videoElem.snapshotPath) && [[NSFileManager defaultManager] fileExistsAtPath:videoElem.snapshotPath]) {
-            snapshotName = [videoElem.snapshotPath lastPathComponent];
+        if (message.isSelf) {
+            NSString *videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoElem.snapshotPath.lastPathComponent];
+            if (!XOIsEmptyString(videoPath) && [[NSFileManager defaultManager] fileExistsAtPath:videoPath]) {
+                snapshotName = [videoPath lastPathComponent];
+            }
         }
         // 收到的消息
         else {
@@ -127,8 +133,8 @@ static BOOL progressFinish = NO;
         [self.messageImageView setFrame:CGRectMake(x, y, imageSize.width, imageSize.height)];
         [self.messageBackgroundImageView setFrame:CGRectMake(x, y, imageSize.width, imageSize.height)];
         [self.messageSendStatusImageView setCenter:CGPointMake(x - 20, sendY)];
-        self.progressHud.bounds     = CGRectMake(0, 0, imageSize.width, imageSize.height);
-        self.progressHud.position   = CGPointMake(imageSize.width/2.0, imageSize.height/2.0);
+        self.progressHud.bounds = CGRectMake(0, 0, imageSize.width, imageSize.height);
+        self.progressHud.position = CGPointMake(imageSize.width/2.0, imageSize.height/2.0);
     }
     else {
         float x = CGRectGetMaxX(self.avatarImageView.frame) + 10;
@@ -360,8 +366,8 @@ static BOOL progressFinish = NO;
 - (CGSize)messageSize
 {
     CGFloat standradW = (KWIDTH < KHEIGHT) ? KWIDTH : KHEIGHT;
-    float sizew = 375.0f;  // 图片的宽度
-    float sizeh = 750.0f;  // 图片的高度
+    float sizew = ImageWidth;   // 图片的宽度
+    float sizeh = ImageHeight;  // 图片的高度
     CGSize size = CGSizeZero;
     
     TIMElem *elem = [self.message getElem:0];

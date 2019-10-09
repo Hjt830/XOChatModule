@@ -7,6 +7,7 @@
 //
 
 #import "XOChatBoxViewController.h"
+#import "XODocumentPickerViewController.h"
 
 #import <TZImagePickerController/TZImagePickerController.h>
 #import <Photos/Photos.h>
@@ -22,7 +23,7 @@
 static NSTimeInterval MaxAudioRecordTime = 60.0f;
 static NSTimeInterval audioRecordTime = 0.0f;
 
-@interface XOChatBoxViewController () <ZXChatBoxDelegate, ZXChatBoxMoreViewDelegate, ZXChatBoxFaceViewDelegate, LGSoundRecorderDelegate, TZImagePickerControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface XOChatBoxViewController () <ZXChatBoxDelegate, ZXChatBoxMoreViewDelegate, ZXChatBoxFaceViewDelegate, LGSoundRecorderDelegate, TZImagePickerControllerDelegate, UIDocumentPickerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 {
     int                 _seconds;   // 录音时间
     UIEdgeInsets        _safeInset;
@@ -114,22 +115,31 @@ static NSTimeInterval audioRecordTime = 0.0f;
 {
     if (_chatBoxMoreView == nil) {
         ZXChatBoxItemView *albumItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.album") imageName:@"more_pic"];       // 相册
-        ZXChatBoxItemView *cameraItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.camera") imageName:@"more_camera"];      // 相机
-        ZXChatBoxItemView *callItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.voice.call") imageName:@"more_call"];// 通话
-        ZXChatBoxItemView *positionItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.location") imageName:@"more_position"];  // 位置
+        albumItem.tag = 100;
+        ZXChatBoxItemView *cameraItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.camera") imageName:@"more_camera"];    // 相机
+        cameraItem.tag = 101;
         ZXChatBoxItemView *videoItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.video") imageName:@"more_video"];     // 视频
+        videoItem.tag = 102;
+        ZXChatBoxItemView *fileItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.file") imageName:@"more_file"];      // 文件
+        fileItem.tag = 103;
+        ZXChatBoxItemView *positionItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.location") imageName:@"more_position"];  // 位置
+        positionItem.tag = 104;
+        ZXChatBoxItemView *CarteItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.carte") imageName:@"more_carte"];     // 名片
+        CarteItem.tag = 105;
+        ZXChatBoxItemView *callItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.voice.call") imageName:@"more_call"];      // 通话
+        callItem.tag = 106;
         ZXChatBoxItemView *redPacketItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.redPacket") imageName:@"more_redpacket"]; // 红包
-        ZXChatBoxItemView *transferItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.transfer") imageName:@"more_transfer"];   // 转账
-        ZXChatBoxItemView *CarteItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.carte") imageName:@"more_carte"];    // 名片
-        ZXChatBoxItemView *fileItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.file") imageName:@"more_file"];       // 文件
+        redPacketItem.tag = 107;
+        ZXChatBoxItemView *transferItem = [ZXChatBoxItemView createChatBoxMoreItemWithTitle:XOChatLocalizedString(@"chat.more.transfer") imageName:@"more_transfer"];  // 转账
+        transferItem.tag = 108;
         
         _chatBoxMoreView = [[ZXChatBoxMoreView alloc] initWithFrame:CGRectMake(0, HEIGHT_TABBAR, KWIDTH, HEIGHT_CHATBOXVIEW)];
         _chatBoxMoreView.delegate = self;
         if (TIM_C2C == self.chatType) { // 单聊
-            [_chatBoxMoreView setItems:[[NSMutableArray alloc] initWithObjects:albumItem, cameraItem, callItem, positionItem, videoItem, redPacketItem, transferItem, CarteItem, fileItem, nil]];
+            [_chatBoxMoreView setItems:[[NSMutableArray alloc] initWithObjects:albumItem, cameraItem, videoItem, fileItem, positionItem, CarteItem,  callItem,  redPacketItem, transferItem, nil]];
         }
         else if (TIM_GROUP == self.chatType) { // 群聊
-            [_chatBoxMoreView setItems:[[NSMutableArray alloc] initWithObjects:albumItem, cameraItem, callItem, positionItem, videoItem, redPacketItem, CarteItem, fileItem, nil]];
+            [_chatBoxMoreView setItems:[[NSMutableArray alloc] initWithObjects:albumItem, cameraItem, videoItem, fileItem, positionItem, CarteItem, callItem, redPacketItem, nil]];
         }
     }
     return _chatBoxMoreView;
@@ -202,7 +212,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
                 // 结束录音
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     audioRecordTime = [LGSoundRecorder shareInstance].soundRecordTime;
-                    [[LGSoundRecorder shareInstance] stopSoundRecord:self.view];
+                    [[LGSoundRecorder shareInstance] stopSoundRecord:self.parentViewController.view];
                 }];
             }
             else if ([LGSoundRecorder shareInstance].soundRecordTime >= (MaxAudioRecordTime - 10)) {
@@ -400,34 +410,34 @@ static NSTimeInterval audioRecordTime = 0.0f;
 // 开始录音
 - (void)chatBoxDidBeginTalking:(ZXChatBoxView *)chatBox
 {
-    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
-    if (AVAuthorizationStatusAuthorized == authStatus) {
-        // 停止播放音乐之类的
-        [[LGAudioPlayer sharePlayer] stopAudioPlayer];
-        // 重置时间
-        _seconds = 0;
-        // 开始倒计时
-        dispatch_resume(self.timer);
-        // 开始录音
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            NSString *audioPath = [DocumentDirectory() stringByAppendingPathComponent:XOMsgFileDirectory(XOMsgFileTypeAudio)];
-            [[LGSoundRecorder shareInstance] startSoundRecord:self.view.superview recordPath:audioPath];
-        }];
-    }
-    else if (AVAuthorizationStatusDenied == authStatus || AVAuthorizationStatusRestricted == authStatus) {
-        // 打开授权提示
-        [self showAlertAuthor:XORequestAuthMicphone];
-    }
-    else {
-        // 申请权限
-        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
-            if (!granted) {
-                NSLog(@"未授权麦克风权限");
-            } else {
-                NSLog(@"授权麦克风权限");
-            }
-        }];
-    }
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+        if (AVAuthorizationStatusAuthorized == authStatus) {
+            // 停止播放音乐之类的
+            [[LGAudioPlayer sharePlayer] stopAudioPlayer];
+            // 重置时间
+            self->_seconds = 0;
+            // 开始倒计时
+            dispatch_resume(self.timer);
+            // 开始录音
+            NSString *audioPath = XOMsgFileDirectory(XOMsgFileTypeAudio);
+            [[LGSoundRecorder shareInstance] startSoundRecord:self.parentViewController.view recordPath:audioPath];
+        }
+        else if (AVAuthorizationStatusDenied == authStatus || AVAuthorizationStatusRestricted == authStatus) {
+            // 打开授权提示
+            [self showAlertAuthor:XORequestAuthMicphone];
+        }
+        else {
+            // 申请权限
+            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
+                if (!granted) {
+                    NSLog(@"未授权麦克风权限");
+                } else {
+                    NSLog(@"授权麦克风权限");
+                }
+            }];
+        }
+    }];
 }
 // 结束录音
 - (void)chatBoxDidEndTalking:(ZXChatBoxView *)chatBox
@@ -439,10 +449,10 @@ static NSTimeInterval audioRecordTime = 0.0f;
     
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         if ([LGSoundRecorder shareInstance].soundRecordTime < 1.0) {
-            [[LGSoundRecorder shareInstance] showShotTimeSign:self.view];
+            [[LGSoundRecorder shareInstance] showShotTimeSign:self.parentViewController.view];
         } else {
             audioRecordTime = [LGSoundRecorder shareInstance].soundRecordTime;
-            [[LGSoundRecorder shareInstance] stopSoundRecord:self.view];
+            [[LGSoundRecorder shareInstance] stopSoundRecord:self.parentViewController.view];
         }
     }];
 }
@@ -454,7 +464,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
         _timer = nil;
     }
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [[LGSoundRecorder shareInstance] soundRecordFailed:self.view];
+        [[LGSoundRecorder shareInstance] soundRecordFailed:self.parentViewController.view];
     }];
 }
 // 将要取消录音
@@ -509,110 +519,108 @@ static NSTimeInterval audioRecordTime = 0.0f;
 
 - (void)chatBoxMoreView:(ZXChatBoxMoreView *)chatBoxMoreView didSelectItem:(NSUInteger)itemIndex
 {
-    if (0 == itemIndex) {            // 相册
-        PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
-        if (PHAuthorizationStatusAuthorized == status) { // 已授权
-            [self pickPhotos];
-        }
-        else if (PHAuthorizationStatusNotDetermined == status) { // 未选择过, 申请授权
-            [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-                if (PHAuthorizationStatusAuthorized == status) {
-                    [self pickPhotos];
-                } else {
-                    [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"tip.auth.fail")];
-                    [SVProgressHUD dismissWithDelay:0.6f];
-                }
-            }];
-        }
-        else { // 提示授权
-            [self showAlertAuthor:XORequestAuthPhotos];
-        }
-    }
-    else if (1 == itemIndex) {       // 相机
-        AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
-        if (AVAuthorizationStatusAuthorized == status) { // 已授权
-            [self takePhoto];
-        }
-        else if (AVAuthorizationStatusNotDetermined == status) { // 未选择过, 申请授权
-            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
-                if (granted) {
-                    [self takePhoto];
-                } else {
-                    [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"tip.auth.fail")];
-                    [SVProgressHUD dismissWithDelay:0.6f];
-                }
-            }];
-        }
-        else { // 提示授权
-            [self showAlertAuthor:XORequestAuthCamera];
-        }
-    }
-    else if (2 == itemIndex) {       // 通话
-        if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
-            [self.delegate chatBoxViewControllerSendCall:self];
-        }
-    }
-    else if (3 == itemIndex) {       // 位置
-        if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendPosition:)]) {
-            [self.delegate chatBoxViewControllerSendPosition:self];
-        }
-    }
-    else if (4 == itemIndex) {       // 视频
-        PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
-        if (PHAuthorizationStatusAuthorized == status) {
-            if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-                [self takeVideo];
-            } else {
-                [SVProgressHUD showInfoWithStatus:@"当前设备不支持拍照"];
-                [SVProgressHUD dismissWithDelay:1.3f];
+    ZXChatBoxItemView *item = chatBoxMoreView.items[itemIndex];
+    switch (item.tag) {
+        case 100:   // 相册
+        {
+            PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+            if (PHAuthorizationStatusAuthorized == status) { // 已授权
+                [self pickPhotos];
+            }
+            else if (PHAuthorizationStatusNotDetermined == status) { // 未选择过, 申请授权
+                [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                    if (PHAuthorizationStatusAuthorized == status) {
+                        [self pickPhotos];
+                    } else {
+                        [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"tip.auth.fail")];
+                        [SVProgressHUD dismissWithDelay:0.6f];
+                    }
+                }];
+            }
+            else { // 提示授权
+                [self showAlertAuthor:XORequestAuthPhotos];
             }
         }
-        else if (PHAuthorizationStatusNotDetermined == status) {
-            [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-                if (PHAuthorizationStatusAuthorized == status) {
+            break;
+        case 101:   // 相机
+        {
+            AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+            if (AVAuthorizationStatusAuthorized == status) { // 已授权
+                [self takePhoto];
+            }
+            else if (AVAuthorizationStatusNotDetermined == status) { // 未选择过, 申请授权
+                [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+                    if (granted) {
+                        [self takePhoto];
+                    } else {
+                        [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"tip.auth.fail")];
+                        [SVProgressHUD dismissWithDelay:0.6f];
+                    }
+                }];
+            }
+            else { // 提示授权
+                [self showAlertAuthor:XORequestAuthCamera];
+            }
+        }
+            break;
+        case 102:   // 视频
+        {
+            PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+            if (PHAuthorizationStatusAuthorized == status) {
+                if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
                     [self takeVideo];
+                } else {
+                    [SVProgressHUD showInfoWithStatus:@"当前设备不支持拍照"];
+                    [SVProgressHUD dismissWithDelay:1.3f];
                 }
-                else if (PHAuthorizationStatusDenied == status) {
-                    [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"tip.auth.fail")];
-                    [SVProgressHUD dismissWithDelay:0.8];
-                }
-            }];
+            }
+            else if (PHAuthorizationStatusNotDetermined == status) {
+                [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                    if (PHAuthorizationStatusAuthorized == status) {
+                        [self takeVideo];
+                    }
+                    else if (PHAuthorizationStatusDenied == status) {
+                        [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"tip.auth.fail")];
+                        [SVProgressHUD dismissWithDelay:0.8];
+                    }
+                }];
+            }
+            else {
+                [self showAlertAuthor:XORequestAuthCamera];
+            }
         }
-        else {
-            [self showAlertAuthor:XORequestAuthCamera];
-        }
-    }
-    else if (5 == itemIndex) {       // 红包
-        if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
-            [self.delegate chatBoxViewControllerSendRedPacket:self];
-        }
-    }
-    else if (6 == itemIndex) {       // 转账(单聊时) | 名片(群聊时)
-        if (TIM_C2C == self.chatType) {
+            break;
+        case 103:   // 文件
+            [self takeFile];
+            break;
+        case 104:   // 位置
+            if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendPosition:)]) {
+                [self.delegate chatBoxViewControllerSendPosition:self];
+            }
+            break;
+        case 105:   // 名片
+            if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
+                [self.delegate chatBoxViewControllerSendCarte:self];
+            }
+            break;
+        case 106:   // 音视频通话
+            if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
+                [self.delegate chatBoxViewControllerSendCall:self];
+            }
+            break;
+        case 107:   // 红包
+            if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
+                [self.delegate chatBoxViewControllerSendRedPacket:self];
+            }
+            break;
+        case 108:   // 转账
             if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
                 [self.delegate chatBoxViewControllerSendTransfer:self];
             }
-        } else {
-            if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
-                [self.delegate chatBoxViewControllerSendCarte:self];
-            }
-        }
-    }
-    else if (7 == itemIndex) {       // 名片(单聊时) | 文件(群聊时)
-        if (TIM_C2C == self.chatType) {
-            if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
-                [self.delegate chatBoxViewControllerSendCarte:self];
-            }
-        } else {
-            if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
-                [self.delegate chatBoxViewControllerSendFile:self];
-            }
-        }
-    }
-    else if (8 == itemIndex) {       // 文件
-        if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
-            [self.delegate chatBoxViewControllerSendFile:self];
-        }
+            break;
+            
+        default:
+            break;
     }
 }
 
@@ -684,6 +692,28 @@ static NSTimeInterval audioRecordTime = 0.0f;
     }
     [self.parentViewController.navigationController presentViewController:self.imagePicker animated:YES completion:NULL];
 }
+// 选取文件
+- (void)takeFile
+{
+    NSArray *documentTypes = @[@"public.text", @"public.plain-text",
+                               @"com.adobe.pdf",
+                               @"com.microsoft.word.doc", @"org.openxmlformats.wordprocessingml.document",
+                               @"com.microsoft.excel.xls", @"org.openxmlformats.spreadsheetml.sheet",
+                               @"com.microsoft.powerpoint.ppt", @"org.openxmlformats.presentationml.presentation",
+                               @"public.archive",
+                               @"public.image",
+                               @"public.source-code", @"public.script", @"public.shell-script",
+                               @"com.apple.application", @"com.apple.bundle", @"com.apple.package",
+                               @"public.composite-​content"];
+    XODocumentPickerViewController *documentVC = [[XODocumentPickerViewController alloc] initWithDocumentTypes:documentTypes inMode:UIDocumentPickerModeOpen];
+    if (@available(iOS 11.0, *)) {
+        documentVC.allowsMultipleSelection = NO;
+    }
+    documentVC.modalPresentationStyle = UIModalPresentationFullScreen;
+    documentVC.delegate = self;
+    [self.parentViewController.navigationController presentViewController:documentVC animated:YES completion:nil];
+}
+
 // 取消选中的图片或视频
 - (void)cancelSelectedImageOrVideo
 {
@@ -692,6 +722,129 @@ static NSTimeInterval audioRecordTime = 0.0f;
         @XOStrongify(self);
         [self.TZImagePicker removeSelectedModel:obj];
     }];
+}
+
+#pragma mark =========================== UIDocumentPickerDelegate ===========================
+
+- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller {}
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray <NSURL *>*)urls NS_AVAILABLE_IOS(11_0)
+{
+    [urls enumerateObjectsUsingBlock:^(NSURL * _Nonnull url, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        BOOL canAccessingResource = [url startAccessingSecurityScopedResource];
+        if(canAccessingResource) {
+            NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] init];
+            NSError *error;
+            __block NSURL *fileUrl = nil;
+            [fileCoordinator coordinateReadingItemAtURL:url options:0 error:&error byAccessor:^(NSURL *newURL) {
+                fileUrl = newURL;
+                [controller dismissViewControllerAnimated:YES completion:nil];
+            }];
+            if (error) {
+                NSLog(@"读取文件失败: %@", error);
+            } else {
+                [self filterFileWithUrl:fileUrl];
+            }
+        } else {
+            [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"tip.chat.file.fail")];
+            [SVProgressHUD dismissWithDelay:0.6];
+        }
+        [url stopAccessingSecurityScopedResource];
+    }];
+}
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url NS_DEPRECATED_IOS(8_0, 11_0)
+{
+    BOOL canAccessingResource = [url startAccessingSecurityScopedResource];
+    if (canAccessingResource) {
+        NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] init];
+        NSError *error;
+        __block NSURL *fileUrl = nil;
+        [fileCoordinator coordinateReadingItemAtURL:url options:0 error:&error byAccessor:^(NSURL *newURL) {
+            fileUrl = newURL;
+            [controller dismissViewControllerAnimated:YES completion:nil];
+        }];
+        if (error) {
+            NSLog(@"读取文件失败: %@", error);
+        } else {
+            [self filterFileWithUrl:fileUrl];
+        }
+    } else {
+        [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"tip.chat.file.fail")];
+        [SVProgressHUD dismissWithDelay:0.6];
+    }
+    [url stopAccessingSecurityScopedResource];
+}
+
+- (void)filterFileWithUrl:(NSURL *)fileUrl
+{
+    if (!XOIsEmptyString(fileUrl.absoluteString)) {
+        [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+            BOOL canAccessingResource = [fileUrl startAccessingSecurityScopedResource];
+            if (canAccessingResource) {
+                NSData *data = [NSData dataWithContentsOfURL:fileUrl];
+                long long fileSize = data.length;
+                if ([[NSFileManager defaultManager] fileExistsAtPath:fileUrl.path] && fileSize <= 30 * 1024 * 1024) {  // 文件大小不能超过30M
+                    NSString *fileName = [[fileUrl path] lastPathComponent];
+                    // 图片消息
+                    if ([fileName hasSuffix:@".png"] || [fileName hasSuffix:@".jpg"] || [fileName hasSuffix:@".jpeg"]) {
+                        NSString *uti = [fileName componentsSeparatedByString:@"."][1];
+                        if (fileSize > 0) {
+                            // 图片存储的路径
+                            NSString *imageName = [NSString stringWithFormat:@"%@.%@", [NSUUID UUID].UUIDString, uti];
+                            NSString *imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
+                            // 图片大于6M压缩
+                            if (fileSize > 6 * 1024 * 1024)
+                            {
+                                [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                                    UIImage *originImage = [UIImage imageWithData:data];
+                                    CGFloat ratio = (6.0 * 1024 * 1024)/data.length;
+                                    CGSize size = CGSizeMake(originImage.size.width * ratio, originImage.size.height * ratio);
+                                    UIImage *image = [[XOFileManager shareInstance] scaleOriginImage:originImage toSize:size];
+                                    [self handleImageWith:image imageName:imageName imagePath:imagePath uti:uti];
+                                }];
+                            }
+                            else {
+                                [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                                    UIImage *originImage = [UIImage imageWithData:data];
+                                    [self handleImageWith:originImage imageName:imageName imagePath:imagePath uti:uti];
+                                }];
+                            }
+                        }
+                        else {
+                            [SVProgressHUD showInfoWithStatus:NSLocalizedString(@"error.unknown", nil)];
+                            [SVProgressHUD dismissWithDelay:0.6f];
+                        }
+                    }
+                    // 文件消息
+                    else {
+                        __block NSString *filePath = [XOMsgFileDirectory(XOMsgFileTypeFile) stringByAppendingPathComponent:fileName];
+                        // 写入沙盒后直接发送
+                        [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                            
+                            if ([data writeToFile:filePath atomically:YES]) {
+                                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                    if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendFile:sendFile:filename:fileSize:)]) {
+                                        [self.delegate chatBoxViewControllerSendFile:self sendFile:filePath filename:fileName fileSize:(int)fileSize];
+                                    }
+                                }];
+                            }
+                            else {
+                                NSLog(@"写入文件失败: %@", filePath);
+                            }
+                        }];
+                    }
+                }
+                else {
+                    // 文件过大
+                    [SVProgressHUD showWithStatus:@"文件不能超过30M"];
+                    [SVProgressHUD dismiss];
+                }
+            }
+            [fileUrl stopAccessingSecurityScopedResource];
+        }];
+    }
 }
 
 #pragma mark =========================== LGSoundRecorderDelegate ===========================
@@ -707,36 +860,48 @@ static NSTimeInterval audioRecordTime = 0.0f;
 // 录音停止
 - (void)didStopSoundRecord
 {
-    // 录音文件地址
-    __block NSString *cafPath = [LGSoundRecorder shareInstance].soundFilePath;
-    // 转码后的文件地址
-    NSString *mp3Name = [NSString stringWithFormat:@"%@.mp3", [NSString creatUUID]];
-    __block NSString *mp3Path = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:mp3Name];
-    
-    if (![XOFM fileExistsAtPath:mp3Path]) {
-        NSLog(@"录音文件不存在");
-    }
-    else { // 发送语音消息
-        [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-            // 转码mp3格式
-            if ([ConvertWavToMp3 convertToMp3WithSavePath:mp3Path sourcePath:cafPath])
-            {
-                if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendMp3Audio:audioDuration:)]) {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        [self.delegate chatBoxViewController:self sendMp3Audio:mp3Path audioDuration:(int)audioRecordTime];
+    if (audioRecordTime >= 1.0) {
+        NSLog(@"录音时间: %f", audioRecordTime);
+        
+        // 录音文件地址
+        __block NSString *cafPath = [LGSoundRecorder shareInstance].soundFilePath;
+        
+        if (![XOFM fileExistsAtPath:cafPath]) {
+            NSLog(@"录音文件不存在");
+        }
+        else {
+            // 转码后的文件地址
+            NSString *mp3Name = [NSString stringWithFormat:@"%@.mp3", [NSString creatUUID]];
+            __block NSString *mp3Path = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:mp3Name];
+            
+            [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                // 转码mp3格式
+                if ([ConvertWavToMp3 convertToMp3WithSavePath:mp3Path sourcePath:cafPath])
+                {
+                    if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendMp3Audio:soundSize:audioDuration:)]) {
+                        
+                        NSData *mp3Data = [NSData dataWithContentsOfFile:mp3Path];
+                        __block long mp3Size = mp3Data.length;
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            [self.delegate chatBoxViewController:self sendMp3Audio:mp3Path soundSize:mp3Size audioDuration:(int)audioRecordTime];
+                            audioRecordTime = 0.0f;
+                        }];
+                    } else {
                         audioRecordTime = 0.0f;
-                    }];
-                } else {
-                    audioRecordTime = 0.0f;
+                    }
                 }
-            }
-            else {
-                if (audioRecordTime > 1.0f) {
-                    [SVProgressHUD showInfoWithStatus:NSLocalizedString(@"error.unknown", nil)];
-                    [SVProgressHUD dismissWithDelay:0.6f];
+                else {
+                    if (audioRecordTime > 1.0f) {
+                        [SVProgressHUD showInfoWithStatus:NSLocalizedString(@"error.unknown", nil)];
+                        [SVProgressHUD dismissWithDelay:0.6f];
+                    }
                 }
-            }
-        }];
+            }];
+        }
+    }
+    else {
+        NSLog(@"录音时间过短: %f", audioRecordTime);
+        audioRecordTime = 0.0f;
     }
 }
 
@@ -799,31 +964,59 @@ static NSTimeInterval audioRecordTime = 0.0f;
     NSString *snapshotName = [NSString stringWithFormat:@"%@_%ld_snapshot.jpg", [NSUUID UUID].UUIDString, (long)[[NSDate date] timeIntervalSince1970]];
     __block NSString *snapshotPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:snapshotName];
     __block NSURL *snapshotURL = [NSURL fileURLWithPath:snapshotPath];
-    [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-        NSData *imageData = UIImageJPEGRepresentation(snapshotImage, 1.0);
-        if ([imageData writeToURL:snapshotURL atomically:YES]) {
-            NSLog(@"写入视频截图成功: %@", snapshotPath);
-        }
-    }];
-    // 2、转化视频格式为mp4
+    NSData *imageData = UIImageJPEGRepresentation(snapshotImage, 1.0);
+    if ([imageData writeToURL:snapshotURL atomically:YES]) {
+        NSLog(@"写入视频截图成功: %@", snapshotPath);
+    }
+    
     NSString *videoName = [NSString stringWithFormat:@"%@_%ld.mp4", [NSUUID UUID].UUIDString, (long)[[NSDate date] timeIntervalSince1970]];
     __block NSString *videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoName];
-    NSURL *videoURL = [NSURL fileURLWithPath:videoPath];
     __block CGFloat duration = CMTimeGetSeconds(videoAsset.duration) * 1000;
     __block CGSize snapshotSize = snapshotImage.size;
-    [SVProgressHUD showWithStatus:@"处理视频中..."];
-    [self convertToMP4:videoAsset videoURL:videoURL succ:^(NSURL *outputURL) {
-        [SVProgressHUD dismiss];
-        
-        if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendVideo:snapshotImage:snapshotSize:videoDuration:)]) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.delegate chatBoxViewController:self sendVideo:videoPath snapshotImage:snapshotPath snapshotSize:snapshotSize videoDuration:duration];
-            }];
-        }
-    } fail:^(NSError *error) {
-        [SVProgressHUD showWithStatus:@"视频处理失败..."];
-        [SVProgressHUD dismiss];
-    }];
+    
+    // 2、mp4格式写入沙盒后直接发送
+    NSString *originVideoName = videoAsset.URL.lastPathComponent;
+    if ([originVideoName hasSuffix:@".mp4"] || [originVideoName hasSuffix:@".MP4"]) {
+        [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+            
+            NSData *videoData = [NSData dataWithContentsOfURL:videoAsset.URL];
+            if (videoData.length <= 20 * 1024 * 1024) {
+                if ([videoData writeToFile:videoPath atomically:YES]) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendVideo:snapshotImage:snapshotSize:videoDuration:)]) {
+                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                [self.delegate chatBoxViewController:self sendVideo:videoPath snapshotImage:snapshotPath snapshotSize:snapshotSize videoDuration:duration];
+                            }];
+                        }
+                    }];
+                }
+                else {
+                    NSLog(@"写入视频失败: %@", videoAsset.URL);
+                }
+            }
+            else {
+                [SVProgressHUD showWithStatus:@"视频不能超过20M"];
+                [SVProgressHUD dismiss];
+            }
+        }];
+    }
+    // 3、转化视频格式为mp4, 再发送
+    else {
+        NSURL *videoURL = [NSURL fileURLWithPath:videoPath];
+        [SVProgressHUD showWithStatus:@"处理视频中..."];
+        [self convertToMP4:videoAsset videoURL:videoURL succ:^(NSURL *outputURL) {
+            [SVProgressHUD dismiss];
+            
+            if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendVideo:snapshotImage:snapshotSize:videoDuration:)]) {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self.delegate chatBoxViewController:self sendVideo:videoPath snapshotImage:snapshotPath snapshotSize:snapshotSize videoDuration:duration];
+                }];
+            }
+        } fail:^(NSError *error) {
+            [SVProgressHUD showWithStatus:@"视频处理失败..."];
+            [SVProgressHUD dismiss];
+        }];
+    }
 }
 
 // 将MOV转为MP4格式的视频

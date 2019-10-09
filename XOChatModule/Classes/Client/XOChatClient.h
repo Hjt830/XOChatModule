@@ -76,6 +76,13 @@ FOUNDATION_STATIC_INLINE NSString * getMessageKey(TIMMessage *message) {
 // 获取图片的格式
 - (NSString *)getImageFormat:(TIM_IMAGE_FORMAT)imageFormat;
 
+// 是否正在下载中
+- (BOOL)isOnDownloading:(TIMMessage *)message;
+
+// 是否正在排队下载队列中
+- (BOOL)isWaitingDownload:(TIMMessage *)message;
+
+
 @end
 
 

@@ -9,11 +9,10 @@
 #import "XOChatViewController.h"
 #import "XOChatBoxViewController.h"
 #import "XOChatMessageController.h"
-#import "XODocumentPickerViewController.h"
 
 #import "XOChatModule.h"
 
-@interface XOChatViewController () <XOChatBoxViewControllerDelegate, XOChatMessageControllerDelegate, UIDocumentPickerDelegate>
+@interface XOChatViewController () <XOChatBoxViewControllerDelegate, XOChatMessageControllerDelegate>
 {
     UIEdgeInsets   _safeInsets;
 }
@@ -239,9 +238,68 @@
         NSLog(@"添加视频消息失败: %d", result);
     }
 }
-- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMp3Audio:(NSString *)mp3Path audioDuration:(NSTimeInterval)duration
+// 发送语音消息
+- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMp3Audio:(NSString *)mp3Path soundSize:(long)soundSize audioDuration:(NSTimeInterval)duration
 {
-    
+    TIMSoundElem *soundElem = [[TIMSoundElem alloc] init];
+    soundElem.path = mp3Path;
+    soundElem.dataSize = (int)soundSize;
+    soundElem.second = duration;
+    // 语音消息
+    TIMMessage *soundMsg = [[TIMMessage alloc] init];
+    int result = [soundMsg addElem:soundElem];
+    // 发送消息
+    if (0 == result) {
+        @XOWeakify(self);
+        int sendSound = [self.conversation sendMessage:soundMsg succ:^{
+            @XOStrongify(self);
+            [self.chatMsgVC sendSuccessMessage:soundMsg];
+        } fail:^(int code, NSString *msg) {
+            @XOStrongify(self);
+            [self.chatMsgVC sendFailMessage:soundMsg];
+        }];
+        
+        // 将消息显示出来
+        if(0 == sendSound) {
+            [self.chatMsgVC sendingMessage:soundMsg];
+        } else {
+            NSLog(@"发送语音消息失败 sendSound: %d", sendSound);
+        }
+    }
+    else {
+        NSLog(@"添加语音消息失败: %d", result);
+    }
+}
+- (void)chatBoxViewControllerSendFile:(XOChatBoxViewController *)chatboxViewController sendFile:(NSString *)filePath filename:(NSString *)filename fileSize:(int)fileSize
+{
+    TIMFileElem *fileElem = [[TIMFileElem alloc] init];
+    fileElem.path = filePath;
+    fileElem.fileSize = fileSize;
+    fileElem.filename = filename;
+    // 文件消息
+    TIMMessage *fileMsg = [[TIMMessage alloc] init];
+    int result = [fileMsg addElem:fileElem];
+    // 发送消息
+    if (0 == result) {
+        @XOWeakify(self);
+        int sendFile = [self.conversation sendMessage:fileMsg succ:^{
+            @XOStrongify(self);
+            [self.chatMsgVC sendSuccessMessage:fileMsg];
+        } fail:^(int code, NSString *msg) {
+            @XOStrongify(self);
+            [self.chatMsgVC sendFailMessage:fileMsg];
+        }];
+        
+        // 将消息显示出来
+        if(0 == sendFile) {
+            [self.chatMsgVC sendingMessage:fileMsg];
+        } else {
+            NSLog(@"发送文件消息失败 sendSound: %d", sendFile);
+        }
+    }
+    else {
+        NSLog(@"添加文件消息失败: %d", result);
+    }
 }
 - (void)chatBoxViewControllerSendPosition:(XOChatBoxViewController *)chatboxViewController
 {
@@ -262,32 +320,6 @@
 - (void)chatBoxViewControllerSendCarte:(XOChatBoxViewController *)chatboxViewController
 {
     
-}
-- (void)chatBoxViewControllerSendFile:(XOChatBoxViewController *)chatboxViewController
-{
-    NSArray *documentTypes = @[@"public.text", @"public.plain-text",
-                               @"com.adobe.pdf",
-                               @"com.microsoft.word.doc", @"org.openxmlformats.wordprocessingml.document",
-                               @"com.microsoft.excel.xls", @"org.openxmlformats.spreadsheetml.sheet",
-                               @"com.microsoft.powerpoint.ppt", @"org.openxmlformats.presentationml.presentation",
-                               @"public.audio",
-                               @"public.archive",
-                               @"public.image",
-                               @"public.source-code", @"public.script", @"public.shell-script",
-                               @"com.apple.application", @"com.apple.bundle", @"com.apple.package",
-                               @"public.composite-​content"];
-    XODocumentPickerViewController *documentVC = [[XODocumentPickerViewController alloc] initWithDocumentTypes:documentTypes inMode:UIDocumentPickerModeOpen];
-    if (@available(iOS 11.0, *)) {
-        documentVC.allowsMultipleSelection = NO;
-    }
-    documentVC.modalPresentationStyle = UIModalPresentationFullScreen;
-    documentVC.delegate = self;
-    [self.navigationController presentViewController:documentVC animated:YES completion:nil];
-}
-
-- (void)dismissDocument:(UIButton *)sender
-{
-    NSLog(@"%@ %@", self.navigationController.topViewController, self.navigationController.presentedViewController);
 }
 
 #pragma mark ========================= XOChatMessageControllerDelegate =========================
@@ -314,95 +346,6 @@
 - (void) didReadTransferMessage:(TIMMessage *)message indexpath:(NSIndexPath *)indexPath ChatMessageView:(XOChatMessageController *)chatMsgViewController
 {
     
-}
-
-#pragma mark =========================== UIDocumentPickerDelegate ===========================
-
-- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray <NSURL *>*)urls NS_AVAILABLE_IOS(11_0)
-{
-    [urls enumerateObjectsUsingBlock:^(NSURL * _Nonnull url, NSUInteger idx, BOOL * _Nonnull stop) {
-        
-        BOOL canAccessingResource = [url startAccessingSecurityScopedResource];
-        if(canAccessingResource) {
-            NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] init];
-            NSError *error;
-            __block NSURL *fileUrl = nil;
-            [fileCoordinator coordinateReadingItemAtURL:url options:0 error:&error byAccessor:^(NSURL *newURL) {
-                fileUrl = newURL;
-                [controller dismissViewControllerAnimated:YES completion:nil];
-            }];
-            if (error) {
-                NSLog(@"读取文件失败: %@", error);
-            } else {
-                [self sendFileMessageWithUrl:fileUrl];
-            }
-        } else {
-            [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"tip.chat.file.fail")];
-            [SVProgressHUD dismissWithDelay:0.6];
-        }
-        [url stopAccessingSecurityScopedResource];
-    }];
-}
-
-- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller
-{
-    
-}
-
-- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url NS_DEPRECATED_IOS(8_0, 11_0)
-{
-    BOOL canAccessingResource = [url startAccessingSecurityScopedResource];
-    if (canAccessingResource) {
-        NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] init];
-        NSError *error;
-        __block NSURL *fileUrl = nil;
-        [fileCoordinator coordinateReadingItemAtURL:url options:0 error:&error byAccessor:^(NSURL *newURL) {
-            fileUrl = newURL;
-            [controller dismissViewControllerAnimated:YES completion:nil];
-        }];
-        if (error) {
-            NSLog(@"读取文件失败: %@", error);
-        } else {
-            [self sendFileMessageWithUrl:fileUrl];
-        }
-    } else {
-        [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"tip.chat.file.fail")];
-        [SVProgressHUD dismissWithDelay:0.6];
-    }
-    [url stopAccessingSecurityScopedResource];
-}
-
-- (void)sendFileMessageWithUrl:(NSURL *)fileUrl
-{
-    if (!XOIsEmptyString(fileUrl.absoluteString)) {
-        [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-            BOOL canAccessingResource = [fileUrl startAccessingSecurityScopedResource];
-            if (canAccessingResource) {
-                NSData *data = [NSData dataWithContentsOfURL:fileUrl];
-                long long fileSize = data.length;
-                if ([[NSFileManager defaultManager] fileExistsAtPath:fileUrl.path] && fileSize < 20 * 1024 * 1024) {  // 文件大小不能超过20M
-                    // 发送文件
-                    NSString *fileName = [[fileUrl path] lastPathComponent];
-                    // 图片消息
-                    if ([fileName hasSuffix:@".png"] || [fileName hasSuffix:@".jpg"] || [fileName hasSuffix:@".jpeg"]) {
-                        NSData *imageData = [NSData dataWithContentsOfURL:fileUrl];
-                        if (imageData.length > 0) {
-//                            CGSize size = [UIImage imageWithData:imageData].size;
-                            
-                        } else {
-                            [SVProgressHUD showInfoWithStatus:NSLocalizedString(@"error.unknown", nil)];
-                            [SVProgressHUD dismissWithDelay:0.6f];
-                        }
-                    }
-                    // 文件消息
-                    else {
-                        
-                    }
-                }
-            }
-            [fileUrl stopAccessingSecurityScopedResource];
-        }];
-    }
 }
 
 

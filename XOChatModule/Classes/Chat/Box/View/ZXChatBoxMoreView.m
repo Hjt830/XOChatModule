@@ -54,7 +54,6 @@
     for (ZXChatBoxItemView * item in self.items) {
         [self.scrollView addSubview:item];
         [item setFrame:CGRectMake(x, y, w, h)];
-        [item setTag:i];
         [item addTarget:self action:@selector(didSelectedItem:) forControlEvents:UIControlEventTouchUpInside];
         i ++;
         page = i % 8 == 0 ? page + 1 : page;
@@ -105,7 +104,7 @@
 {
     if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxMoreView:didSelectItem:)]) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.delegate chatBoxMoreView:self didSelectItem:(int)sender.tag];
+            [self.delegate chatBoxMoreView:self didSelectItem:((int)sender.tag - 100)];
         }];
     }
 }

@@ -7,9 +7,8 @@
 //
 
 #import "LGSoundRecorder.h"
-#import "MBProgressHUD.h"
 #import "UIImage+XOChatBundle.h"
-//#include "amrFileCodec.h"
+#import "NSBundle+ChatModule.h"
 
 #pragma clang diagnostic ignored "-Wdeprecated"
 
@@ -17,7 +16,7 @@
 
 @interface LGSoundRecorder()
 
-@property (nonatomic, strong) MBProgressHUD *HUD;
+@property (nonatomic, strong) UIView *HUD;
 @property (nonatomic, strong) NSString *recordPath;
 @property (nonatomic, strong) AVAudioRecorder *recorder;
 @property (nonatomic, strong) NSTimer *levelTimer;
@@ -47,58 +46,65 @@
 
 #pragma mark - Public Methods
 
-- (void)startSoundRecord:(UIView *)view recordPath:(NSString *)path {
-	self.recordPath = path;
-	[self initHUBViewWithView:view];
-	[self startRecord];
+- (void)startSoundRecord:(UIView *)view recordPath:(NSString *)path
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.recordPath = path;
+        [self initHUBViewWithView:view];
+        [self startRecord];
+    });
 }
 
-- (void)stopSoundRecord:(UIView *)view {
-	if (self.levelTimer) {
-		[self.levelTimer invalidate];
-		self.levelTimer = nil;
-	}
-	
-	NSString *str = [NSString stringWithFormat:@"%f",_recorder.currentTime];
-	
-	int times = [str intValue];
-	if (self.recorder) {
-		[self.recorder stop];
-	}
-	if (times >= 1) {
-		if (view == nil) {
-			view = [[[UIApplication sharedApplication] windows] lastObject];
-		}
-		
-		if ([view isKindOfClass:[UIWindow class]]) {
-			[view addSubview:_HUD];
-		} else {
-			[view.window addSubview:_HUD];
-		}
-		if (_delegate&&[_delegate respondsToSelector:@selector(didStopSoundRecord)]) {
-			[_delegate didStopSoundRecord];
-		}
-	} else {
-		[self deleteRecord];
-		[self.recorder stop];
-		if ([_delegate respondsToSelector:@selector(showSoundRecordFailed)]) {
-			[_delegate showSoundRecordFailed];
-		}
-	}
-	[self removeHUD];
-	//恢复外部正在播放的音乐
-	[[AVAudioSession sharedInstance] setActive:NO
-									 withFlags:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
-										 error:nil];
+- (void)stopSoundRecord:(UIView *)view
+{
+    if (self.levelTimer) {
+        [self.levelTimer invalidate];
+        self.levelTimer = nil;
+    }
+    
+    NSString *str = [NSString stringWithFormat:@"%f",_recorder.currentTime];
+    
+    int times = [str intValue];
+    if (self.recorder) {
+        [self.recorder stop];
+    }
+    if (times >= 1) {
+        if (view == nil) {
+            view = [[[UIApplication sharedApplication] windows] lastObject];
+        }
+        
+        if ([view isKindOfClass:[UIWindow class]]) {
+            [view addSubview:_HUD];
+        } else {
+            [view.window addSubview:_HUD];
+        }
+        if (_delegate&&[_delegate respondsToSelector:@selector(didStopSoundRecord)]) {
+            [_delegate didStopSoundRecord];
+        }
+    } else {
+        [self deleteRecord];
+        [self.recorder stop];
+        if ([_delegate respondsToSelector:@selector(showSoundRecordFailed)]) {
+            [_delegate showSoundRecordFailed];
+        }
+    }
+    [self removeHUD];
+    //恢复外部正在播放的音乐
+    [[AVAudioSession sharedInstance] setActive:NO
+                                     withFlags:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
+                                         error:nil];
 }
 
-- (void)soundRecordFailed:(UIView *)view {
-	[self.recorder stop];
-	[self removeHUD];
-	//恢复外部正在播放的音乐
-	[[AVAudioSession sharedInstance] setActive:NO
-									 withFlags:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
-										 error:nil];
+- (void)soundRecordFailed:(UIView *)view
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.recorder stop];
+        [self removeHUD];
+        //恢复外部正在播放的音乐
+        [[AVAudioSession sharedInstance] setActive:NO
+                                         withFlags:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
+                                             error:nil];
+    });
 }
 
 - (void)readyCancelSound {
@@ -110,7 +116,7 @@
 
 	_textLable.frame = CGRectMake(0, CGRectGetMaxY(_imageViewAnimation.frame) , 130, 45);
     _textLable.numberOfLines = 2;
-	_textLable.text = NSLocalizedString(@"message.toolBar.record.loosenCancel", @"Release the fingers, to cancel sending");
+	_textLable.text = XOChatLocalizedString(@"chat.keyboard.sound.release");
 	_textLable.backgroundColor = [UIColor redColor];
 	_textLable.layer.masksToBounds = YES;
 	_textLable.layer.cornerRadius = 3;
@@ -124,7 +130,7 @@
     _countDownLabel.hidden = YES;
 
 	_textLable.frame = CGRectMake(0, CGRectGetMaxY(_imageViewAnimation.frame) , 130, 45);
-	_textLable.text = NSLocalizedString(@"message.toolBar.record.upCancel", @"Slide up to cancel sending");
+	_textLable.text = XOChatLocalizedString(@"chat.keyboard.sound.slide");
 	_textLable.backgroundColor = [UIColor clearColor];
 }
 
@@ -135,15 +141,15 @@
 	_shotTime.hidden = NO;
     _countDownLabel.hidden = YES;
 	[_textLable setFrame:CGRectMake(0, 100, 130, 25)];
-	_textLable.text = NSLocalizedString(@"message.time.short", @"The time is too shoot");
+	_textLable.text = XOChatLocalizedString(@"chat.keyboard.sound.timeShort");
 	_textLable.backgroundColor = [UIColor clearColor];
 	
 	[self performSelector:@selector(stopSoundRecord:) withObject:view afterDelay:1.f];
 }
 
-- (void)showCountdown:(int)countDown{
-
-	_textLable.text = [NSString stringWithFormat:NSLocalizedString(@"message.time.left", @"Can also say %d seconds"),countDown];
+- (void)showCountdown:(int)countDown
+{
+	_textLable.text = [NSString stringWithFormat:XOChatLocalizedString(@"chat.keyboard.sound.time.left.%d"), countDown];
 }
 
 - (NSTimeInterval)soundRecordTime {
@@ -152,79 +158,88 @@
 
 #pragma mark - Private Methods
 
-- (void)initHUBViewWithView:(UIView *)view {
-	if (_HUD) {
-		[_HUD removeFromSuperview];
-		_HUD = nil;
-	}
-	if (view == nil) {
-		view = [[[UIApplication sharedApplication] windows] lastObject];
-	}
-	if (_HUD == nil) {
-		_HUD = [[MBProgressHUD alloc] initWithView:view];
-		_HUD.opacity = 0.3;
-		
-		CGFloat left = 22;
-		CGFloat top = 0;
-		top = 18;
-		
-		UIView *cv = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 130, 120)];
-		
-		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(left, top, 37, 70)];
-		_talkPhone = imageView;
-		_talkPhone.image = GetImage(@"toast_microphone");
-		[cv addSubview:_talkPhone];
-		left += CGRectGetWidth(_talkPhone.frame) + 16;
-		
-		top+=7;
-		imageView = [[UIImageView alloc] initWithFrame:CGRectMake(left, top, 29, 64)];
-		_imageViewAnimation = imageView;
-		[cv addSubview:_imageViewAnimation];
-		
-		imageView = [[UIImageView alloc] initWithFrame:CGRectMake(30, 24, 52, 61)];
-		_cancelTalk = imageView;
-		_cancelTalk.image = GetImage(@"toast_cancelsend");
-		[cv addSubview:_cancelTalk];
-		_cancelTalk.hidden = YES;
-		
-		imageView = [[UIImageView alloc] initWithFrame:CGRectMake(56, 24, 18, 60)];
-		self.shotTime = imageView;
-		_shotTime.image = GetImage(@"toast_timeshort");
-		[cv addSubview:_shotTime];
-		_shotTime.hidden = YES;
-		
-		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(30, 14, 70, 71)];
-		self.countDownLabel = label;
-		self.countDownLabel.backgroundColor = [UIColor clearColor];
-		self.countDownLabel.textColor = [UIColor whiteColor];
-		self.countDownLabel.textAlignment = NSTextAlignmentCenter;
-		self.countDownLabel.font = [UIFont systemFontOfSize:60.0];
-		[cv addSubview:self.countDownLabel];
-		self.countDownLabel.hidden = YES;
-		
-		left = 0;
-		top += CGRectGetHeight(_imageViewAnimation.frame) + 20;
-		
-		label = [[UILabel alloc] initWithFrame:CGRectMake(left, top, 130, 14)];
-		self.textLable = label;
-		_textLable.backgroundColor = [UIColor clearColor];
-		_textLable.textColor = [UIColor whiteColor];
-		_textLable.textAlignment = NSTextAlignmentCenter;
-		_textLable.font = [UIFont systemFontOfSize:14.0];
-		_textLable.text = NSLocalizedString(@"message.toolBar.record.upCancel", @"Slide up to cancel sending");
-		[cv addSubview:_textLable];
-		
-		_HUD.customView = cv;
-		
-		// Set custom view mode
-		_HUD.mode = MBProgressHUDModeCustomView;
-	}
-	if ([view isKindOfClass:[UIWindow class]]) {
-		[view addSubview:_HUD];
-	} else {
-		[view.window addSubview:_HUD];
-	}
-	[_HUD show:YES];
+- (void)initHUBViewWithView:(UIView *)view
+{
+    if (_HUD) {
+        [_HUD removeFromSuperview];
+    }
+    
+    if (_HUD == nil) {
+        CGFloat hubWidth = 180;
+        CGFloat hubHeight = 160;
+        CGFloat hubX = ([UIScreen mainScreen].bounds.size.width - hubWidth) / 2;
+        CGFloat hubY = ([UIScreen mainScreen].bounds.size.height - hubHeight) / 2;
+        CGFloat cvWidth = 130;
+        CGFloat cvHeight = 120;
+        CGFloat cvX = (hubWidth - cvWidth) / 2;
+        CGFloat cvY = (hubHeight - cvHeight) / 2;
+        
+        _HUD = [[UIView alloc] initWithFrame:CGRectMake(hubX, hubY, hubWidth, hubHeight)];
+        _HUD.backgroundColor = [[UIColor alloc] initWithRed:0 green:0 blue:0 alpha:0.38];
+        _HUD.layer.cornerRadius = 12;
+        _HUD.layer.masksToBounds = true;
+        
+        CGFloat left = 22;
+        CGFloat top = 0;
+        top = 18;
+        
+        UIView *cv = [[UIView alloc] initWithFrame:CGRectMake(cvX, cvY, cvWidth, cvHeight)];
+        
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(left, top, 37, 70)];
+        _talkPhone = imageView;
+        _talkPhone.image = GetImage(@"toast_microphone");
+        [cv addSubview:_talkPhone];
+        left += CGRectGetWidth(_talkPhone.frame) + 16;
+        
+        top+=7;
+        imageView = [[UIImageView alloc] initWithFrame:CGRectMake(left, top, 29, 64)];
+        imageView.animationImages = @[GetImage(@"toast_vol_1"),
+                                      GetImage(@"toast_vol_2"),
+                                      GetImage(@"toast_vol_3"),
+                                      GetImage(@"toast_vol_4"),
+                                      GetImage(@"toast_vol_5"),
+                                      GetImage(@"toast_vol_6"),
+                                      GetImage(@"toast_vol_7")];
+        imageView.animationDuration = 1.0f;
+        _imageViewAnimation = imageView;
+        [cv addSubview:_imageViewAnimation];
+        
+        imageView = [[UIImageView alloc] initWithFrame:CGRectMake(30, 24, 52, 61)];
+        _cancelTalk = imageView;
+        _cancelTalk.image = GetImage(@"toast_cancelsend");
+        [cv addSubview:_cancelTalk];
+        _cancelTalk.hidden = YES;
+        
+        imageView = [[UIImageView alloc] initWithFrame:CGRectMake(56, 24, 18, 60)];
+        self.shotTime = imageView;
+        _shotTime.image = GetImage(@"toast_timeshort");
+        [cv addSubview:_shotTime];
+        _shotTime.hidden = YES;
+        
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(30, 14, 70, 71)];
+        self.countDownLabel = label;
+        self.countDownLabel.backgroundColor = [UIColor clearColor];
+        self.countDownLabel.textColor = [UIColor whiteColor];
+        self.countDownLabel.textAlignment = NSTextAlignmentCenter;
+        self.countDownLabel.font = [UIFont systemFontOfSize:60.0];
+        [cv addSubview:self.countDownLabel];
+        self.countDownLabel.hidden = YES;
+        
+        left = -15;
+        top += CGRectGetHeight(_imageViewAnimation.frame) + 20;
+        
+        label = [[UILabel alloc] initWithFrame:CGRectMake(left, top, 160, 14)];
+        self.textLable = label;
+        _textLable.backgroundColor = [UIColor clearColor];
+        _textLable.textColor = [UIColor whiteColor];
+        _textLable.textAlignment = NSTextAlignmentCenter;
+        _textLable.font = [UIFont systemFontOfSize:12.0];
+        _textLable.text = XOChatLocalizedString(@"chat.keyboard.sound.slide");
+        [cv addSubview:_textLable];
+        
+        [_HUD addSubview:cv];
+    }
+    [view addSubview:_HUD];
 }
 
 - (void)removeHUD {
@@ -281,7 +296,7 @@
 	}
 	
 	if (self.HUD) {
-		[self.HUD hide:NO];
+		[self.HUD removeFromSuperview];
 	}
 }
 

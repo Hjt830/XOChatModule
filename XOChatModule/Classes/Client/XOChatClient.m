@@ -395,46 +395,58 @@ static XOChatClient *__chatClient = nil;
         // 图片消息
         if ([elem isKindOfClass:[TIMImageElem class]]) {
             TIMImageElem *imageElem = (TIMImageElem *)elem;
-            if (imageElem.imageList.count > 0) {
-                TIMImage *timImage = [imageElem.imageList objectAtIndex:0];
-                NSString *imageFomat = [self getImageFormat:imageElem.format];
-                NSString *imageName = [NSString stringWithFormat:@"%@.%@", timImage.uuid, imageFomat];
-                NSString *imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
-                if (![XOFM fileExistsAtPath:imagePath]) {
-                    need = YES;
+            NSString *imagePath = nil;
+            if (message.isSelf) {
+                imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageElem.path.lastPathComponent];
+            }
+            else {
+                if (imageElem.imageList.count > 0) {
+                    TIMImage *timImage = [imageElem.imageList objectAtIndex:0];
+                    NSString *imageFomat = [self getImageFormat:imageElem.format];
+                    NSString *imageName = [NSString stringWithFormat:@"%@.%@", timImage.uuid, imageFomat];
+                    imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
                 }
             }
+            if (![XOFM fileExistsAtPath:imagePath]) need = YES;
         }
         // 视频消息
         else if ([elem isKindOfClass:[TIMVideoElem class]]) {
             TIMVideoElem *videoElem = (TIMVideoElem *)elem;
-            if (nil != videoElem.video) {
+            NSString *videoPath = nil;
+            if (message.isSelf) {
+                videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoElem.videoPath.lastPathComponent];
+            }
+            else {
                 TIMVideo *timVideo = videoElem.video;
                 NSString *videoFomat = !XOIsEmptyString(timVideo.type) ? timVideo.type : @"mp4";
                 NSString *videoName = [NSString stringWithFormat:@"%@.%@", timVideo.uuid, videoFomat];
-                NSString *videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoName];
-                if (![XOFM fileExistsAtPath:videoPath]) {
-                    need = YES;
-                }
+                videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoName];
             }
+            if (![XOFM fileExistsAtPath:videoPath]) need = YES;
         }
         // 语音消息
         else if ([elem isKindOfClass:[TIMSoundElem class]]) {
             TIMSoundElem *soundElem = (TIMSoundElem *)elem;
-            NSString *soundName = [NSString stringWithFormat:@"%@.mp3", soundElem.uuid];
-            NSString *soundPath = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:soundName];
-            if (![XOFM fileExistsAtPath:soundPath]) {
-                need = YES;
+            NSString *soundPath = nil;
+            if (message.isSelf) {
+                soundPath = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:soundElem.path.lastPathComponent];
+            } else {
+                NSString *soundName = [NSString stringWithFormat:@"%@.mp3", soundElem.uuid];
+                soundPath = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:soundName];
             }
+            if (![XOFM fileExistsAtPath:soundPath]) need = YES;
         }
         // 文件消息
         else if ([elem isKindOfClass:[TIMFileElem class]]) {
             TIMFileElem *fileElem = (TIMFileElem *)elem;
-            NSString *filename = !XOIsEmptyString(fileElem.filename) ? fileElem.filename : [NSString stringWithFormat:@"%@.unknow", fileElem.uuid];
-            NSString *filePath = [XOMsgFileDirectory(XOMsgFileTypeFile) stringByAppendingPathComponent:filename];
-            if (![XOFM fileExistsAtPath:filePath]) {
-                need = YES;
+            NSString *filePath = nil;
+            if (message.isSelf) {
+                filePath = [XOMsgFileDirectory(XOMsgFileTypeFile) stringByAppendingPathComponent:fileElem.path.lastPathComponent];
+            } else {
+                NSString *filename = !XOIsEmptyString(fileElem.filename) ? fileElem.filename : [NSString stringWithFormat:@"%@.unknow", fileElem.uuid];
+                filePath = [XOMsgFileDirectory(XOMsgFileTypeFile) stringByAppendingPathComponent:filename];
             }
+            if (![XOFM fileExistsAtPath:filePath]) need = YES;
         }
         
         return need;
@@ -875,6 +887,32 @@ static XOChatClient *__chatClient = nil;
     }
 }
 
+#pragma mark ========================= public method =========================
+
+// 是否正在下载中
+- (BOOL)isOnDownloading:(TIMMessage *)message
+{
+    NSString *taskId = getMessageKey(message);
+    NSURLSessionTask *task = [self.taskQueue objectForKey:taskId];
+    if (task) {
+        return YES;
+    }
+    return NO;
+}
+
+// 是否正在排队下载队列中
+- (BOOL)isWaitingDownload:(TIMMessage *)message
+{
+    NSString *taskId = getMessageKey(message);
+    __block BOOL contain = NO;
+    [self.waitTaskQueue enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([taskId isEqualToString:getMessageKey(obj)]) {
+            contain = YES;
+            *stop = YES;
+        }
+    }];
+    return contain;
+}
 
 #pragma mark ========================= help =========================
 
