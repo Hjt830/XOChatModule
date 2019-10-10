@@ -128,10 +128,10 @@
     }
 }
 
-- (void)chatFaceItemView:(ZXChatFaceItemView *)itemView didSelectFace:(ChatFace *)chatFace faceType:(TLFaceType)faceType
+- (void)chatFaceItemView:(ZXChatFaceItemView *)itemView didSelectFace:(int)faceIndex faceGroup:(ChatFaceGroup *)faceGroup faceType:(TLFaceType)faceType
 {
-    if (_delegate && [_delegate respondsToSelector:@selector(chatBoxFaceViewDidSelectedFace:type:)]) {
-        [_delegate chatBoxFaceViewDidSelectedFace:chatFace type:faceType];
+    if (_delegate && [_delegate respondsToSelector:@selector(chatBoxFaceViewDidSelectedFace:faceGroup:type:)]) {
+        [_delegate chatBoxFaceViewDidSelectedFace:faceIndex faceGroup:faceGroup type:faceType];
     }
 }
 

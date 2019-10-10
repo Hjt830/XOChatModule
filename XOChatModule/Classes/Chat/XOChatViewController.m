@@ -135,8 +135,41 @@
     
 }
 
+// 发送Gif表情
+- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendGifwithGroup:(NSString *)groupID face:(int)faceIndex
+{
+    TIMFaceElem *faceElem = [[TIMFaceElem alloc] init];
+    faceElem.index = faceIndex;
+    if (!XOIsEmptyString(groupID)) {
+        faceElem.data = [groupID dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    
+    TIMMessage *faceMsg = [[TIMMessage alloc] init];
+    int result = [faceMsg addElem:faceElem];
+    
+    if (0 == result) {
+        @XOWeakify(self);
+        int sendFace = [self.conversation sendMessage:faceMsg succ:^{
+            @XOStrongify(self);
+            [self.chatMsgVC sendSuccessMessage:faceMsg];
+        } fail:^(int code, NSString *msg) {
+            @XOStrongify(self);
+            [self.chatMsgVC sendFailMessage:faceMsg];
+        }];
+        
+        // 将消息显示出来
+        if(0 == sendFace) {
+            [self.chatMsgVC sendingMessage:faceMsg];
+        } else {
+            NSLog(@"发送文本消息失败 sendFace: %d", sendFace);
+        }
+    }
+    else {
+        NSLog(@"添加文本消息失败  result: %d", result);
+    }
+}
 // 发送文字消息
-- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendMessage:(NSString *)content
+- (void)chatBoxViewController:(XOChatBoxViewController *)chatboxViewController sendTextMessage:(NSString *)content
 {
     TIMTextElem *textElem = [[TIMTextElem alloc] init];
     textElem.text = content;
@@ -270,6 +303,7 @@
         NSLog(@"添加语音消息失败: %d", result);
     }
 }
+// 发送文件消息
 - (void)chatBoxViewControllerSendFile:(XOChatBoxViewController *)chatboxViewController sendFile:(NSString *)filePath filename:(NSString *)filename fileSize:(int)fileSize
 {
     TIMFileElem *fileElem = [[TIMFileElem alloc] init];
@@ -301,6 +335,7 @@
         NSLog(@"添加文件消息失败: %d", result);
     }
 }
+// 发送位置消息
 - (void)chatBoxViewControllerSendPosition:(XOChatBoxViewController *)chatboxViewController sendLocationLatitude:(double)latitude longitude:(double)longitude addressDesc:(nonnull NSString *)address
 {
     TIMLocationElem *locationElem = [[TIMLocationElem alloc] init];
@@ -332,19 +367,23 @@
         NSLog(@"添加位置消息失败: %d", result);
     }
 }
+// 发送名片消息
+- (void)chatBoxViewControllerSendCarte:(XOChatBoxViewController *)chatboxViewController
+{
+    
+}
+// 发送音视频消息
 - (void)chatBoxViewControllerSendCall:(XOChatBoxViewController *)chatboxViewController
 {
     
 }
+// 发送红包消息
 - (void)chatBoxViewControllerSendRedPacket:(XOChatBoxViewController *)chatboxViewController
 {
     
 }
+// 发送转账消息
 - (void)chatBoxViewControllerSendTransfer:(XOChatBoxViewController *)chatboxViewController
-{
-    
-}
-- (void)chatBoxViewControllerSendCarte:(XOChatBoxViewController *)chatboxViewController
 {
     
 }

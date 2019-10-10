@@ -7,16 +7,12 @@
 //
 
 #import "ChatFaceHelper.h"
-#import "ChatFace.h"
-#import <XOBaseLib/XOBaseLib.h>
 #import "XOChatClient.h"
+#import <XOBaseLib/XOBaseLib.h>
 
-static ChatFaceHelper * faceHeleper = nil;
+static ChatFaceHelper * __faceHeleper = nil;
 
 @interface ChatFaceHelper ()
-
-// 表情组集合
-@property (nonatomic, strong) NSMutableDictionary         *faceGroupsSet;
 
 @end
 
@@ -24,15 +20,16 @@ static ChatFaceHelper * faceHeleper = nil;
 
 + (ChatFaceHelper * )sharedFaceHelper
 {
-    if (!faceHeleper) {
-        faceHeleper = [[ChatFaceHelper alloc]init];
-    }
-    return  faceHeleper;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        __faceHeleper = [[ChatFaceHelper alloc]init];
+    });
+    return  __faceHeleper;
 }
 
 - (void)initilizationEmoji
 {
-    self.faceGroupsSet = [[NSMutableDictionary alloc] init];
+    _faceGroupsSet = [[NSMutableDictionary alloc] init];
     // 加载常规表情组
     [self getFaceArrayByGroupID:@"face_emoji" complection:nil];
     // 加载兔斯基gif表情
@@ -45,7 +42,7 @@ static ChatFaceHelper * faceHeleper = nil;
 - (void)getFaceArrayByGroupID:(NSString *_Nonnull)groupID
                   complection:(void(^ _Nullable)(NSArray <ChatFace *> * _Nullable chatFaceArray))handler
 {
-    NSArray *faceArray = [self.faceGroupsSet objectForKey:groupID];
+    NSArray *faceArray = [_faceGroupsSet objectForKey:groupID];
     if (XOIsEmptyArray(faceArray)) {
         [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
             NSArray *array = [NSArray arrayWithContentsOfFile:[[XOChatClient shareClient].chatBundle pathForResource:groupID ofType:@"plist"]];
@@ -61,8 +58,8 @@ static ChatFaceHelper * faceHeleper = nil;
             // 将表情组加到集合中
             if (!XOIsEmptyString(groupID) && !XOIsEmptyArray(chatFaceArray)) {
                 @synchronized (self) {
-                    [self.faceGroupsSet removeObjectForKey:groupID];
-                    [self.faceGroupsSet setObject:chatFaceArray forKey:groupID];
+                    [self->_faceGroupsSet removeObjectForKey:groupID];
+                    [self->_faceGroupsSet setObject:chatFaceArray forKey:groupID];
                 }
             }
             

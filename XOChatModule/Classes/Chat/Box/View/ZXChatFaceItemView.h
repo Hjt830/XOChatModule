@@ -21,7 +21,7 @@
 @protocol ZXChatFaceItemViewDelegate <NSObject>
 
 // 点击了某个表情
-- (void)chatFaceItemView:(ZXChatFaceItemView *)itemView didSelectFace:(ChatFace *)chatFace faceType:(TLFaceType)faceType;
+- (void)chatFaceItemView:(ZXChatFaceItemView *)itemView didSelectFace:(int)faceIndex faceGroup:(ChatFaceGroup *)faceGroup faceType:(TLFaceType)faceType;
 // 点击了删除按钮
 - (void)chatFaceItemViewDidClickDelete:(ZXChatFaceItemView *)itemView;
 

@@ -268,8 +268,8 @@ static NSTimeInterval audioRecordTime = 0.0f;
  */
 - (void) chatBox:(ZXChatBoxView *)chatBox sendTextMessage:(NSString *)textMessage
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendMessage:)]) {
-        [self.delegate chatBoxViewController:self sendMessage:textMessage];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendTextMessage:)]) {
+        [self.delegate chatBoxViewController:self sendTextMessage:textMessage];
     }
 }
 
@@ -623,15 +623,18 @@ static NSTimeInterval audioRecordTime = 0.0f;
     }
 }
 
-- (void) chatBoxFaceViewDidSelectedFace:(ChatFace *)face type:(TLFaceType)type
+- (void) chatBoxFaceViewDidSelectedFace:(int)faceIndex faceGroup:(ChatFaceGroup *)faceGroup type:(TLFaceType)type
 {
+    // 发送emoji表情
     if (type == TLFaceTypeEmoji) {
-        // 发送emoji表情
+        ChatFace *face = faceGroup.facesArray[faceIndex];
         [self.chatBox addEmojiFace:face];
     }
-    else {
-        // 发送gif表情
-        NSLog(@"gif: %@",face.faceName);
+    // 发送gif表情
+    else if (type == TLFaceTypeGIF) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewController:sendGifwithGroup:face:)]) {
+            [self.delegate chatBoxViewController:self sendGifwithGroup:faceGroup.groupID face:faceIndex];
+        }
     }
 }
 

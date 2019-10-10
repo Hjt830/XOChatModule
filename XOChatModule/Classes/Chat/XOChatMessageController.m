@@ -11,6 +11,7 @@
 #import "ZXChatHelper.h"
 
 #import "XOChatClient.h"
+#import "WXFaceMessageCell.h"
 #import "WXTextMessageCell.h"
 #import "WXImageMessageCell.h"
 #import "WXSoundMessageCell.h"
@@ -22,6 +23,7 @@
 #import "LGAudioKit.h"
 #import <SVProgressHUD/SVProgressHUD.h>
 #import <YBImageBrowser/YBIBVideoData.h>
+#import <FLAnimatedImage/FLAnimatedImage.h>
 
 static NSString * const MsgSectionTimeKey = @"timeSection";     // 数据源中的时间key
 static NSString * const MsgSectionListKey = @"messageList";     // 数据源中的消息key
@@ -31,6 +33,7 @@ static NSString * const TextMessageCellID       = @"TextMessageCellID";
 static NSString * const ImageMessageCellID      = @"ImageMessageCellID";
 static NSString * const SoundMessageCellID      = @"SoundMessageCellID";
 static NSString * const VideoMessageCellID      = @"VideoMessageCellID";
+static NSString * const FaceMessageCellID       = @"FaceMessageCellID";
 static NSString * const FileMessageCellID       = @"FileMessageCellID";
 static NSString * const LocationMessageCellID   = @"LocationMessageCellID";
 static NSString * const CarteMessageCellID      = @"CarteMessageCellID";
@@ -643,9 +646,9 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
             else if ([elem isKindOfClass:[TIMLocationElem class]]) {
                 cell = [tableView dequeueReusableCellWithIdentifier:LocationMessageCellID forIndexPath:indexPath];
             }
-            //        else if ([elem isKindOfClass:[TIMFaceElem class]]) {
-            //            cell = [tableView dequeueReusableCellWithIdentifier:VideoMessageCellID forIndexPath:indexPath];
-            //        }
+            else if ([elem isKindOfClass:[TIMFaceElem class]]) {
+                cell = [tableView dequeueReusableCellWithIdentifier:FaceMessageCellID forIndexPath:indexPath];
+            }
             else if ([elem isKindOfClass:[TIMGroupTipsElem class]] ||
                      [elem isKindOfClass:[TIMGroupTipsElemMemberInfo class]] ||
                      [elem isKindOfClass:[TIMGroupSystemElem class]])
@@ -957,6 +960,7 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
         [_tableView registerClass:[WXSoundMessageCell class] forCellReuseIdentifier:SoundMessageCellID];
         [_tableView registerClass:[WXVideoMessageCell class] forCellReuseIdentifier:VideoMessageCellID];
         [_tableView registerClass:[WXFileMessageCell class] forCellReuseIdentifier:FileMessageCellID];
+        [_tableView registerClass:[WXFaceMessageCell class] forCellReuseIdentifier:FaceMessageCellID];
         [_tableView registerClass:[WXLocationMessageCell class] forCellReuseIdentifier:LocationMessageCellID];
         [_tableView registerClass:[WXPromptMessageCell class] forCellReuseIdentifier:PromptMessageCellID];
         [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:UITableViewCellID];
@@ -1476,7 +1480,22 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
     // 表情消息
     else if ([elem isKindOfClass:[TIMFaceElem class]])
     {
-        size = CGSizeMake(FileWidth + 16, FileHeight + 20);
+        TIMFaceElem *faceElem = (TIMFaceElem *)[message getElem:0];
+        if (faceElem.data.length > 0) {
+            NSString *groupId = [[NSString alloc] initWithData:faceElem.data encoding:NSUTF8StringEncoding];
+            int faceIndex = faceElem.index;
+            if (!XOIsEmptyString(groupId)) {
+                NSArray <ChatFace *> * chatFaceArray = [[ChatFaceHelper sharedFaceHelper].faceGroupsSet objectForKey:groupId];
+                if (chatFaceArray.count > faceIndex) {
+                    ChatFace *face = [chatFaceArray objectAtIndex:faceIndex];
+                    NSURL *url = [[NSBundle xo_chatResourceBundle] URLForResource:face.faceID withExtension:@"gif"];
+                    NSData *data = [NSData dataWithContentsOfURL:url];
+                    FLAnimatedImage *animatedImage = [FLAnimatedImage animatedImageWithGIFData:data];
+                    
+                    size = CGSizeMake(animatedImage.size.width/2.0 + 16, animatedImage.size.height/2.0 + MsgCellIconMargin * 2);
+                }
+            }
+        }
     }
     // 提示消息
     else if ([elem isKindOfClass:[TIMGroupTipsElem class]] ||

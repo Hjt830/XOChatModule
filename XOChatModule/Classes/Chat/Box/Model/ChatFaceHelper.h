@@ -7,12 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ChatFace.h"
 
-@class ChatFace;
 @interface ChatFaceHelper : NSObject
 
 // 常规表情组
 @property (nonatomic, strong) NSMutableArray * _Nullable faceGroupArray;
+
+// 表情集合
+@property (nonatomic, strong, readonly) NSMutableDictionary <NSString *, NSArray <ChatFace *> *> * _Nullable faceGroupsSet;
 
 + (ChatFaceHelper *_Nonnull) sharedFaceHelper;
 

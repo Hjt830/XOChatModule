@@ -24,8 +24,8 @@ typedef NS_ENUM(NSInteger, TLFaceType) {
 
 @interface ChatFace : NSObject
 
-@property (nonatomic, strong) NSString *faceID;
-@property (nonatomic, strong) NSString *faceName;
+@property (nonatomic, copy) NSString *faceID;
+@property (nonatomic, copy) NSString *faceName;
 
 @end
 
@@ -35,8 +35,8 @@ typedef NS_ENUM(NSInteger, TLFaceType) {
 @interface ChatFaceGroup : NSObject
 
 @property (nonatomic, assign) TLFaceType faceType;
-@property (nonatomic, strong) NSString *groupID;
-@property (nonatomic, strong) NSString *groupImageName;
+@property (nonatomic, copy) NSString *groupID;
+@property (nonatomic, copy) NSString *groupImageName;
 @property (nonatomic, strong) NSArray *facesArray;
 
 @end

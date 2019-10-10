@@ -125,13 +125,12 @@
         int x = (point.x - spaceX)/w + wa; // 列数
         int y = (point.y - spaceY)/h + ha; // 行数
         int faceIndex = self.fromIndex + (y - 1) * (self.faceGroup.faceType == TLFaceTypeEmoji ? 7 : 4) + (x - 1);
-        ChatFace *face = [self.faceGroup.facesArray objectAtIndex:faceIndex];
         
         // 当前是emoji (点击范围是 可点击宽度和高度)
         if (self.faceGroup.faceType == TLFaceTypeEmoji) {
-            if (self.delegate && [self.delegate respondsToSelector:@selector(chatFaceItemView:didSelectFace:faceType:)]) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(chatFaceItemView:didSelectFace:faceGroup:faceType:)]) {
                 if (faceIndex < self.faceGroup.facesArray.count) {
-                    [self.delegate chatFaceItemView:self didSelectFace:face faceType:self.faceGroup.faceType];
+                    [self.delegate chatFaceItemView:self didSelectFace:faceIndex faceGroup:self.faceGroup faceType:self.faceGroup.faceType];
                 }
             }
         }
@@ -154,9 +153,9 @@
                 return;
             }
             else {
-                if (self.delegate && [self.delegate respondsToSelector:@selector(chatFaceItemView:didSelectFace:faceType:)]) {
+                if (self.delegate && [self.delegate respondsToSelector:@selector(chatFaceItemView:didSelectFace:faceGroup:faceType:)]) {
                     if (faceIndex < self.faceGroup.facesArray.count) {
-                        [self.delegate chatFaceItemView:self didSelectFace:face faceType:self.faceGroup.faceType];
+                        [self.delegate chatFaceItemView:self didSelectFace:faceIndex faceGroup:self.faceGroup faceType:self.faceGroup.faceType];
                     }
                 }
             }

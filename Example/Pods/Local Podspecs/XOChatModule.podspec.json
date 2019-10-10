@@ -61,6 +61,9 @@
     ],
     "YBImageBrowser/VideoNOSD": [
       "~> 3.0.6"
+    ],
+    "FLAnimatedImage": [
+      "~> 1.0.12"
     ]
   }
 }

@@ -10,7 +10,7 @@
 #import "ChatFace.h"
 @protocol ZXChatBoxFaceViewDelegate <NSObject>
 
-- (void) chatBoxFaceViewDidSelectedFace:(ChatFace *)face type:(TLFaceType)type;
+- (void) chatBoxFaceViewDidSelectedFace:(int)faceIndex faceGroup:(ChatFaceGroup *)faceGroup type:(TLFaceType)type;
 - (void) chatBoxFaceViewDeleteButtonDown;
 - (void) chatBoxFaceViewSendButtonDown;
 

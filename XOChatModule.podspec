@@ -55,5 +55,6 @@ Pod::Spec.new do |s|
   s.dependency 'AFNetworking', '~> 3.2.1'
   s.dependency 'YBImageBrowser/NOSD', '~> 3.0.6'
   s.dependency 'YBImageBrowser/VideoNOSD', '~> 3.0.6'
+  s.dependency 'FLAnimatedImage', '~> 1.0.12'
 
 end
