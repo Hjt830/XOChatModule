@@ -301,9 +301,36 @@
         NSLog(@"添加文件消息失败: %d", result);
     }
 }
-- (void)chatBoxViewControllerSendPosition:(XOChatBoxViewController *)chatboxViewController
+- (void)chatBoxViewControllerSendPosition:(XOChatBoxViewController *)chatboxViewController sendLocationLatitude:(double)latitude longitude:(double)longitude addressDesc:(nonnull NSString *)address
 {
-    
+    TIMLocationElem *locationElem = [[TIMLocationElem alloc] init];
+    locationElem.desc = address;
+    locationElem.latitude = latitude;
+    locationElem.longitude = longitude;
+    // 位置消息
+    TIMMessage *locationMsg = [[TIMMessage alloc] init];
+    int result = [locationMsg addElem:locationElem];
+    // 发送消息
+    if (0 == result) {
+        @XOWeakify(self);
+        int sendLocation = [self.conversation sendMessage:locationMsg succ:^{
+            @XOStrongify(self);
+            [self.chatMsgVC sendSuccessMessage:locationMsg];
+        } fail:^(int code, NSString *msg) {
+            @XOStrongify(self);
+            [self.chatMsgVC sendFailMessage:locationMsg];
+        }];
+        
+        // 将消息显示出来
+        if(0 == sendLocation) {
+            [self.chatMsgVC sendingMessage:locationMsg];
+        } else {
+            NSLog(@"发送位置消息失败 sendLocation: %d", sendLocation);
+        }
+    }
+    else {
+        NSLog(@"添加位置消息失败: %d", result);
+    }
 }
 - (void)chatBoxViewControllerSendCall:(XOChatBoxViewController *)chatboxViewController
 {

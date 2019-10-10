@@ -6,6 +6,8 @@
   
 */
 
+"chat.sure"             = "確定";
+"chat.cancel"           = "取消";
 
 "network.disconnected"  = "當前網絡不可用，請檢查設備網絡";
 
@@ -42,5 +44,14 @@
 "chat.keyboard.sound.release"       = "手指鬆開，取消發送";
 "chat.keyboard.sound.timeShort"     = "說話時間太短";
 "chat.keyboard.sound.time.left.%d"  = "還可以說%d秒";
+
+"chat.location.title"               = "位置";
+"chat.location.send"                = "發送";
+"chat.location.searchAddress"       = "搜索";
+"chat.location.navigation.aMap"     = "高德地圖";
+"chat.location.navigation.baidu"    = "百度地圖";
+"chat.location.navigation.apple"    = "蘋果地圖";
+"chat.location.navigation.google"   = "谷歌地圖";
+"chat.location.navigation.message"  = "導航";
 
 "chat.message.reSend"               = "重發消息嗎?";

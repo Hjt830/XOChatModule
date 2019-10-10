@@ -441,7 +441,7 @@ static XOChatClient *__chatClient = nil;
             TIMFileElem *fileElem = (TIMFileElem *)elem;
             NSString *filePath = nil;
             if (message.isSelf) {
-                filePath = [XOMsgFileDirectory(XOMsgFileTypeFile) stringByAppendingPathComponent:fileElem.path.lastPathComponent];
+                filePath = [XOMsgFileDirectory(XOMsgFileTypeFile) stringByAppendingPathComponent:fileElem.filename];
             } else {
                 NSString *filename = !XOIsEmptyString(fileElem.filename) ? fileElem.filename : [NSString stringWithFormat:@"%@.unknow", fileElem.uuid];
                 filePath = [XOMsgFileDirectory(XOMsgFileTypeFile) stringByAppendingPathComponent:filename];

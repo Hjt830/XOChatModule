@@ -6,8 +6,10 @@
   
 */
 
+"chat.sure"             = "Sure";
+"chat.cancel"           = "Cancel";
 
-"network.disconnected" = "Network disconnected, please check network";
+"network.disconnected"  = "Network disconnected, please check network";
 
 "tip.auth.success"      = "Authorized success";
 "tip.auth.fail"         = "Authorized fail";
@@ -42,5 +44,14 @@
 "chat.keyboard.sound.release"       = "Release the finger to cancel sending";
 "chat.keyboard.sound.timeShort"     = "Talking time is too short";
 "chat.keyboard.sound.time.left.%d"  = "Can also say %d seconds";
+
+"chat.location.title"               = "Location";
+"chat.location.send"                = "Send";
+"chat.location.searchAddress"       = "Search";
+"chat.location.navigation.aMap"     = "AMap";
+"chat.location.navigation.baidu"    = "Baidu Map";
+"chat.location.navigation.apple"    = "Apple Map";
+"chat.location.navigation.google"   = "Google Map";
+"chat.location.navigation.message"  = "Navigation";
 
 "chat.message.reSend"               = "Resend the message?";

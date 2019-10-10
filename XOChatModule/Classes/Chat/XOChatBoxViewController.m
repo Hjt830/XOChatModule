@@ -8,6 +8,7 @@
 
 #import "XOChatBoxViewController.h"
 #import "XODocumentPickerViewController.h"
+#import "XOLocationViewController.h"
 
 #import <TZImagePickerController/TZImagePickerController.h>
 #import <Photos/Photos.h>
@@ -23,7 +24,7 @@
 static NSTimeInterval MaxAudioRecordTime = 60.0f;
 static NSTimeInterval audioRecordTime = 0.0f;
 
-@interface XOChatBoxViewController () <ZXChatBoxDelegate, ZXChatBoxMoreViewDelegate, ZXChatBoxFaceViewDelegate, LGSoundRecorderDelegate, TZImagePickerControllerDelegate, UIDocumentPickerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface XOChatBoxViewController () <ZXChatBoxDelegate, ZXChatBoxMoreViewDelegate, ZXChatBoxFaceViewDelegate, LGSoundRecorderDelegate, TZImagePickerControllerDelegate, XOLocationViewControllerDelegate, UIDocumentPickerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 {
     int                 _seconds;   // 录音时间
     UIEdgeInsets        _safeInset;
@@ -594,9 +595,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
             [self takeFile];
             break;
         case 104:   // 位置
-            if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendPosition:)]) {
-                [self.delegate chatBoxViewControllerSendPosition:self];
-            }
+            [self pickLocation];
             break;
         case 105:   // 名片
             if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendCall:)]) {
@@ -722,6 +721,24 @@ static NSTimeInterval audioRecordTime = 0.0f;
         @XOStrongify(self);
         [self.TZImagePicker removeSelectedModel:obj];
     }];
+}
+
+- (void)pickLocation
+{
+    XOLocationViewController *locationVC = [[XOLocationViewController alloc] init];
+    locationVC.delegate = self;
+    locationVC.locationType = XOLocationTypeSend;
+    XOBaseNavigationController *nav = [[XOBaseNavigationController alloc] initWithRootViewController:locationVC];
+    [self.parentViewController.navigationController presentViewController:nav animated:YES completion:NULL];
+}
+
+#pragma mark ========================= XOLocationViewControllerDelegate =========================
+
+- (void)locationViewController:(XOLocationViewController *)locationViewController pickLocationLatitude:(double)latitude longitude:(double)longitude addressDesc:(NSString *)address
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(chatBoxViewControllerSendPosition:sendLocationLatitude:longitude:addressDesc:)]) {
+        [self.delegate chatBoxViewControllerSendPosition:self sendLocationLatitude:latitude longitude:longitude addressDesc:address];
+    }
 }
 
 #pragma mark =========================== UIDocumentPickerDelegate ===========================

@@ -1,66 +1,95 @@
 //
-//  ZFLocationViewController.m
-//  HTMessage
+//  XOLocationViewController.m
+//  XOChatModule_Example
 //
-//  Created by Lucas.Xu on 2017/12/8.
-//  Copyright © 2017年 Hefei Palm Peak Technology Co., Ltd. All rights reserved.
+//  Created by kenter on 2019/10/9.
+//  Copyright © 2019 kenter. All rights reserved.
 //
 
-#import "ZFLocationViewController.h"
-#import "POITableViewCell.h"
-#import "MJRefresh.h"
+#import "XOLocationViewController.h"
+#import "NSBundle+ChatModule.h"
+#import "UIImage+XOChatBundle.h"
 
-#import <MAMapKit/MAMapKit.h>
 #import <MapKit/MapKit.h>
-#import <AMapFoundationKit/AMapFoundationKit.h>
-#import <AMapLocationKit/AMapLocationKit.h>
-#import <AMapSearchKit/AMapSearchKit.h>
+#import <SVProgressHUD/SVProgressHUD.h>
 
-#define MapHeight KHEIGHT * (300.0/667.0)
+#define MapHeight KHEIGHT * (400.0/667.0)
 static NSString * const POITableViewCellID = @"POITableViewCellID";
 static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 
-@interface ZFLocationViewController ()<UISearchControllerDelegate,UISearchResultsUpdating,MAMapViewDelegate,AMapLocationManagerDelegate,AMapSearchDelegate,UITableViewDelegate,UITableViewDataSource, CLLocationManagerDelegate>
+@interface XOLocationViewController () <UISearchControllerDelegate, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, MKMapViewDelegate>
 
-@property (nonatomic, strong)UITableView        *tableView;
-@property (nonatomic ,strong)UITableView        *searchTableView;//用于搜索的tableView
-@property (nonatomic, strong)UISearchController *searchController;
-@property (nonatomic, strong)MAMapView          *mapView;
-@property (nonatomic, strong)UIButton           *locationBtn;
+@property (nonatomic, strong) UITableView        *tableView;
+@property (nonatomic ,strong) UITableView        *searchTableView; //用于搜索的tableView
+@property (nonatomic, strong) UISearchController *searchController;
+@property (nonatomic, strong) MKMapView          *mapView;
+@property (nonatomic, strong) UIButton           *locationBtn;
 
-@property (nonatomic, strong)UIView             *bottomView;
-@property (nonatomic, strong)UILabel            *addressLabel;
-@property (nonatomic, strong)UIButton           *navigationBtn;
+@property (nonatomic, strong) UIView             *bottomView;
+@property (nonatomic, strong) UILabel            *addressLabel;
+@property (nonatomic, strong) UIButton           *navigationBtn;
 
-@property (nonatomic ,assign)NSInteger          currentPage;
-@property (nonatomic ,assign)BOOL               isSelectedAddress;
-@property (nonatomic ,strong)NSIndexPath        *selectedIndexPath;
+@property (nonatomic, assign) NSInteger          currentPage;
+@property (nonatomic, assign) BOOL               isSelectedAddress;
+@property (nonatomic, strong) NSIndexPath        *selectedIndexPath;
 
-@property (nonatomic, strong)NSString           *addressString;
-@property (nonatomic ,strong)NSString           *city;//定位的当前城市，用于搜索功能
+@property (nonatomic, strong) NSString           *addressString;
+@property (nonatomic, strong) NSString           *city;//定位的当前城市，用于搜索功能
 
-@property (nonatomic,strong)NSArray             *dataArray;
-@property (nonatomic ,strong)NSArray            *tipsArray;//搜索提示的数组
+@property (nonatomic, strong) NSArray            *dataArray;
+@property (nonatomic, strong) NSArray            *tipsArray;//搜索提示的数组
 
-@property (nonatomic ,strong)AMapPOIAroundSearchRequest *request;
-@property (nonatomic, strong)AMapLocationManager        *locationManager;
-@property (nonatomic,strong)AMapSearchAPI               *mapSearch;
-@property (nonatomic ,strong)AMapPOI                    *currentPOI;//点击选择的当前的位置插入到数组中
-@property (nonatomic, assign)CLLocationCoordinate2D     currentLocationCoordinate;
-@property (nonatomic, assign)CLLocationCoordinate2D     startLocation;
+//@property (nonatomic, strong) AMapPOIAroundSearchRequest *request;
+@property (nonatomic, strong) CLLocationManager        *locationManager;
+//@property (nonatomic, strong) AMapSearchAPI              *mapSearch;
+//@property (nonatomic, strong) AMapPOI                    *currentPOI;//点击选择的当前的位置插入到数组中
+@property (nonatomic, assign) CLLocationCoordinate2D     currentLocationCoordinate;
+@property (nonatomic, assign) CLLocationCoordinate2D     startLocation;
 
 @end
 
-@implementation ZFLocationViewController
+@implementation XOLocationViewController
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    self.title = XOChatLocalizedString(@"chat.location.title");
+    
+    [self initilization];
+    
+    [self setupSubViews];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    if (XOLocationTypeSend == self.locationType) {
+        CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+        if (kCLAuthorizationStatusNotDetermined == status) {
+            [self.locationManager requestWhenInUseAuthorization];
+        }
+        else if (kCLAuthorizationStatusDenied == status || kCLAuthorizationStatusRestricted == status) {
+            [self showAlertAuthor:XORequestAuthLocation];
+        } else {
+            [SVProgressHUD showWithStatus:@"正在定位..."];
+            [self.locationManager startUpdatingLocation];
+        }
+    } else {
+        [self showMapPoint];
+        [self setCenterPoint];
+    }
+}
 
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
     
-    if (WXLocationTypeSend == self.locationType) {
+    if (XOLocationTypeSend == self.locationType) {
         self.searchController.searchBar.frame = CGRectMake(0, 0, KWIDTH, 44);
         self.mapView.frame = CGRectMake(0, 44, KWIDTH, MapHeight);
         self.tableView.frame = CGRectMake(0, (MapHeight + 44), KWIDTH, self.view.height - MapHeight - 44);
+        self.locationBtn.frame = CGRectMake(KWIDTH - 60, MapHeight - 70, 50, 50);
     } else {
         self.mapView.frame = CGRectMake(0, 0, KWIDTH, self.view.height - 64);
         self.bottomView.frame = CGRectMake(0, self.view.height - 64, KWIDTH, 64);
@@ -69,42 +98,9 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
     }
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    self.title = @"定位";
-    
-    [self initilization];
-    
-    [self setupSubViews];
-    
-    if (![CLLocationManager locationServicesEnabled] ||
-        kCLAuthorizationStatusAuthorizedAlways != [CLLocationManager authorizationStatus] ||
-        kCLAuthorizationStatusAuthorizedWhenInUse != [CLLocationManager authorizationStatus]) {
-        // 申请定位权限
-        CLLocationManager *manager = [[CLLocationManager alloc] init];
-        manager.delegate = self;
-        [manager requestWhenInUseAuthorization];
-    }
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    if (WXLocationTypeSend == self.locationType) {
-        // 定位
-        [self locateAction];
-    }
-    else {
-        [self showMapPoint];
-        [self setCenterPoint];
-    };
-}
-
 - (void)initilization
 {
-    if (WXLocationTypeSend == self.locationType) {
+    if (XOLocationTypeSend == self.locationType) {
         self.isSelectedAddress = NO;
         self.currentPage = 1;
         self.selectedIndexPath = [NSIndexPath indexPathForRow:-1 inSection:-1];
@@ -116,57 +112,70 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 - (void)setupSubViews
 {
     self.definesPresentationContext = YES;
+    if ([self respondsToSelector:@selector(setEdgesForExtendedLayout:)]) {
+        [self setEdgesForExtendedLayout:UIRectEdgeNone];
+    }
+    if (@available(iOS 11.0, *)) {
+        [UIScrollView appearance].contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+    } else {
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
     
     [self.view addSubview:self.mapView];
     
-    if (WXLocationTypeSend == self.locationType) {
-        
+    if (XOLocationTypeSend == self.locationType) {
         [self setupNav];
-        
         [self.mapView addSubview:self.locationBtn];
-        
         [self.view addSubview:self.tableView];
-        
         [self.view addSubview:self.searchController.searchBar];
     }
     else {
         [self.view addSubview:self.bottomView];
-        
         [self.bottomView addSubview:self.addressLabel];
-        
         [self.bottomView addSubview:self.navigationBtn];
     }
 }
 
 - (void)setupNav
 {
+    UIButton *cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
+    [cancelButton setTitle:XOChatLocalizedString(@"chat.cancel") forState:UIControlStateNormal];
+    [cancelButton setTitleColor:AppTinColor forState:UIControlStateNormal];
+    cancelButton.titleLabel.font = [UIFont systemFontOfSize:18];
+    [cancelButton addTarget:self action:@selector(cancelPick) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem.enabled = NO;
+    UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithCustomView:cancelButton];
+    
+    UIBarButtonItem *nagativeSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    nagativeSpacer.width = 10;
+    [self.navigationItem setLeftBarButtonItems:@[nagativeSpacer,cancelItem]];
+    
     UIButton *sendButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
-    [sendButton setTitle:NSLocalizedString(@"send", @"Send") forState:UIControlStateNormal];
-    [sendButton setTitleColor:BASE_GREEN_COLOR forState:UIControlStateNormal];
+    [sendButton setTitle:XOChatLocalizedString(@"chat.location.send") forState:UIControlStateNormal];
+    [sendButton setTitleColor:AppTinColor forState:UIControlStateNormal];
     sendButton.titleLabel.font = [UIFont systemFontOfSize:18];
     [sendButton addTarget:self action:@selector(sendLocation) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     UIBarButtonItem *sendItem = [[UIBarButtonItem alloc] initWithCustomView:sendButton];
     
-    UIBarButtonItem *nagativeSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    nagativeSpacer.width = -10;
-    [self.navigationItem setRightBarButtonItems:@[nagativeSpacer,sendItem]];
+    UIBarButtonItem *nagativeSpacer1 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    nagativeSpacer1.width = -10;
+    [self.navigationItem setRightBarButtonItems:@[nagativeSpacer1,sendItem]];
 }
 
 #pragma mark ====================== lazy =======================
 
-- (AMapLocationManager *)locationManager
+- (CLLocationManager *)locationManager
 {
     if (!_locationManager) {
-        _locationManager = [[AMapLocationManager alloc] init];
+        _locationManager = [[CLLocationManager alloc] init];
         [_locationManager setDelegate:self];
-        [_locationManager setDesiredAccuracy:kCLLocationAccuracyHundredMeters];
-        [_locationManager setLocationTimeout:6];
-        [_locationManager setReGeocodeTimeout:3];
+        [_locationManager setDesiredAccuracy:kCLLocationAccuracyNearestTenMeters];
+        [_locationManager setDistanceFilter:kCLDistanceFilterNone];
     }
     return _locationManager;
 }
-
+/*
 - (AMapSearchAPI *)mapSearch
 {
     if (!_mapSearch) {
@@ -187,7 +196,7 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
     }
     return _request;
 }
-
+*/
 - (UISearchController *)searchController
 {
     if (!_searchController) {
@@ -195,39 +204,47 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
         _searchController.delegate = self;
         _searchController.searchResultsUpdater = self;
         _searchController.dimsBackgroundDuringPresentation = NO;
+        _searchController.hidesNavigationBarDuringPresentation = NO;
+        _searchController.view.backgroundColor = [UIColor clearColor];
+        if (@available(iOS 9.1, *)) {
+            _searchController.obscuresBackgroundDuringPresentation = NO;
+        }
         
         UISearchBar *bar = _searchController.searchBar;
         bar.barStyle = UIBarStyleDefault;
         bar.translucent = YES;
         bar.barTintColor = [UIColor groupTableViewBackgroundColor];
-        bar.tintColor = AppTintColor;
+        bar.tintColor = AppTinColor;
         UIImageView *view = [[[bar.subviews objectAtIndex:0] subviews] firstObject];
-        view.layer.borderColor =FX_HEX_COLOR(0xdddddd, 1).CGColor;
+        view.layer.borderColor = RGBOF(0xdddddd).CGColor;
         view.layer.borderWidth = 0.7;
         
         bar.showsBookmarkButton = NO;
         UITextField *searchField = [bar valueForKey:@"searchField"];
-        searchField.placeholder = @"搜索地点";
+        searchField.placeholder = XOChatLocalizedString(@"chat.location.searchAddress");
         if (searchField) {
             [searchField setBackgroundColor:[UIColor whiteColor]];
             searchField.layer.cornerRadius = 3.0f;
-            searchField.layer.borderColor = FX_HEX_COLOR(0xdddddd, 1).CGColor;
+            searchField.layer.borderColor = RGBOF(0xdddddd).CGColor;
             searchField.layer.borderWidth = 0.7;
         }
     }
     return _searchController;
 }
 
-- (MAMapView *)mapView
+- (MKMapView *)mapView
 {
     if (!_mapView) {
-        _mapView = [[MAMapView alloc] initWithFrame:self.view.bounds];
+        _mapView = [[MKMapView alloc] initWithFrame:self.view.bounds];
         _mapView.delegate = self;
-        _mapView.mapType = MAMapTypeStandard;
+        _mapView.mapType = MKMapTypeStandard;
         _mapView.showsScale = YES;
+        _mapView.zoomEnabled = YES;
         _mapView.showsCompass = YES;
         _mapView.showsUserLocation = YES;
-        _mapView.userTrackingMode = MAUserTrackingModeFollow;
+        _mapView.userTrackingMode = MKUserTrackingModeFollow;
+        MKCoordinateSpan span = MKCoordinateSpanMake(0.021251, 0.016093);
+        [_mapView setRegion:MKCoordinateRegionMake(_mapView.userLocation.coordinate, span) animated:YES];
     }
     return _mapView;
 }
@@ -236,11 +253,10 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 {
     if (!_locationBtn) {
         _locationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _locationBtn.frame = CGRectMake(KWIDTH - 60, 240, 50, 50);
         [_locationBtn addTarget:self action:@selector(localButtonAction) forControlEvents:UIControlEventTouchUpInside];
         _locationBtn.layer.cornerRadius = 25;
         _locationBtn.clipsToBounds = YES;
-        [_locationBtn setImage:[UIImage imageNamed:@"message_location"] forState:UIControlStateNormal];
+        [_locationBtn setImage:[UIImage xo_imageNamedFromChatBundle:@"message_location"] forState:UIControlStateNormal];
     }
     return _locationBtn;
 }
@@ -253,16 +269,7 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
         _tableView.delegate = self;
         _tableView.dataSource = self;
         _tableView.tableFooterView = [UIView new];
-        @WXWeakify(self);
-        _tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
-            @WXStrongify(self);
-            self.currentPage ++ ;
-            self.request.page = self.currentPage;
-            self.request.location = [AMapGeoPoint locationWithLatitude:self.currentLocationCoordinate.latitude longitude:self.currentLocationCoordinate.longitude];
-            [self.mapSearch AMapPOIAroundSearch:self.request];
-        }];
-        
-        [_tableView registerNib:[UINib nibWithNibName:@"POITableViewCell" bundle:nil] forCellReuseIdentifier:POITableViewCellID];
+        [_tableView registerClass:[POITableViewCell class] forCellReuseIdentifier:POITableViewCellID];
     }
     return _tableView;
 }
@@ -275,7 +282,7 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
         _searchTableView.dataSource = self;
         _searchTableView.tableFooterView = [UIView new];
         
-        [_searchTableView registerNib:[UINib nibWithNibName:@"POITableViewCell" bundle:nil] forCellReuseIdentifier:POITableViewCellID];
+        [_tableView registerClass:[POITableViewCell class] forCellReuseIdentifier:POITableViewCellID];
     }
     return _searchTableView;
 }
@@ -304,7 +311,7 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 {
     if (!_navigationBtn) {
         _navigationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_navigationBtn setImage:[UIImage imageNamed:@"location_navigation"] forState:UIControlStateNormal];
+        [_navigationBtn setImage:[UIImage xo_imageNamedFromChatBundle:@"location_navigation"] forState:UIControlStateNormal];
         [_navigationBtn addTarget:self action:@selector(showNavifationSelect) forControlEvents:UIControlEventTouchUpInside];
     }
     return _navigationBtn;
@@ -312,12 +319,11 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 
 - (void)showNavifationSelect
 {
-    NSArray <NSString *> * titles = @[NSLocalizedString(@"location.navigation.aMap", nil),
-                                      NSLocalizedString(@"location.navigation.baidu", nil),
-                                      NSLocalizedString(@"location.navigation.apple", nil),
-                                      NSLocalizedString(@"location.navigation.google", nil),];
-    [self showSheetWithTitle:nil message:NSLocalizedString(@"location.navigation.message", nil) actions:titles complection:^(int index, NSString * _Nullable title) {
-        
+    NSArray <NSString *> * titles = @[XOChatLocalizedString(@"chat.location.navigation.aMap"),
+                                      XOChatLocalizedString(@"chat.location.navigation.baidu"),
+                                      XOChatLocalizedString(@"chat.location.navigation.apple"),
+                                      XOChatLocalizedString(@"chat.location.navigation.google")];
+    [self showSheetWithTitle:nil message:XOChatLocalizedString(@"chat.location.navigation.message") actions:titles redIndex:nil complection:^(int index, NSString * _Nullable title) {
         switch (index) {
             case 0:
                 [self navigationWithAMap];
@@ -341,63 +347,80 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
-    if (kCLAuthorizationStatusAuthorizedWhenInUse == status ||
-        kCLAuthorizationStatusAuthorizedAlways == status)
+    if (kCLAuthorizationStatusAuthorizedWhenInUse == status || kCLAuthorizationStatusAuthorizedAlways == status)
     {
-        if (WXLocationTypeSend == self.locationType) {
-            // 定位
-            [self locateAction];
-        }
-        else {
+        if (XOLocationTypeRecive == self.locationType) {
             [self showMapPoint];
             [self setCenterPoint];
-            [self locateAction];
         }
+        [SVProgressHUD showWithStatus:@"正在定位..."];
+        [self.locationManager startUpdatingLocation];
     }
-    else {
-        NSLog(@"取消定位授权");
+    else if (kCLAuthorizationStatusDenied == status || kCLAuthorizationStatusRestricted == status) {
+        [self showAlertAuthor:XORequestAuthLocation];
+    }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
+{
+    [SVProgressHUD dismiss];
+    if (locations && locations.count > 0) {
+        // 停止刷新
+        [manager stopUpdatingLocation];
+        
+        CLLocation *location = locations[0];
+        if (XOLocationTypeSend == self.locationType) {
+            self.currentLocationCoordinate = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude);
+            
+            // 保存 Device 的现语言
+            NSMutableArray *deviceLanguages = [[NSUserDefaults standardUserDefaults] objectForKey:@"AppleLanguages"];
+            // 强制转换成 App 当前语言
+            XOLanguageName language = [XOSettingManager defaultManager].language;
+            [[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:language,nil] forKey:@"AppleLanguages"];
+            
+            CLGeocoder *geocoder = [[CLGeocoder alloc] init];
+            [geocoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+               if (!error) {
+                   for (CLPlacemark *place in placemarks) {
+                        self.city = place.locality;
+                        NSString *administrativeArea = place.administrativeArea;
+                        if ([self.city isEqualToString:administrativeArea]) {
+                            // 四大直辖市
+                            self.addressString = [NSString stringWithFormat:@"%@%@", self.city, place.subLocality];
+                        } else {
+                            self.addressString = [NSString stringWithFormat:@"%@%@", administrativeArea, self.city];
+                        }
+                        break;
+                    }
+                }
+                // 还原 Device 的现语言
+                [[NSUserDefaults standardUserDefaults] setObject:deviceLanguages forKey:@"AppleLanguages"];
+                
+                // 添加搜索数据结果
+                if (self.currentPage == 1) {
+                    self.dataArray = [placemarks copy];
+                } else {
+                    NSMutableArray * moreArray = self.dataArray.mutableCopy;
+                    [moreArray addObjectsFromArray:placemarks];
+                    self.dataArray = moreArray;
+                }
+                [self.tableView reloadData];
+            }];
+            
+            [self showMapPoint];
+            [self setCenterPoint];
+//            self.request.location = [AMapGeoPoint locationWithLatitude:location.coordinate.latitude longitude:location.coordinate.longitude];
+//            [self.mapSearch AMapPOIAroundSearch:self.request];
+        } else {
+            self.startLocation = location.coordinate;
+        }
     }
 }
 
 #pragma mark ====================== 定位 =======================
 
-- (void)locateAction
-{
-    [SVProgressHUD showWithStatus:@"正在定位..."];
-    //带逆地理的单次定位
-    [self.locationManager requestLocationWithReGeocode:YES completionBlock:^(CLLocation *location, AMapLocationReGeocode *regeocode, NSError *error) {
-        [SVProgressHUD dismiss];
-        
-        if (error) {
-            [SVProgressHUD showInfoWithStatus:@"定位错误"];
-            [SVProgressHUD dismissWithDelay:1.3f];
-            WXLog(@"locError:{%ld - %@};",(long)error.code,error.localizedDescription);
-            if (error.code == AMapLocationErrorLocateFailed) {
-                return ;
-            }
-        }
-        //定位信息
-        WXLog(@"location:%@", location);
-        if (regeocode)
-        {
-            if (WXLocationTypeSend == self.locationType) {
-                self.currentLocationCoordinate = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude);
-                self.addressString = regeocode.formattedAddress;
-                self.city = regeocode.city;
-                [self showMapPoint];
-                [self setCenterPoint];
-                self.request.location = [AMapGeoPoint locationWithLatitude:location.coordinate.latitude longitude:location.coordinate.longitude];
-                [self.mapSearch AMapPOIAroundSearch:self.request];
-            } else {
-                self.startLocation = location.coordinate;
-            }
-        }
-    }];
-}
-
 - (void)showMapPoint {
-    [_mapView setZoomLevel:15.1 animated:YES];
-    if (WXLocationTypeSend == self.locationType) {
+    if (XOLocationTypeSend == self.locationType) {
         [_mapView setCenterCoordinate:self.currentLocationCoordinate animated:YES];
     } else {
         [_mapView setCenterCoordinate:self.location animated:YES];
@@ -405,90 +428,59 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 }
 
 - (void)setCenterPoint {
-    MAPointAnnotation * centerAnnotation = [[MAPointAnnotation alloc] init];//初始化注解对象
-    if (WXLocationTypeSend == self.locationType) {
+    MKPointAnnotation * centerAnnotation = [[MKPointAnnotation alloc] init];//初始化注解对象
+    if (XOLocationTypeSend == self.locationType) {
         centerAnnotation.coordinate = self.currentLocationCoordinate;//定位经纬度
     } else {
         centerAnnotation.coordinate = self.location;//定位经纬度
-        centerAnnotation.lockedToScreen = YES;
     }
     centerAnnotation.title = @"";
     centerAnnotation.subtitle = @"";
     [self.mapView addAnnotation:centerAnnotation];//添加注解
 }
 
-#pragma mark - MAMapView Delegate
-- (MAAnnotationView *)mapView:(MAMapView *)mapView viewForAnnotation:(id<MAAnnotation>)annotation
+#pragma mark ========================= MKMapViewDelegate =========================
+
+- (nullable MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation;
 {
-    if ([annotation isKindOfClass:[MAPointAnnotation class]]) {
-        MAPinAnnotationView *annotationView = (MAPinAnnotationView*)[mapView dequeueReusableAnnotationViewWithIdentifier:PointReuseIndentifier];
+    if ([annotation isKindOfClass:[MKPointAnnotation class]]) {
+        MKPinAnnotationView *annotationView = (MKPinAnnotationView*)[mapView dequeueReusableAnnotationViewWithIdentifier:PointReuseIndentifier];
         annotationView.canShowCallout= YES;       //设置气泡可以弹出，默认为NO
         annotationView.animatesDrop = YES;        //设置标注动画显示，默认为NO
-        if (WXLocationTypeSend == self.locationType) {
+        if (XOLocationTypeSend == self.locationType) {
             annotationView.draggable = YES;        //设置标注可以拖动，默认为NO
         } else {
             annotationView.draggable = NO;        //设置标注可以拖动，默认为NO
         }
-        annotationView.pinColor = MAPinAnnotationColorRed;
+        annotationView.pinTintColor = AppTinColor;
         return annotationView;
     }
     return nil;
 }
 
-- (void)mapView:(MAMapView *)mapView regionDidChangeAnimated:(BOOL)animated
+- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated;
 {
-    [self.mapView removeAnnotations:self.mapView.annotations];
-    
-    CLLocationCoordinate2D centerCoordinate = mapView.region.center;
-    self.currentLocationCoordinate = centerCoordinate;
-    
-    MAPointAnnotation * centerAnnotation = [[MAPointAnnotation alloc] init];
-    centerAnnotation.coordinate = centerCoordinate;
-    centerAnnotation.title = @"";
-    centerAnnotation.subtitle = @"";
-    [self.mapView addAnnotation:centerAnnotation];
-    //主动选择地图上的地点
-    if (!self.isSelectedAddress) {
-        [self.tableView setContentOffset:CGPointMake(0,0) animated:NO];
-        self.selectedIndexPath=[NSIndexPath indexPathForRow:0 inSection:0];
-        self.request.location = [AMapGeoPoint locationWithLatitude:centerCoordinate.latitude longitude:centerCoordinate.longitude];
-        self.currentPage = 1;
-        self.request.page = self.currentPage;
-        [self.mapSearch AMapPOIAroundSearch:self.request];
+    if (XOLocationTypeSend == self.locationType) {
+        [self.mapView removeAnnotations:self.mapView.annotations];
+        
+        CLLocationCoordinate2D centerCoordinate = mapView.region.center;
+        self.currentLocationCoordinate = centerCoordinate;
+        
+        MKPointAnnotation * centerAnnotation = [[MKPointAnnotation alloc] init];
+        centerAnnotation.coordinate = centerCoordinate;
+        centerAnnotation.title = @"";
+        centerAnnotation.subtitle = @"";
+        [self.mapView addAnnotation:centerAnnotation];
+        //主动选择地图上的地点
+        if (!self.isSelectedAddress) {
+            [self.tableView setContentOffset:CGPointMake(0,0) animated:NO];
+            self.selectedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+            //        self.request.location = [AMapGeoPoint locationWithLatitude:centerCoordinate.latitude longitude:centerCoordinate.longitude];
+            //        self.request.page = self.currentPage;
+            //        [self.mapSearch AMapPOIAroundSearch:self.request];
+        }
+        self.isSelectedAddress = NO;
     }
-    self.isSelectedAddress = NO;
-    
-}
-
-#pragma mark -AMapSearchDelegate
-- (void)onPOISearchDone:(AMapPOISearchBaseRequest *)request response:(AMapPOISearchResponse *)response{
-    NSMutableArray *remoteArray = response.pois.mutableCopy;
-    if (self.currentPOI) {
-        [remoteArray insertObject:self.currentPOI atIndex:0];
-    }
-    if (self.currentPage == 1) {
-        self.dataArray = remoteArray.copy;
-    }else{
-        NSMutableArray * moreArray = self.dataArray.mutableCopy;
-        [moreArray addObjectsFromArray:remoteArray];
-        self.dataArray = moreArray.copy;
-    }
-    
-    if (response.pois.count< 50) {
-        [self.tableView.mj_footer endRefreshingWithNoMoreData];
-    }else{
-        [self.tableView.mj_footer endRefreshing];
-    }
-    [self.tableView reloadData];
-    
-    
-}
-
-- (void)onInputTipsSearchDone:(AMapInputTipsSearchRequest *)request response:(AMapInputTipsSearchResponse *)response{
-    
-    self.tipsArray = response.tips;
-    [self.searchTableView reloadData];
-    
 }
 
 #pragma mark - UITableViewDelegate && UITableViewDataSource
@@ -504,19 +496,19 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 {
     POITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:POITableViewCellID forIndexPath:indexPath];
     if (tableView == self.tableView) {
-        AMapPOI *POIModel = self.dataArray[indexPath.row];
-        cell.nameLabel.text = POIModel.name;
-        cell.addressLable.text = [NSString stringWithFormat:@"%@%@%@%@",POIModel.province,POIModel.city,POIModel.district,POIModel.address];
+        CLPlacemark *placemark = self.dataArray[indexPath.row];
+        cell.POIName = placemark.name;
+        cell.addressName = [NSString stringWithFormat:@"%@%@%@%@%@", placemark.country, placemark.administrativeArea, placemark.locality, placemark.subLocality, placemark.thoroughfare];
         if (indexPath.row==self.selectedIndexPath.row){
-            cell.accessoryType=UITableViewCellAccessoryCheckmark;
-        }else{
-            cell.accessoryType=UITableViewCellAccessoryNone;
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryNone;
         }
     }
     else {
-        AMapTip *tipModel = self.tipsArray[indexPath.row];
-        cell.nameLabel.text = tipModel.name;
-        cell.addressLable.text = [NSString stringWithFormat:@"%@%@",tipModel.district,tipModel.address];
+//        AMapTip *tipModel = self.tipsArray[indexPath.row];
+//        cell.nameLabel.text = tipModel.name;
+//        cell.addressLable.text = [NSString stringWithFormat:@"%@%@",tipModel.district,tipModel.address];
     }
     
     return cell;
@@ -529,27 +521,27 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (self.tableView == tableView) {
-        self.selectedIndexPath=indexPath;
+        self.selectedIndexPath = indexPath;
         [tableView reloadData];
-        AMapPOI *POIModel = self.dataArray[indexPath.row];
-        CLLocationCoordinate2D locationCoordinate = CLLocationCoordinate2DMake(POIModel.location.latitude, POIModel.location.longitude);
+        CLPlacemark *placemark = self.dataArray[indexPath.row];
+        CLLocationCoordinate2D locationCoordinate = CLLocationCoordinate2DMake(placemark.location.coordinate.latitude, placemark.location.coordinate.longitude);
         [_mapView setCenterCoordinate:locationCoordinate animated:YES];
         self.isSelectedAddress = YES;
     }
     else{
         self.searchController.active = NO;
         [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
-        AMapTip *tipModel = self.tipsArray[indexPath.row];
-        CLLocationCoordinate2D locationCoordinate = CLLocationCoordinate2DMake(tipModel.location.latitude, tipModel.location.longitude);
-        [_mapView setCenterCoordinate:locationCoordinate animated:YES];
-        self.selectedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-
-        AMapPOI *POIModel = [AMapPOI new];
-        POIModel.address = [NSString stringWithFormat:@"%@%@",tipModel.district,tipModel.address];
-        POIModel.location = tipModel.location;
-        POIModel.name = tipModel.name;
-        self.currentPOI = POIModel;
-        [self.tableView reloadData];
+//        AMapTip *tipModel = self.tipsArray[indexPath.row];
+//        CLLocationCoordinate2D locationCoordinate = CLLocationCoordinate2DMake(tipModel.location.latitude, tipModel.location.longitude);
+//        [_mapView setCenterCoordinate:locationCoordinate animated:YES];
+//        self.selectedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+//
+//        AMapPOI *POIModel = [AMapPOI new];
+//        POIModel.address = [NSString stringWithFormat:@"%@%@",tipModel.district,tipModel.address];
+//        POIModel.location = tipModel.location;
+//        POIModel.name = tipModel.name;
+//        self.currentPOI = POIModel;
+//        [self.tableView reloadData];
     }
 }
 
@@ -562,69 +554,97 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 
 #pragma mark - UISearchControllerDelegate && UISearchResultsUpdating
 
-//谓词搜索过滤
+// 谓词搜索过滤
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
     if (searchController.searchBar.text.length == 0) {
         return;
     }
     [self.view addSubview:self.searchTableView];
-    AMapInputTipsSearchRequest *tips = [[AMapInputTipsSearchRequest alloc] init];
-    tips.keywords = searchController.searchBar.text;
-    tips.city = self.city;
-    [self.mapSearch AMapInputTipsSearch:tips];
     
+    NSString *address = searchController.searchBar.text;
+    if (!XOIsEmptyString(address)) {
+        CLGeocoder *geocoder = [[CLGeocoder alloc] init];
+        [geocoder geocodeAddressString:address completionHandler:^(NSArray<CLPlacemark *> * _Nullable placemarks, NSError * _Nullable error) {
+            if ([placemarks count] > 0 && error == nil)
+            {
+                // 处理第一个地址
+                CLPlacemark * placemark = [placemarks objectAtIndex:0];
+                // 设置地图显示的范围, 越小细节越清楚
+                MKCoordinateSpan span = MKCoordinateSpanMake(0.01, 0.01);
+                MKCoordinateRegion region = {placemark.location.coordinate, span};
+                // 设置地图中心位置为搜索到的位置
+                [self.mapView setRegion:region];
+                // 创建一个MKPointAnnotation，该对象将作为地图锚点
+                MKPointAnnotation *point = [[MKPointAnnotation alloc]init];
+                // 设置地图锚点的坐标
+                point.coordinate = placemark.location.coordinate;
+                // 设置地图锚点的标题
+                point.title = placemark.name;
+                // 设置地图锚点的副标题
+                point.subtitle = [NSString stringWithFormat:@"%@%@%@%@%@", placemark.country, placemark.administrativeArea, placemark.locality, placemark.subLocality, placemark.thoroughfare];
+                // 将地图锚点添加到地图上
+                [self.mapView addAnnotation:point];
+                // 选中指定锚点
+                [self.mapView selectAnnotation:point animated:YES];
+            }
+            else {
+                NSLog(@"没有搜索到匹配数据");
+            }
+            
+            // 添加搜索数据结果
+            if (self.currentPage == 1) {
+                self.dataArray = [placemarks copy];
+            } else {
+                NSMutableArray * moreArray = self.dataArray.mutableCopy;
+                [moreArray addObjectsFromArray:placemarks];
+                self.dataArray = moreArray;
+            }
+            [self.tableView reloadData];
+        }];
+    }
 }
 
 #pragma mark - UISearchControllerDelegate代理
-- (void)willPresentSearchController:(UISearchController *)searchController{
-    self.searchController.searchBar.frame = CGRectMake(0, 0, self.searchController.searchBar.frame.size.width, 44.0);
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
-    self.mapView.frame = CGRectMake(0, 64, KWIDTH, 300);
-    
-}
-- (void)willDismissSearchController:(UISearchController *)searchController{
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent ];
-}
 
-
-- (void)didDismissSearchController:(UISearchController *)searchController{
-    self.searchController.searchBar.frame = CGRectMake(0, 64, self.searchController.searchBar.frame.size.width, 44.0);
-    self.mapView.frame = CGRectMake(0, 64 + 44, KWIDTH, 300);
-    
+- (void)didDismissSearchController:(UISearchController *)searchController
+{
     [self.searchTableView removeFromSuperview];
 }
 
-#pragma mark - buttonAction
+#pragma mark ========================= touch event =========================
+
+- (void)cancelPick
+{
+    [self.locationManager stopUpdatingLocation];
+    [self.navigationController dismissViewControllerAnimated:YES completion:NULL];
+}
+
 - (void)sendLocation
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(sendLocationLatitude:longitude:andAddress:andAddressSnapshotImage:imageSize:andName:)]) {
+    [self.locationManager stopUpdatingLocation];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(locationViewController:pickLocationLatitude:longitude:addressDesc:)]) {
         
-        AMapPOI *POIModel = self.dataArray[self.selectedIndexPath.row];
-        __block NSString *address = [NSString stringWithFormat:@"%@%@%@", POIModel.city, POIModel.district, POIModel.address];
-        __block CGRect snapshotRect = CGRectMake(0, 0, KWIDTH, KWIDTH *2 /3.0);
-        [self.mapView takeSnapshotInRect:snapshotRect withCompletionBlock:^(UIImage *resultImage, CGRect rect) {
-            [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-                __block NSData *resultData = UIImagePNGRepresentation(resultImage);
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self.delegate sendLocationLatitude:POIModel.location.latitude longitude:POIModel.location.longitude andAddress:address andAddressSnapshotImage:resultData imageSize:snapshotRect.size andName:POIModel.name];
-                }];
-            }];
-        }];
+        CLPlacemark *placemark = self.dataArray[self.selectedIndexPath.row];
+        double latitude = placemark.location.coordinate.latitude;
+        double longitude = placemark.location.coordinate.longitude;
+        NSString *address = [NSString stringWithFormat:@"%@%@%@%@%@", placemark.country, placemark.administrativeArea, placemark.locality, placemark.subLocality, placemark.thoroughfare];
+        [self.delegate locationViewController:self pickLocationLatitude:latitude longitude:longitude addressDesc:address];
     }
-    [self.navigationController popViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:NULL];
 }
 
-- (void)localButtonAction{
-    [self locateAction];
+- (void)localButtonAction
+{
+    [SVProgressHUD showWithStatus:@"正在定位..."];
+    [self.locationManager startUpdatingLocation];
 }
-
 
 // 高德导航
 - (void)navigationWithAMap
 {
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"iosamap://"]]) {
-        NSString *urlsting =[[NSString stringWithFormat:@"iosamap://path?sourceApplication=%@&sid=BGVIS1&slat=%f&slon=%f&sname=%@&did=BGVIS2&dlat=%f&dlon=%f&dname=%@&dev=0&m=0&t=0", @"weixun", self.startLocation.latitude, self.startLocation.longitude, @"我的位置", self.location.latitude, self.location.longitude, self.address] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *urlsting =[[NSString stringWithFormat:@"iosamap://path?sourceApplication=%@&sid=BGVIS1&slat=%f&slon=%f&sname=%@&did=BGVIS2&dlat=%f&dlon=%f&dname=%@&dev=0&m=0&t=0", @"xochat", self.startLocation.latitude, self.startLocation.longitude, @"我的位置", self.location.latitude, self.location.longitude, self.address] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlsting]];
     }
     else {
@@ -688,6 +708,72 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
             }
         } cancelComplection:nil];
     }
+}
+
+@end
+
+
+
+
+@interface POITableViewCell ()
+
+@property (strong, nonatomic) UILabel *nameLabel;
+@property (strong, nonatomic) UILabel *addressLabel;
+
+@end
+
+@implementation POITableViewCell
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        
+        [self.contentView addSubview:self.nameLabel];
+        [self.contentView addSubview:self.addressLabel];
+    }
+    return self;
+}
+
+- (UILabel *)nameLabel
+{
+    if (!_nameLabel) {
+        _nameLabel = [[UILabel alloc] init];
+        _nameLabel.textColor = [UIColor darkTextColor];
+        _nameLabel.font = [UIFont systemFontOfSize:17.0f];
+        _nameLabel.textAlignment = NSTextAlignmentLeft;
+    }
+    return _nameLabel;
+}
+
+- (UILabel *)addressLabel
+{
+    if (!_addressLabel) {
+        _addressLabel = [[UILabel alloc] init];
+        _addressLabel.textColor = [UIColor lightGrayColor];
+        _addressLabel.font = [UIFont systemFontOfSize:14.0f];
+        _addressLabel.textAlignment = NSTextAlignmentLeft;
+    }
+    return _addressLabel;
+}
+
+- (void)setPOIName:(NSString *)POIName
+{
+    _POIName = [POIName copy];
+    self.nameLabel.text = _POIName;
+}
+
+- (void)setAddressName:(NSString *)addressName
+{
+    _addressName = [addressName copy];
+    self.addressLabel.text = _addressName;
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    self.nameLabel.frame = CGRectMake(20, 0, self.width - 50, 30);
+    self.addressLabel.frame = CGRectMake(20, 30, self.width - 50, 20);
 }
 
 @end

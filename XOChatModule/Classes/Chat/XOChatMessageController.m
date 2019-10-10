@@ -7,6 +7,7 @@
 //
 
 #import "XOChatMessageController.h"
+#import "XOLocationViewController.h"
 #import "ZXChatHelper.h"
 
 #import "XOChatClient.h"
@@ -887,11 +888,11 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
         }
         else if ([elem isKindOfClass:[TIMFileElem class]])
         {
-            NSLog(@"文件消息 ==============");
+            [self readFileMessageWith:message];
         }
         else if ([elem isKindOfClass:[TIMLocationElem class]])
         {
-            NSLog(@"位置消息 ==============");
+            [self readLocationMessageWith:message];
         }
     }
 }
@@ -1181,8 +1182,7 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
     if (message.isSelf) {
         NSString *soundName = [soundElem.path lastPathComponent];
         soundPath = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:soundName];
-    }
-    else {
+    } else {
         NSString *soundName = [NSString stringWithFormat:@"%@.mp3", soundElem.uuid];
         soundPath = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:soundName];
     }
@@ -1204,6 +1204,69 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
     }
 }
 
+// 读取文件消息
+- (void)readFileMessageWith:(TIMMessage *)message
+{
+    TIMFileElem *fileElem = (TIMFileElem *)[message getElem:0];
+    NSString *filename = !XOIsEmptyString(fileElem.filename) ? fileElem.filename : [NSString stringWithFormat:@"%@.unknow", fileElem.uuid];
+    NSString *filePath = [XOMsgFileDirectory(XOMsgFileTypeFile) stringByAppendingPathComponent:filename];
+    BOOL isFileExist = [XOFM fileExistsAtPath:filePath];
+    
+    // 文件存在
+    if (isFileExist) {
+        NSURL *fileURL = [NSURL fileURLWithPath:filePath];
+        UIDocumentInteractionController *documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+        documentInteractionController.delegate = self;
+        documentInteractionController.name = filename;
+        [documentInteractionController presentPreviewAnimated:YES];
+    }
+    // 文件不存在
+    else {
+        // 是否正在下载中
+        BOOL isDownloading = [[XOChatClient shareClient] isOnDownloading:message];
+        BOOL isWaitDownload = [[XOChatClient shareClient] isWaitingDownload:message];
+        if (!isDownloading && !isWaitDownload) {
+            // 开启下载
+            [[XOChatClient shareClient] scheduleDownloadTask:message];
+        }
+    }
+}
+
+// 读取定位
+- (void)readLocationMessageWith:(TIMMessage *)message
+{
+    TIMLocationElem *locationElem = (TIMLocationElem *)[message getElem:0];
+    CLLocationCoordinate2D location = CLLocationCoordinate2DMake(locationElem.latitude, locationElem.longitude);
+    
+    XOLocationViewController *locationVC = [[XOLocationViewController alloc] init];
+    locationVC.locationType = XOLocationTypeRecive;
+    locationVC.location = location;
+    locationVC.address = locationElem.desc;
+    [self.navigationController pushViewController:locationVC animated:YES];
+}
+
+#pragma mark ====================== UIDocumentInteractionControllerDelegate =======================
+
+- (UIViewController *)documentInteractionControllerViewControllerForPreview:(UIDocumentInteractionController *)controller
+{
+    return self.parentViewController.navigationController;
+}
+- (void)documentInteractionControllerWillBeginPreview:(UIDocumentInteractionController *)controller
+{
+    [[UINavigationBar appearance] setTintColor:AppTinColor];
+    [[UINavigationBar appearance] setBarTintColor:AppTinColor];
+    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor blackColor],
+                                                           NSFontAttributeName: [UIFont boldSystemFontOfSize:19.0f]}];
+}
+- (void)documentInteractionControllerDidEndPreview:(UIDocumentInteractionController *)controller
+{
+    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+    [[UINavigationBar appearance] setBarTintColor:[UIColor whiteColor]];
+    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor blackColor],
+                                                           NSFontAttributeName: [UIFont boldSystemFontOfSize:19.0f]}];
+}
+
+#pragma mark ========================= YBImageBrowserDelegate =========================
 /**
  页码变化
  
@@ -1398,7 +1461,17 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
     // 位置消息
     else if ([elem isKindOfClass:[TIMLocationElem class]])
     {
-        size = CGSizeMake(FileWidth + 16, FileHeight + MsgCellIconMargin * 2);
+        TIMLocationElem *locationElem = (TIMLocationElem *)[message getElem:0];
+        UILabel *label = [[UILabel alloc] init];
+        [label setNumberOfLines:0];
+        [label setFont:[UIFont systemFontOfSize:16.0f]];
+        label.text = locationElem.desc;
+        CGFloat maxWidth = standradW - (10 + 40 + 5) * 2 - 40 - 23;
+        size = [label sizeThatFits:CGSizeMake(maxWidth, MAXFLOAT)];
+        CGFloat aboutH = size.height + 18 + MsgCellIconMargin * 2; // label的高度加上 距离泡泡上下边距之和 和 泡泡距离cell上下边距之和
+        CGFloat relHeight = aboutH <= height ? height : aboutH;
+        
+        size = CGSizeMake(size.width, relHeight);
     }
     // 表情消息
     else if ([elem isKindOfClass:[TIMFaceElem class]])

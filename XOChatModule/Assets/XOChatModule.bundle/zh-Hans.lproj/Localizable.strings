@@ -6,8 +6,10 @@
   
 */
 
+"chat.sure"             = "确定";
+"chat.cancel"           = "取消";
 
-"network.disconnected" = "当前网络不可用，请检查设备网络";
+"network.disconnected"  = "当前网络不可用，请检查设备网络";
 
 "tip.auth.success"      = "授权成功";
 "tip.auth.fail"         = "授权失败";
@@ -42,5 +44,14 @@
 "chat.keyboard.sound.release"       = "手指松开，取消发送";
 "chat.keyboard.sound.timeShort"     = "说话时间太短";
 "chat.keyboard.sound.time.left.%d"  = "还可以说%d秒";
+
+"chat.location.title"               = "位置";
+"chat.location.send"                = "发送";
+"chat.location.searchAddress"       = "搜索";
+"chat.location.navigation.aMap"     = "高德地图";
+"chat.location.navigation.baidu"    = "百度地图";
+"chat.location.navigation.apple"    = "苹果地图";
+"chat.location.navigation.google"   = "谷歌地图";
+"chat.location.navigation.message"  = "导航";
 
 "chat.message.reSend"               = "重发消息吗?";

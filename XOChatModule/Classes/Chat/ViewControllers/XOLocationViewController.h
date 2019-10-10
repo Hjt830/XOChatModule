@@ -1,33 +1,45 @@
 //
-//  ZFLocationViewController.h
-//  HTMessage
+//  XOLocationViewController.h
+//  XOChatModule_Example
 //
-//  Created by Lucas.Xu on 2017/12/8.
-//  Copyright © 2017年 Hefei Palm Peak Technology Co., Ltd. All rights reserved.
+//  Created by kenter on 2019/10/9.
+//  Copyright © 2019 kenter. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <XOBaseLib/XOBaseLib.h>
+#import <CoreLocation/CoreLocation.h>
 
-@protocol ZFLocationViewControllerDelegate <NSObject>
+@class XOLocationViewController;
+@protocol XOLocationViewControllerDelegate <NSObject>
 
 @optional
-- (void)sendLocationLatitude:(double)latitude longitude:(double)longitude andAddress:(NSString *)address andAddressSnapshotImage:(NSData *)imageData imageSize:(CGSize)size andName:(NSString *)name;
+- (void)locationViewController:(XOLocationViewController *)locationViewController pickLocationLatitude:(double)latitude longitude:(double)longitude addressDesc:(NSString *)address;
 @end
 
 
-typedef NS_ENUM(NSUInteger, WXLocationType) {
-    WXLocationTypeSend,     // 发送定位
-    WXLocationTypeRecive,   // 查看定位
+typedef NS_ENUM(NSUInteger, XOLocationType) {
+    XOLocationTypeSend,     // 发送定位
+    XOLocationTypeRecive,   // 查看定位
 };
 
 
-@interface ZFLocationViewController : WXBaseViewController
+@interface XOLocationViewController : XOBaseViewController
 
-@property (nonatomic, assign) WXLocationType locationType;
+@property (nonatomic, assign) XOLocationType locationType;
 
-@property (nonatomic, assign) CLLocationCoordinate2D location;  // WXLocationTypeRecive 时必传
-@property (nonatomic, copy) NSString *address;                  // WXLocationTypeRecive 时传
+@property (nonatomic, assign) CLLocationCoordinate2D location;  // XOLocationTypeRecive 时必传
+@property (nonatomic, copy) NSString *address;                  // XOLocationTypeRecive 时传
 
-@property (nonatomic, assign) id <ZFLocationViewControllerDelegate> delegate;
+@property (nonatomic, assign) id <XOLocationViewControllerDelegate> delegate;
+
+@end
+
+
+
+
+@interface POITableViewCell : UITableViewCell
+
+@property (nonatomic, copy) NSString               *POIName;
+@property (nonatomic, copy) NSString               *addressName;
 
 @end
