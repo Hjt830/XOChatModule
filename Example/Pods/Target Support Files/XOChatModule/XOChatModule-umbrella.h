@@ -24,6 +24,7 @@
 #import "ZXChatFaceItemView.h"
 #import "ZXChatFaceMenuView.h"
 #import "XODocumentPickerViewController.h"
+#import "XOLocationViewController.h"
 #import "WXFileMessageCell.h"
 #import "WXImageMessageCell.h"
 #import "WXLocationMessageCell.h"

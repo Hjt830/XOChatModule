@@ -17,7 +17,6 @@ PODS:
   - CTMediator (25)
   - GCDMulticastDelegate (1.0.0)
   - GTMBase64 (1.0.1)
-  - MBProgressHUD (1.1.0)
   - MJRefresh (3.2.0)
   - ReactiveObjC (3.1.1)
   - SDWebImage (5.0.6):
@@ -37,7 +36,6 @@ PODS:
     - AFNetworking (~> 3.2.1)
     - CTMediator (~> 25)
     - GCDMulticastDelegate (~> 1.0.0)
-    - MBProgressHUD (~> 1.1.0)
     - ReactiveObjC (~> 3.1.1)
     - SVProgressHUD (~> 2.2.5)
     - TXIMSDK_iOS (~> 4.4.627)
@@ -65,7 +63,6 @@ SPEC REPOS:
     - CTMediator
     - GCDMulticastDelegate
     - GTMBase64
-    - MBProgressHUD
     - MJRefresh
     - ReactiveObjC
     - SDWebImage
@@ -84,7 +81,6 @@ SPEC CHECKSUMS:
   CTMediator: 830c1fc204b3a6abf2a059510c7380f56343da0f
   GCDMulticastDelegate: 3c0ae43d8998623db0876c77d7ae2c3844afeba8
   GTMBase64: f0f91be06a7a20b84c8e4fee30c0430395091d82
-  MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MJRefresh: ed450d6eb9d3346a2cb033ab7eb6de090aeef437
   ReactiveObjC: 011caa393aa0383245f2dcf9bf02e86b80b36040
   SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
@@ -92,7 +88,7 @@ SPEC CHECKSUMS:
   TXIMSDK_iOS: 637af83382870a7da50cd05eebf9a7e280440885
   TZImagePickerController: bf4c57b98d8707fce41ea6be872414a71c7a8c9d
   XOBaseLib: cfd2dd1dd7e65ceb31ba22fc63b0eacecd3185c3
-  XOChatModule: baa6af8937cb7b8aad4f04dabbda4aafac0a7b81
+  XOChatModule: 03b8af34ef8908550b9aad96105144ae3d74264f
   YBImageBrowser: 59d3e8e035351a9f2f89760742628329378a634b
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
