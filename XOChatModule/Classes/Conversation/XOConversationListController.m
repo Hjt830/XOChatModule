@@ -7,10 +7,11 @@
 //
 
 #import "XOConversationListController.h"
+#import "XOContactListViewController.h"
+#import "XOChatViewController.h"
 
 #import "XOConversationListCell.h"
 
-#import "XOChatViewController.h"
 #import <XOBaseLib/XOBaseLib.h>
 #import "XOChatModule.h"
 #import "XOChatClient.h"
@@ -97,6 +98,14 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
     [self.headerView addSubview:self.groupChatView];
     [self.view addSubview:self.headerView];
     [self.view addSubview:self.tableView];
+    
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.frame = CGRectMake(0, 0, 64, 44);
+    [button setTitleColor:[UIColor darkTextColor] forState:UIControlStateNormal];
+    [button setTitle:XOChatLocalizedString(@"contact.addressbook") forState:UIControlStateNormal];
+    [button addTarget:self action:@selector(contactList) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *bbi = [[UIBarButtonItem alloc] initWithCustomView:button];
+    self.navigationItem.rightBarButtonItem = bbi;
 }
 
 - (void)viewDidLayoutSubviews
@@ -133,6 +142,14 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
         self.groupChatView.frame = CGRectMake(_safeInset.left, self.systemView.bottom + Margin, self.view.width - (_safeInset.left + _safeInset.right), 70);
     }
     self.tableView.frame = CGRectMake(_safeInset.left + 10, self.headerView.height + Margin, self.view.width - 20 - (_safeInset.left + _safeInset.right), self.view.height - (self.headerView.height + Margin));
+}
+
+#pragma mark ========================= touch event =========================
+
+- (void)contactList
+{
+    XOContactListViewController *contactListVC = [[XOContactListViewController alloc] init];
+    [self.navigationController pushViewController:contactListVC animated:YES];
 }
 
 #pragma mark ====================== load data =======================
@@ -416,26 +433,6 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 {
     XOConversationListCell *cell = [tableView dequeueReusableCellWithIdentifier:ConversationListCellID forIndexPath:indexPath];
     cell.conversation = [self.dataSource objectAtIndex:indexPath.row];
-    
-//    if (0 == indexPath.row && cell.layer.mask == nil) {
-//        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, tableView.width, 70)
-//                                                       byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight
-//                                                             cornerRadii:CGSizeMake(8, 8)];
-//        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-//        maskLayer.frame = cell.bounds;
-//        maskLayer.path = maskPath.CGPath;
-//        cell.layer.mask = maskLayer;
-//    }
-//    else if (self.dataSource.count - 1 == indexPath.row && cell.layer.mask == nil) {
-//        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, tableView.width, 70)
-//                                                       byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight
-//                                                             cornerRadii:CGSizeMake(8, 8)];
-//        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-//        maskLayer.frame = cell.bounds;
-//        maskLayer.path = maskPath.CGPath;
-//        cell.layer.mask = maskLayer;
-//    }
-    
     return cell;
 }
 

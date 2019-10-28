@@ -16,6 +16,9 @@ PODS:
     - AFNetworking/NSURLSession
   - CTMediator (25)
   - FLAnimatedImage (1.0.12)
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
   - GCDMulticastDelegate (1.0.0)
   - GTMBase64 (1.0.1)
   - MJRefresh (3.2.0)
@@ -33,10 +36,11 @@ PODS:
     - SDWebImage (~> 5.0.6)
     - SVProgressHUD (~> 2.2.5)
     - TZImagePickerController (~> 3.2.1)
-  - XOChatModule (0.0.1):
+  - XOChatModule (0.0.2):
     - AFNetworking (~> 3.2.1)
     - CTMediator (~> 25)
     - FLAnimatedImage (~> 1.0.12)
+    - FMDB (~> 2.7.5)
     - GCDMulticastDelegate (~> 1.0.0)
     - ReactiveObjC (~> 3.1.1)
     - SVProgressHUD (~> 2.2.5)
@@ -60,10 +64,11 @@ DEPENDENCIES:
 SPEC REPOS:
   http://192.168.1.119/xxoogo_livechat/xxoospecs.git:
     - XOBaseLib
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - AFNetworking
     - CTMediator
     - FLAnimatedImage
+    - FMDB
     - GCDMulticastDelegate
     - GTMBase64
     - MJRefresh
@@ -83,6 +88,7 @@ SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   CTMediator: 830c1fc204b3a6abf2a059510c7380f56343da0f
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GCDMulticastDelegate: 3c0ae43d8998623db0876c77d7ae2c3844afeba8
   GTMBase64: f0f91be06a7a20b84c8e4fee30c0430395091d82
   MJRefresh: ed450d6eb9d3346a2cb033ab7eb6de090aeef437
@@ -92,10 +98,10 @@ SPEC CHECKSUMS:
   TXIMSDK_iOS: 637af83382870a7da50cd05eebf9a7e280440885
   TZImagePickerController: bf4c57b98d8707fce41ea6be872414a71c7a8c9d
   XOBaseLib: cfd2dd1dd7e65ceb31ba22fc63b0eacecd3185c3
-  XOChatModule: b7c36321e3d62014f84e5ae60a4ea8890d92fa90
+  XOChatModule: 496fb54f97cba422f089e2ef75a0cab9c3d59509
   YBImageBrowser: 59d3e8e035351a9f2f89760742628329378a634b
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
 PODFILE CHECKSUM: ad87e188dd2dd634ad31e9e2f3b674cb151f1207
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.8.3

@@ -26,6 +26,18 @@
 "conversation.top.title"        = "Top";
 "conversation.unTop.title"      = "Unpin";
 
+"conversation.message.image" = "[picture]";
+"conversation.message.video" = "[video]";
+"conversation.message.sound" = "[voice]";
+"conversation.message.file" = "[file]";
+"conversation.message.face" = "[expression]";
+"conversation.message.location" = "[location]";
+"conversation.message.redPacket"= "[red envelope]";
+"conversation.message.transfer" = "[transfer]";
+"conversation.message.carte" = "[business card]";
+"conversation.message.aCall" = "[Voice Call]";
+"conversation.message.vCall" = "[Video Call]";
+
 "chat.more.album"       = "Album";
 "chat.more.camera"      = "Camera";
 "chat.more.voice.call"  = "Sound call";
@@ -53,5 +65,14 @@
 "chat.location.navigation.apple"    = "Apple Map";
 "chat.location.navigation.google"   = "Google Map";
 "chat.location.navigation.message"  = "Navigation";
-
 "chat.message.reSend"               = "Resend the message?";
+
+"contact.addressbook"               = "Address Book";
+"contact.friend"                    = "Friend";
+"contact.group"                     = "Group";
+"contact.contactNum"                = "friends";
+"contact.groupNum"                  = "groups";
+"contact.delete.title"              = "Delete";
+"contact.delete.alertMsg"           = "Are you sure you want to delete this contact?";
+"contact.remark.title"              = "remark name";
+"contact.remark.placeholder"        = "Add a remark name";

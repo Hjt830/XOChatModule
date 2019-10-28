@@ -49,10 +49,13 @@ static XOChatClient *__chatClient = nil;
         _languageBundle = [NSBundle bundleWithPath:languagePath];
         _conversationManager = [XOConversationManager defaultManager];
         _messageManager = [XOMessageManager defaultManager];
+        _contactManager = [XOContactManager defaultManager];
         _multiDelegate = (GCDMulticastDelegate <XOChatClientProtocol> *)[[GCDMulticastDelegate alloc] init];
         
         // 开启后台常驻线程
         [self startBackgroundThread];
+        
+        [self.contactManager initDataBase];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(languageDidChange) name:XOLanguageDidChangeNotification object:nil];
     }
@@ -132,11 +135,14 @@ static XOChatClient *__chatClient = nil;
         
         if (success) {success();}
         
-        // 获取好友列表
-        [[XOContactManager defaultManager] asyncFriendList];
-        
-        // 获取群列表
-        [[XOContactManager defaultManager] asyncGroupList];
+        // 延迟两秒，等待数据库初始化完成
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            // 获取好友列表
+            [[XOContactManager defaultManager] asyncFriendList];
+            
+            // 获取群列表
+            [[XOContactManager defaultManager] asyncGroupList];
+        });
         
     } fail:^(int code, NSString *msg) {
         

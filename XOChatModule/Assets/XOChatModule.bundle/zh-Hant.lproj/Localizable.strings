@@ -26,6 +26,18 @@
 "conversation.top.title"        = "置頂";
 "conversation.unTop.title"      = "取消置頂";
 
+"conversation.message.image"    = "[圖片]";
+"conversation.message.video"    = "[視頻]";
+"conversation.message.sound"    = "[語音]";
+"conversation.message.file"     = "[文件]";
+"conversation.message.face"     = "[表情]";
+"conversation.message.location" = "[位置]";
+"conversation.message.redPacket"= "[紅包]";
+"conversation.message.transfer" = "[轉賬]";
+"conversation.message.carte"    = "[名片]";
+"conversation.message.aCall"    = "[語音通話]";
+"conversation.message.vCall"    = "[視頻通話]";
+
 "chat.more.album"       = "照片";
 "chat.more.camera"      = "拍照";
 "chat.more.voice.call"  = "語音通話";
@@ -53,5 +65,14 @@
 "chat.location.navigation.apple"    = "蘋果地圖";
 "chat.location.navigation.google"   = "谷歌地圖";
 "chat.location.navigation.message"  = "導航";
-
 "chat.message.reSend"               = "重發消息嗎?";
+
+"contact.addressbook"               = "通訊錄";
+"contact.friend"                    = "好友";
+"contact.group"                     = "群組";
+"contact.contactNum"                = "個好友";
+"contact.groupNum"                  = "個群組";
+"contact.delete.title"              = "刪除";
+"contact.delete.alertMsg"           = "確定刪除該聯繫人嗎?";
+"contact.remark.title"              = "備註名";
+"contact.remark.placeholder"        = "添加備註名";

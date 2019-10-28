@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'XOChatModule'
-  s.version          = '0.0.1'
+  s.version          = '0.0.2'
   s.summary          = 'XXOOGO项目的聊天模块'
 
 # This description is used to generate tags and improve search results.
@@ -56,5 +56,6 @@ Pod::Spec.new do |s|
   s.dependency 'YBImageBrowser/NOSD', '~> 3.0.6'
   s.dependency 'YBImageBrowser/VideoNOSD', '~> 3.0.6'
   s.dependency 'FLAnimatedImage', '~> 1.0.12'
+  s.dependency 'FMDB', '~> 2.7.5'
 
 end

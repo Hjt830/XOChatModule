@@ -1079,11 +1079,13 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
                         NSString *imagePath = nil;
                         NSURL *thumbImageURL = nil;
                         if (obj.isSelf) {
-                            imagePath = imageElem.path;
+                            imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageElem.path.lastPathComponent];
                             NSString *thumbImageName = [[imagePath lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
                             NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
                             thumbImageURL = [NSURL fileURLWithPath:thumbImagePath];
                         }
+                        NSLog(@"imagePath: %d", XOIsEmptyString(imagePath));
+                        NSLog(@"fileExistsAtPath: %d", [[NSFileManager defaultManager] fileExistsAtPath:imagePath]);
                         if (XOIsEmptyString(imagePath) || ![[NSFileManager defaultManager] fileExistsAtPath:imagePath]) {
                             NSString *imageFomat = [[XOChatClient shareClient] getImageFormat:imageElem.format];
                             NSString *imageName = [NSString stringWithFormat:@"%@.%@", timImage.uuid, imageFomat];

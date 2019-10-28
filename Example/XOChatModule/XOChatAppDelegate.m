@@ -13,21 +13,21 @@
 #import "XOConversationListController.h"
 #import "XODetailViewController.h"
 
-#define TXTIMAppID      @"1400079944"
+#define TXTIMAppID      @"1400267062"
 
 #if 1
 
-// 13229292929
+// 13226262626
 #define Token           @"ac7295f5e92742dea25260e9a780db91"
-#define TIM_UserId      @"20f63beb2dd9432393c494c7baf4aad1"
-#define TIM_UserSig     @"eJw1kF1PgzAUhv8L18YwWtrVxAsCxCx2yr5KvCL9JFU7K3YRZvzvMmS3z3NO3nPen2hPd7fce6saHhrQqeguiqObCeve20433ATdjThJSRLHV2mVPgZr7L*KDQJCi0QpAkECCJCQQIkFN5BztZh3vmw7Dq-LQ77aFHlhJM0wUmdmUP4o6if6un0QrHL9idaVt8i9cE2H6tyu2vKTvYOs9j487zNhcN6WRaolGgjRgB1St-l2ku22PV3fX8PUWzM9NkYu4Hg4JgTCWQbr9IWnaLnEyahmzqX8OB1DEwavpyZ*-wBS-1fR"
+#define TIM_UserId      @"10911383a9234ad8bb2fdef8d9e2d7bc"
+#define TIM_UserSig     @"eJw1kMtugzAQRf*FbarENgTblboqLQoKkRCUKtkgG9vgNjxi3NKH8u9JENmeM6O5d-6dbJsuWd9rUTBbuEY4jw5wHiYsf3ptZMGUleaK0ZoiAO5SC9larfSkIKAQusRlFLkeE4RzpIRURFCJBOblvDPo6jocv7w9b5Jg9-EewUYcw4WxtPayP*Tlq2ao9m16hDT3m8OYm3ZV46jaVPxQneDudavkPhwX6JTKIVZZFCYjzYOQf8c4obwLSN2VT-dj4rOYit3yeQAgHwMfzdLqRt74GkOKESZ05qwsu6-WFva3l9Mnzhccpldm"
 
 #else
 
 // 13225252525
 #define Token           @"0db1788e4d7e44adb7ccd8dfd6dfdf6c"
 #define TIM_UserId      @"fddd69261dc44ebe928bc81ebc5bf1a7"
-#define TIM_UserSig     @"eJw1kF1vgjAUhv8L18soXUG6xAtBQlxcbJ1xuhvSj1NXlzEGZeiM-32MyO3znJP3nPfibZYv96KqrC6EKx5q7T16yLsbMJwqW0MhjIO6xzikGKFRWg2ls8YOymitI4qjQCtCQALFsVRxAFKF0gRicttp7KEffs54usg3-tv7Mc1r5li7WpJWrdaq092**T2ZLPHzn3kjfG22bD2zSSIQzdhOvoa8nH8zivkW*HkHR44WNj3wALXoaRbnjnfT6RimP4rhsT4yIP3hE0oJuUlnP*GfhxElMaF45EKpr7Z0hTtXMDRx-QOoule8"
+#define TIM_UserSig     @"eJw1kF1PwjAYhf-LbjHalnVbTbgoZCEknUgU9K7p10ahzNkVGRr-u3Nht8-znpyc9yd6ZS-3omms5iLwqdfRYwSiuwGbrrHecFEG43uMMEEAjNJqUwdb2kGVWuuEoARqFcdGGoIyqTJopMKyhCK9ZVpb9cdFvl2s8vqbLa7xRUlBl764oDfPkGtMmLDnuV2fiBD73boi2klqc3qAT*7d486158kX*9yvugBVkdXHebuherdRlXuAyxbQA5iNZfrIh2F9JYwBQEkKEnSTwZ7MP8cpJCkieFwllPo414GHa2OGT-z*ASD8WMY_"
 
 #endif
 
@@ -63,6 +63,7 @@
     loginParam.appidAt3rd = TIM_UserId;
     [[XOChatClient shareClient] loginWith:loginParam successBlock:^{
         
+        [[XOSettingManager defaultManager] loginIn];
         NSLog(@"============ 云通信登录成功 ================");
     } failBlock:^(int code, NSString *msg) {
         

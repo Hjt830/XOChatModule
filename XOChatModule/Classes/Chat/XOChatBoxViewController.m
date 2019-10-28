@@ -657,7 +657,10 @@ static NSTimeInterval audioRecordTime = 0.0f;
     self.TZImagePicker.allowPickingMultipleVideo = YES;
     self.TZImagePicker.allowTakePicture = NO;
     self.TZImagePicker.allowTakeVideo = NO;
-    [self.parentViewController presentViewController:self.TZImagePicker animated:YES completion:NULL];
+    self.TZImagePicker.modalPresentationStyle = UIModalPresentationFullScreen;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.parentViewController presentViewController:self.TZImagePicker animated:YES completion:NULL];
+    }];
 }
 // 拍照片
 - (void)takePhoto
@@ -672,7 +675,10 @@ static NSTimeInterval audioRecordTime = 0.0f;
         }
     }
     self.imagePicker.showsCameraControls = YES;
-    [self.parentViewController.navigationController presentViewController:self.imagePicker animated:YES completion:NULL];
+    self.imagePicker.modalPresentationStyle = UIModalPresentationFullScreen;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.parentViewController.navigationController presentViewController:self.imagePicker animated:YES completion:NULL];
+    }];
 }
 // 拍视频
 - (void)takeVideo
@@ -692,7 +698,10 @@ static NSTimeInterval audioRecordTime = 0.0f;
             self.imagePicker.videoQuality = UIImagePickerControllerQualityTypeMedium;
         }
     }
-    [self.parentViewController.navigationController presentViewController:self.imagePicker animated:YES completion:NULL];
+    self.imagePicker.modalPresentationStyle = UIModalPresentationFullScreen;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.parentViewController.navigationController presentViewController:self.imagePicker animated:YES completion:NULL];
+    }];
 }
 // 选取文件
 - (void)takeFile
@@ -713,7 +722,9 @@ static NSTimeInterval audioRecordTime = 0.0f;
     }
     documentVC.modalPresentationStyle = UIModalPresentationFullScreen;
     documentVC.delegate = self;
-    [self.parentViewController.navigationController presentViewController:documentVC animated:YES completion:nil];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.parentViewController.navigationController presentViewController:documentVC animated:YES completion:nil];
+    }];
 }
 
 // 取消选中的图片或视频
@@ -732,7 +743,10 @@ static NSTimeInterval audioRecordTime = 0.0f;
     locationVC.delegate = self;
     locationVC.locationType = XOLocationTypeSend;
     XOBaseNavigationController *nav = [[XOBaseNavigationController alloc] initWithRootViewController:locationVC];
-    [self.parentViewController.navigationController presentViewController:nav animated:YES completion:NULL];
+    nav.modalPresentationStyle = UIModalPresentationFullScreen;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.parentViewController.navigationController presentViewController:nav animated:YES completion:NULL];
+    }];
 }
 
 #pragma mark ========================= XOLocationViewControllerDelegate =========================
@@ -1178,6 +1192,11 @@ static NSTimeInterval audioRecordTime = 0.0f;
                     
                     // 图片存储的路径
                     NSString *imageName = [dic[@"PHImageFileURLKey"] lastPathComponent];
+                    if (XOIsEmptyString(imageName)) {
+                        NSArray *arr = [uti componentsSeparatedByString:@"."];
+                        NSString *format = (arr.count > 1) ? arr[1] : @"jpg";
+                        imageName = [NSString stringWithFormat:@"%@.%@", [NSUUID UUID].UUIDString, format];
+                    }
                     NSString *imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
 
                     // 图片大于6M压缩
