@@ -365,7 +365,7 @@ static BOOL progressFinish = NO;
 
 - (CGSize)messageSize
 {
-    CGFloat standradW = (KWIDTH < KHEIGHT) ? KWIDTH : KHEIGHT;
+    CGFloat standradW = (SCREEN_WIDTH < SCREEN_HEIGHT) ? SCREEN_WIDTH : SCREEN_HEIGHT;
     float sizew = ImageWidth;   // 图片的宽度
     float sizeh = ImageHeight;  // 图片的高度
     CGSize size = CGSizeZero;

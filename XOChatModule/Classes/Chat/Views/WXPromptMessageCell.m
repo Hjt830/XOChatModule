@@ -33,8 +33,8 @@
 {
     [super layoutSubviews];
     
-    CGSize size = [self.titleLabel sizeThatFits:CGSizeMake(KWIDTH * 0.92, MAXFLOAT)];
-    float MaxWidth = KWIDTH * 0.92;
+    CGSize size = [self.titleLabel sizeThatFits:CGSizeMake(SCREEN_WIDTH * 0.92, MAXFLOAT)];
+    float MaxWidth = SCREEN_WIDTH * 0.92;
     float MinHeight = 20;
     self.titleLabel.size = CGSizeMake(size.width <= MaxWidth ? size.width : MaxWidth, size.height <= MinHeight ? 20 : MinHeight);
     self.titleLabel.center = CGPointMake(self.contentView.width/2.0, self.height/2.0);

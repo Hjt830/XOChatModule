@@ -13,7 +13,7 @@
 #import <MapKit/MapKit.h>
 #import <SVProgressHUD/SVProgressHUD.h>
 
-#define MapHeight KHEIGHT * (400.0/667.0)
+#define MapHeight SCREEN_HEIGHT * (400.0/667.0)
 static NSString * const POITableViewCellID = @"POITableViewCellID";
 static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 
@@ -247,7 +247,7 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 {
     if (_tableView == nil)
     {
-        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 408, KWIDTH, KHEIGHT - 408) style:UITableViewStylePlain];
+        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 408, SCREEN_WIDTH, SCREEN_HEIGHT - 408) style:UITableViewStylePlain];
         _tableView.delegate = self;
         _tableView.dataSource = self;
         _tableView.tableFooterView = [UIView new];

@@ -7,7 +7,7 @@
 //
 
 #import "XOConversationListController.h"
-#import "XOContactListViewController.h"
+//#import "XOContactListViewController.h"
 #import "XOChatViewController.h"
 
 #import "XOConversationListCell.h"
@@ -148,8 +148,8 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 
 - (void)contactList
 {
-    XOContactListViewController *contactListVC = [[XOContactListViewController alloc] init];
-    [self.navigationController pushViewController:contactListVC animated:YES];
+//    XOContactListViewController *contactListVC = [[XOContactListViewController alloc] init];
+//    [self.navigationController pushViewController:contactListVC animated:YES];
 }
 
 #pragma mark ====================== load data =======================
@@ -234,7 +234,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 - (UIView *)networkStateView
 {
     if (_networkStateView == nil) {
-        _networkStateView = [[UIView alloc]initWithFrame:CGRectMake(0, TableHeaderViewMinHeight, KWIDTH, TableHeaderStateHeight)];
+        _networkStateView = [[UIView alloc]initWithFrame:CGRectMake(0, TableHeaderViewMinHeight, SCREEN_WIDTH, TableHeaderStateHeight)];
         _networkStateView.backgroundColor = RGBA(255, 125, 141, 0.7);
         UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(25, (_networkStateView.height - 20)/2, 20, 20)];
         imageView.image = [UIImage xo_imageNamedFromChatBundle:@"messageSendFail"];
@@ -247,7 +247,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 - (UILabel *)networkStateLabel
 {
     if (_networkStateLabel == nil) {
-        _networkStateLabel = [[UILabel alloc]initWithFrame:CGRectMake(70, 0, KWIDTH - 80, TableHeaderStateHeight)];
+        _networkStateLabel = [[UILabel alloc]initWithFrame:CGRectMake(70, 0, SCREEN_WIDTH - 80, TableHeaderStateHeight)];
         _networkStateLabel.textAlignment = NSTextAlignmentLeft;
         _networkStateLabel.textColor = [UIColor darkTextColor];
         _networkStateLabel.font = [UIFont systemFontOfSize:14];

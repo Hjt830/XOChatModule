@@ -74,7 +74,7 @@
     
     TIMSoundElem *soundElem = (TIMSoundElem *)[self.message getElem:0];
     int duration = soundElem.second;
-    float width = (80 + duration * 8) < KWIDTH * 0.6 ? 80 + duration * 5 : KWIDTH * 0.6;
+    float width = (80 + duration * 8) < SCREEN_WIDTH * 0.6 ? 80 + duration * 5 : SCREEN_WIDTH * 0.6;
     float height = self.avatarImageView.height;
     float y = self.avatarImageView.y;
     float x = self.avatarImageView.x + (self.message.isSelf ? - width - 5 : self.avatarImageView.width + 5);

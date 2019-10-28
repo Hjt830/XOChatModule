@@ -118,7 +118,7 @@
         // 判断点击的哪个表情
         int row = (self.faceGroup.faceType == TLFaceTypeEmoji ? 3 : 2); // 行数
         int col = (self.faceGroup.faceType == TLFaceTypeEmoji ? 7 : 4); // 列数
-        float w = (KWIDTH - spaceX * 2) / col;  // 表情的可点击宽度
+        float w = (SCREEN_WIDTH - spaceX * 2) / col;  // 表情的可点击宽度
         float h = (self.height - spaceY * (row - 1)) / row; // 表情的可点击高度
         int wa = ((point.x - spaceX) - (int)((point.x - spaceX)/w) * w) > 0 ? 1 : 0;
         int ha = ((point.y - spaceY) - (int)((point.y - spaceY)/h) * h) > 0 ? 1 : 0;

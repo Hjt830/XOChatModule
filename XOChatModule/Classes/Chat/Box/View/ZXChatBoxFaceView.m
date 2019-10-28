@@ -177,7 +177,7 @@
     int a = (self.curGroup.facesArray.count % (self.curGroup.faceType == TLFaceTypeEmoji ? 20 : 8) == 0) ? 0 : 1;
     int page = (int)(self.curGroup.facesArray.count / (self.curGroup.faceType == TLFaceTypeEmoji ? 20 : 8)) + a;
     [self.pageControl setNumberOfPages:page];
-    // KWIDTH 屏幕宽
+    // SCREEN_WIDTH 屏幕宽
     [self.scrollView setContentSize:CGSizeMake(self.width * page, self.scrollView.height)];
     [self.scrollView scrollRectToVisible:CGRectMake(0, 0, self.width, self.scrollView.height) animated:NO];
     _curPage = -1;

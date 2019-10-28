@@ -1367,7 +1367,7 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
 
 - (CGSize)messageSize:(TIMMessage *)message
 {
-    CGFloat standradW = (KWIDTH < KHEIGHT) ? KWIDTH : KHEIGHT;
+    CGFloat standradW = (SCREEN_WIDTH < SCREEN_HEIGHT) ? SCREEN_WIDTH : SCREEN_HEIGHT;
     
     if (0 == [message elemCount]) {
         return CGSizeMake(standradW * 0.6, 56.0f);

@@ -36,16 +36,13 @@
       "~> 4.4.627"
     ],
     "XOBaseLib": [
-      "~> 0.2.1"
+      "~> 0.2.6"
     ],
     "TZImagePickerController": [
       "~> 3.2.1"
     ],
     "CTMediator": [
       "~> 25"
-    ],
-    "ReactiveObjC": [
-      "~> 3.1.1"
     ],
     "GCDMulticastDelegate": [
       "~> 1.0.0"
