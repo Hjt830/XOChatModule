@@ -38,7 +38,7 @@ Pod::Spec.new do |s|
   }
   
   # 对.a文件的配置
-  s.vendored_libraries = '${PODS_ROOT}/../../XOChatModule/Classes/Lib/lame'
+  s.vendored_libraries = '${PODS_ROOT}/../../XOChatModule/Classes/Lib/lame/libmp3lame.a'
 #  # 对.framework文件的配置
 #  s.vendored_frameworks = '${PODS_ROOT}/../../XOChatModule/Classes/Lib/AMap/AMap2DMap-NO-IDFA/MAMapKit.framework', '${PODS_ROOT}/../../XOChatModule/Classes/Lib/AMap/AMapFoundation-NO-IDFA/AMapFoundationKit.framework', '${PODS_ROOT}/../../XOChatModule/Classes/Lib/AMap/AMapLocation-NO-IDFA/AMapLocationKit.framework', '${PODS_ROOT}/../../XOChatModule/Classes/Lib/AMap/AMapSearch-NO-IDFA/AMapSearchKit.framework'
 #  # 对sdk中头文件的配置
