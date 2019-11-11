@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'XOChatModule'
-  s.version          = '0.0.2'
+  s.version          = '0.0.3'
   s.summary          = 'XXOOGO项目的聊天模块'
 
 # This description is used to generate tags and improve search results.
@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '9.0'
 
-  s.source_files = 'XOChatModule/Classes/**/*'
+  s.source_files = 'XOChatModule/Classes/**/*.{h,m,swift,xcdatamodeld,a,framework}'
   s.public_header_files = 'XOChatModule/Classes/**/*.h'
   
   s.resource_bundles = {
@@ -49,7 +49,6 @@ Pod::Spec.new do |s|
   s.dependency 'XOBaseLib', '~> 0.2.6'
   s.dependency 'TZImagePickerController', '~> 3.2.1'
   s.dependency 'CTMediator', '~> 25'
-#  s.dependency 'ReactiveObjC', '~> 3.1.1'
   s.dependency 'GCDMulticastDelegate', '~> 1.0.0'
   s.dependency 'SVProgressHUD', '~> 2.2.5'
   s.dependency 'AFNetworking', '~> 3.2.1'

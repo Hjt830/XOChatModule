@@ -9,13 +9,14 @@
 #import "XOChatAppDelegate.h"
 #import <XOBaseLib/XOBaseLib.h>
 #import <XOChatModule/XOChatModule.h>
+#import <ImSDK/ImSDK.h>
 
 #import "XOConversationListController.h"
 #import "XODetailViewController.h"
 
 #define TXTIMAppID      @"1400267062"
 
-#if 1
+#if 0
 
 // 13226262626
 #define Token           @"ac7295f5e92742dea25260e9a780db91"
@@ -65,6 +66,25 @@
         
         [[XOSettingManager defaultManager] loginIn];
         NSLog(@"============ 云通信登录成功 ================");
+        
+        NSMutableDictionary *setting = [NSMutableDictionary dictionaryWithCapacity:3];
+        [setting setValue:@"" forKey:TIMProfileTypeKey_Nick];       // 设置昵称
+        [setting setValue:@"" forKey:TIMProfileTypeKey_FaceUrl];    // 设置头像地址
+        [setting setValue:@(TIM_FRIEND_ALLOW_ANY) forKey:TIMProfileTypeKey_AllowType];  // 设置无需验证加好友
+        [setting setValue:@(TIM_GENDER_MALE) forKey:TIMProfileTypeKey_Gender];          // 设置性别
+        [[TIMManager sharedInstance].friendshipManager modifySelfProfile:setting succ:^{
+
+            NSLog(@"========================================");
+            NSLog(@"========== 设置我的信息完成 =========");
+            NSLog(@"========================================\n");
+            
+        } fail:^(int code, NSString *msg) {
+
+            NSLog(@"========================================");
+            NSLog(@"=========== 设置我的信息失败 code: %d  msg: %@", code, msg);
+            NSLog(@"========================================\n");
+        }];
+        
     } failBlock:^(int code, NSString *msg) {
         
         NSLog(@"============ 云通信登录失败 ================");

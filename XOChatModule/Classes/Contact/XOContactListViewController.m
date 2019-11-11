@@ -308,16 +308,13 @@ static NSString *ContactCellID = @"ContactCellID";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (self.tableView == tableView) {
-        XOContactListCell *cell = [tableView dequeueReusableCellWithIdentifier:ContactCellID forIndexPath:indexPath];
-        if (indexPath.row < self.contactList.count) {
-            TIMFriend *contact = [self.contactList objectAtIndex:indexPath.row];
-            cell.contact = contact;
-        }
-        [cell refreshGenralSetting];
-        return cell;
+    XOContactListCell *cell = [tableView dequeueReusableCellWithIdentifier:ContactCellID forIndexPath:indexPath];
+    if (indexPath.row < self.contactList.count) {
+        TIMFriend *contact = [self.contactList objectAtIndex:indexPath.row];
+        cell.contact = contact;
     }
-    return nil;
+    [cell refreshGenralSetting];
+    return cell;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
@@ -351,6 +348,19 @@ static NSString *ContactCellID = @"ContactCellID";
 //    WXContactDetailViewController * otherDetail = [[WXContactDetailViewController alloc] init];
 //    otherDetail.kUser = [self.fetchedResultController objectAtIndexPath:indexPath];
 //    [self.navigationController pushViewController:otherDetail animated:YES];
+    
+    XOChatViewController *chatVC = [[XOChatViewController alloc] init];
+    if (indexPath.row < self.contactList.count) {
+        TIMFriend *contact = [self.contactList objectAtIndex:indexPath.row];
+        chatVC.chatType = TIM_C2C;
+        chatVC.conversation = [[TIMManager sharedInstance] getConversation:TIM_C2C receiver:contact.identifier];
+    }
+    else {
+        TIMGroupInfo *group = [self.groupList objectAtIndex:indexPath.row];;
+        chatVC.chatType = TIM_GROUP;
+        chatVC.conversation = [[TIMManager sharedInstance] getConversation:TIM_GROUP receiver:group.group];
+    }
+    [self.navigationController pushViewController:chatVC animated:YES];
 }
 
 //实现cell的左滑效果

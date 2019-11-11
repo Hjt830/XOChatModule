@@ -55,8 +55,14 @@ static XOContactManager * __contactManager = nil;
     [[TIMManager sharedInstance].friendshipManager getFriendList:^(NSArray<TIMFriend *> *friends) {
         NSLog(@"好友列表: %@", friends);
         
-        [self batchInsertContact:friends handler:^(BOOL result) {
-            NSLog(@"批量插入联系人: %d", result);
+        [self clearContactsList:^(BOOL result) {
+            NSLog(@"清空联系人列表: %d", result);
+            
+            [self initDataBase];
+            
+            [self batchInsertContact:friends handler:^(BOOL result) {
+                NSLog(@"批量插入联系人: %d", result);
+            }];
         }];
         
     } fail:^(int code, NSString *msg) {
@@ -71,9 +77,16 @@ static XOContactManager * __contactManager = nil;
     [[TIMManager sharedInstance].groupManager getGroupList:^(NSArray<TIMGroupInfo *> *groups) {
         NSLog(@"查询群列表: %@", groups);
         
-        [self batchInsertGroup:groups handler:^(BOOL result) {
-            NSLog(@"批量插入群: %d", result);
+        [self clearGroupList:^(BOOL result) {
+            NSLog(@"清空群列表: %d", result);
+            
+            [self initDataBase];
+            
+            [self batchInsertGroup:groups handler:^(BOOL result) {
+                NSLog(@"批量插入群: %d", result);
+            }];
         }];
+        
     } fail:^(int code, NSString *msg) {
         NSLog(@"查询群列表失败: code:%d  msg:%@", code, msg);
     }];
@@ -667,8 +680,8 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
 {
     [self.DBQueue inDatabase:^(FMDatabase *db) {
         
-        BOOL result1 = [db executeUpdate:[NSString stringWithFormat:@"DELETE %@", ContactTableName]];
-        BOOL result2 = [db executeUpdate:[NSString stringWithFormat:@"DELETE %@", ContactProfileTableName]];
+        BOOL result1 = [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM %@", ContactTableName]];
+        BOOL result2 = [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM %@", ContactProfileTableName]];
         if (result1 && result2) {
             if (complection) complection (YES);
         } else {
@@ -682,7 +695,7 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
 {
     [self.DBQueue inDatabase:^(FMDatabase *db) {
         
-        BOOL result = [db executeUpdate:[NSString stringWithFormat:@"DELETE %@", GroupTableName]];
+        BOOL result = [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM %@", GroupTableName]];
         if (result) {
             if (complection) complection (YES);
         } else {

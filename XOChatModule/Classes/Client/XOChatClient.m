@@ -136,7 +136,7 @@ static XOChatClient *__chatClient = nil;
         if (success) {success();}
         
         // 延迟两秒，等待数据库初始化完成
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             // 获取好友列表
             [[XOContactManager defaultManager] asyncFriendList];
             

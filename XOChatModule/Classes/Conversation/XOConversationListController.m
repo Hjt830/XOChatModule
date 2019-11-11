@@ -7,7 +7,7 @@
 //
 
 #import "XOConversationListController.h"
-//#import "XOContactListViewController.h"
+#import "XOContactListViewController.h"
 #import "XOChatViewController.h"
 
 #import "XOConversationListCell.h"
@@ -34,7 +34,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 @property (nonatomic, strong) UIView                *networkStateView;  // 断网视图
 @property (nonatomic, strong) UILabel               *networkStateLabel; // 断网文字
 @property (nonatomic, strong) UIView                *systemView;        // 系统消息视图
-@property (nonatomic, strong) UIView                *groupChatView;     // 发起群聊视图
+@property (nonatomic, strong) UIView                *onlineChatView;     // 在线客服视图
 @property (nonatomic, strong) UILabel               *sysNameLabel;      // 系统消息
 @property (nonatomic, strong) UILabel               *groupNameLabel;    // 群聊消息
 @property (nonatomic, assign) BOOL                  isDisConnect;       // 连接是否断开
@@ -95,17 +95,26 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 {
     [self.headerView addSubview:self.networkStateView];
     [self.headerView addSubview:self.systemView];
-    [self.headerView addSubview:self.groupChatView];
+    [self.headerView addSubview:self.onlineChatView];
     [self.view addSubview:self.headerView];
     [self.view addSubview:self.tableView];
     
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.frame = CGRectMake(0, 0, 64, 44);
-    [button setTitleColor:[UIColor darkTextColor] forState:UIControlStateNormal];
-    [button setTitle:XOChatLocalizedString(@"contact.addressbook") forState:UIControlStateNormal];
-    [button addTarget:self action:@selector(contactList) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *bbi = [[UIBarButtonItem alloc] initWithCustomView:button];
-    self.navigationItem.rightBarButtonItem = bbi;
+    for (int i = 0; i < 2; i++) {
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        button.frame = CGRectMake(0, 0, 56, 44);
+        [button setTitleColor:[UIColor darkTextColor] forState:UIControlStateNormal];
+        if (0 == i) {
+            [button setTitle:XOChatLocalizedString(@"contact.addressbook") forState:UIControlStateNormal];
+            [button addTarget:self action:@selector(contactList) forControlEvents:UIControlEventTouchUpInside];
+            UIBarButtonItem *bbi = [[UIBarButtonItem alloc] initWithCustomView:button];
+            self.navigationItem.leftBarButtonItem = bbi;
+        } else {
+            [button setImage:[UIImage xo_imageNamedFromChatBundle:@"conversation_createGroup"] forState:UIControlStateNormal];
+            [button addTarget:self action:@selector(groupChat) forControlEvents:UIControlEventTouchUpInside];
+            UIBarButtonItem *bbi = [[UIBarButtonItem alloc] initWithCustomView:button];
+            self.navigationItem.rightBarButtonItem = bbi;
+        }
+    }
 }
 
 - (void)viewDidLayoutSubviews
@@ -132,14 +141,14 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
         self.headerView.height = TableHeaderViewMaxHeight;
         self.networkStateView.hidden = NO;
         self.systemView.frame = CGRectMake(_safeInset.left, self.networkStateView.bottom + Margin, self.view.width - (_safeInset.left + _safeInset.right), 70);
-        self.groupChatView.frame = CGRectMake(_safeInset.left, self.systemView.bottom + Margin, self.view.width - (_safeInset.left + _safeInset.right), 70);
+        self.onlineChatView.frame = CGRectMake(_safeInset.left, self.systemView.bottom + Margin, self.view.width - (_safeInset.left + _safeInset.right), 70);
     }
     // 连接状态
     else {
         self.headerView.height = TableHeaderViewMinHeight;
         self.networkStateView.hidden = YES;
         self.systemView.frame = CGRectMake(_safeInset.left, 10, self.view.width - (_safeInset.left + _safeInset.right), 70);
-        self.groupChatView.frame = CGRectMake(_safeInset.left, self.systemView.bottom + Margin, self.view.width - (_safeInset.left + _safeInset.right), 70);
+        self.onlineChatView.frame = CGRectMake(_safeInset.left, self.systemView.bottom + Margin, self.view.width - (_safeInset.left + _safeInset.right), 70);
     }
     self.tableView.frame = CGRectMake(_safeInset.left + 10, self.headerView.height + Margin, self.view.width - 20 - (_safeInset.left + _safeInset.right), self.view.height - (self.headerView.height + Margin));
 }
@@ -148,8 +157,13 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
 
 - (void)contactList
 {
-//    XOContactListViewController *contactListVC = [[XOContactListViewController alloc] init];
-//    [self.navigationController pushViewController:contactListVC animated:YES];
+    XOContactListViewController *contactListVC = [[XOContactListViewController alloc] init];
+    [self.navigationController pushViewController:contactListVC animated:YES];
+}
+
+- (void)groupChat
+{
+    
 }
 
 #pragma mark ====================== load data =======================
@@ -277,26 +291,26 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
     return _systemView;
 }
 
-- (UIView *)groupChatView
+- (UIView *)onlineChatView
 {
-    if (!_groupChatView) {
-        _groupChatView = [[UIView alloc] init];
-        _groupChatView.backgroundColor = [UIColor whiteColor];
+    if (!_onlineChatView) {
+        _onlineChatView = [[UIView alloc] init];
+        _onlineChatView.backgroundColor = [UIColor whiteColor];
         
         CALayer *imageLayer = [CALayer layer];
         imageLayer.contents = (__bridge id)[UIImage xo_imageNamedFromChatBundle:@"message_groupmessage"].CGImage;
         imageLayer.frame = CGRectMake(Margin, 7, 50.0, 50.0);
         imageLayer.masksToBounds = YES;
         imageLayer.cornerRadius = 25.0f;
-        [_groupChatView.layer addSublayer:imageLayer];
+        [_onlineChatView.layer addSublayer:imageLayer];
         self.groupNameLabel = [[UILabel alloc] init];
         self.groupNameLabel.textColor = [UIColor blackColor];
         self.groupNameLabel.frame = CGRectMake(CGRectGetMaxX(imageLayer.frame) + Margin, 25, 240, 20);
-        self.groupNameLabel.text = XOChatLocalizedString(@"conversation.groupChat");
+        self.groupNameLabel.text = XOChatLocalizedString(@"conversation.onlineService");
         self.groupNameLabel.font = [UIFont boldSystemFontOfSize:18.0f];
-        [_groupChatView addSubview:self.groupNameLabel];
+        [_onlineChatView addSubview:self.groupNameLabel];
     }
-    return _groupChatView;
+    return _onlineChatView;
 }
 
 #pragma mark ====================== XOChatClientProtocol =======================
