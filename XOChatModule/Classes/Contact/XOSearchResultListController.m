@@ -158,7 +158,7 @@ static NSString *SearchContactCellID = @"SearchContactCellID";  // 联系人cell
 - (void)searchContactWith:(NSString *)keyword
 {
     keyword = [NSString stringWithFormat:@"*%@*", keyword];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"nick LIKE %@ OR nickPinyin LIKE %@ OR remark LIKE %@ or remarkPinyin LIKE %@", keyword, keyword, keyword, keyword];
+//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"nick LIKE %@ OR nickPinyin LIKE %@ OR remark LIKE %@ or remarkPinyin LIKE %@", keyword, keyword, keyword, keyword];
 //    [[XOContactCoreDataStorage getInstance] getContactListAsyncWith:predicate result:^(BOOL finish, NSArray<XOContact *> * _Nullable contactList) {
 //        if (self.dataSource.count > 0) {
 //            [self.dataSource insertObject:contactList atIndex:0];
@@ -173,7 +173,7 @@ static NSString *SearchContactCellID = @"SearchContactCellID";  // 联系人cell
 - (void)searchGroupWith:(NSString *)keyword
 {
     keyword = [NSString stringWithFormat:@"*%@*", keyword];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"groupName LIKE %@ OR groupNamePinyin LIKE %@", keyword, keyword, keyword];
+//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"groupName LIKE %@ OR groupNamePinyin LIKE %@", keyword, keyword, keyword];
 //    [[XOGroupCoreDataStorage getInstance] getGroupListAsyncWith:predicate result:^(BOOL finish, NSArray<XOContact *> * _Nullable groupList) {
 //        if (self.dataSource.count > 0) {
 //            [self.dataSource insertObject:groupList atIndex:1];

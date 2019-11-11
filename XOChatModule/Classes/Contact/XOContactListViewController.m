@@ -188,7 +188,7 @@ static NSString *ContactCellID = @"ContactCellID";
         }
         [self.tableView reloadData];
         
-        self.contactNumLabel.text = [NSString stringWithFormat:@"%lu%@  %lu%@", friendList.count, XOChatLocalizedString(@"contact.contactNum"), self.groupList.count, XOChatLocalizedString(@"contact.groupNum")];
+        self.contactNumLabel.text = [NSString stringWithFormat:@"%lu%@  %lu%@", (unsigned long)friendList.count, XOChatLocalizedString(@"contact.contactNum"), (unsigned long)self.groupList.count, XOChatLocalizedString(@"contact.groupNum")];
     }];
     
     [[XOChatClient shareClient].contactManager getAllGroupsList:^(NSArray<TIMGroupInfo *> * _Nullable groupList) {
@@ -199,7 +199,7 @@ static NSString *ContactCellID = @"ContactCellID";
         }
         [self.tableView reloadData];
         
-        self.contactNumLabel.text = [NSString stringWithFormat:@"%lu%@  %lu%@", self.contactList.count, XOChatLocalizedString(@"contact.contactNum"), self.groupList.count, XOChatLocalizedString(@"contact.groupNum")];
+        self.contactNumLabel.text = [NSString stringWithFormat:@"%lu%@  %lu%@", (unsigned long)self.contactList.count, XOChatLocalizedString(@"contact.contactNum"), (unsigned long)self.groupList.count, XOChatLocalizedString(@"contact.groupNum")];
     }];
 }
 

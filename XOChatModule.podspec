@@ -37,12 +37,13 @@ Pod::Spec.new do |s|
       'XOChatModule' => ['XOChatModule/Assets/*']
   }
   
+  s.pod_target_xcconfig = { 'VALID_ARCHS[sdk=iphonesimulator*]' => '' }
   # 对.a文件的配置
-  s.vendored_libraries = '${PODS_ROOT}/../../XOChatModule/Classes/Lib/lame/libmp3lame.a'
+  s.vendored_libraries = 'XOChatModule/Classes/Lib/lame/libmp3lame.a'
 #  # 对.framework文件的配置
-#  s.vendored_frameworks = '${PODS_ROOT}/../../XOChatModule/Classes/Lib/AMap/AMap2DMap-NO-IDFA/MAMapKit.framework', '${PODS_ROOT}/../../XOChatModule/Classes/Lib/AMap/AMapFoundation-NO-IDFA/AMapFoundationKit.framework', '${PODS_ROOT}/../../XOChatModule/Classes/Lib/AMap/AMapLocation-NO-IDFA/AMapLocationKit.framework', '${PODS_ROOT}/../../XOChatModule/Classes/Lib/AMap/AMapSearch-NO-IDFA/AMapSearchKit.framework'
+#  s.vendored_frameworks = 'XOChatModule/Classes/Lib/AMap/AMap2DMap-NO-IDFA/MAMapKit.framework', 'XOChatModule/Classes/Lib/AMap/AMapFoundation-NO-IDFA/AMapFoundationKit.framework', 'XOChatModule/Classes/Lib/AMap/AMapLocation-NO-IDFA/AMapLocationKit.framework', 'XOChatModule/Classes/Lib/AMap/AMapSearch-NO-IDFA/AMapSearchKit.framework'
 #  # 对sdk中头文件的配置
-#  s.xcconfig = { 'USER_HEADER_SEARCH_PATHS' => '${PODS_ROOT}/../../XOChatModule/Classes/Lib/AMap/*/*/Headers/*.{h}'}
+#  s.xcconfig = { 'USER_HEADER_SEARCH_PATHS' => 'XOChatModule/Classes/Lib/AMap/*/*/Headers/*.{h}'}
 
   s.frameworks = 'UIKit', 'Foundation', 'CoreLocation'
   s.dependency 'TXIMSDK_iOS', '~> 4.4.627'

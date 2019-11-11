@@ -37,11 +37,11 @@
     
     if (message.isSelf) {
         _addressLabel.textColor = [UIColor whiteColor];
-        _addressPoi.image = [[UIImage xo_imageNamedFromChatBundle:@"message_location_poi"] imageWithTintColor:[UIColor whiteColor]];
+        _addressPoi.image = [[UIImage xo_imageNamedFromChatBundle:@"message_location_poi"] XO_imageWithTintColor:[UIColor whiteColor]];
     }
     else {
         _addressLabel.textColor = [UIColor darkTextColor];
-        _addressPoi.image = [[UIImage xo_imageNamedFromChatBundle:@"message_location_poi"] imageWithTintColor:[UIColor darkTextColor]];
+        _addressPoi.image = [[UIImage xo_imageNamedFromChatBundle:@"message_location_poi"] XO_imageWithTintColor:[UIColor darkTextColor]];
     }
     CGFloat maxWidth = self.contentView.width - (10 + self.avatarImageView.width + 5) * 2 - 40 - 23;
     CGSize size = [self.addressLabel sizeThatFits:CGSizeMake(maxWidth, MAXFLOAT)];

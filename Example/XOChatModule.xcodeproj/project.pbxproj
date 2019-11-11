@@ -589,11 +589,7 @@
 				GCC_PREFIX_HEADER = "$(PROJECT_DIR)/XOChatModule/PrefixHeader.pch";
 				INFOPLIST_FILE = "XOChatModule/XOChatModule-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/XOChatModule/Box/LGAudioKit/Vendor/AMR/lib",
-					"$(PROJECT_DIR)/XOChatModule/lame",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = test.xxoogo.chat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -621,12 +617,9 @@
 				GCC_PREFIX_HEADER = "$(PROJECT_DIR)/XOChatModule/PrefixHeader.pch";
 				INFOPLIST_FILE = "XOChatModule/XOChatModule-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/XOChatModule/Box/LGAudioKit/Vendor/AMR/lib",
-					"$(PROJECT_DIR)/XOChatModule/lame",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MODULE_NAME = ExampleApp;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = test.xxoogo.chat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = profile_xxoogoTest_development;

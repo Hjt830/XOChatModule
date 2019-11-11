@@ -32,21 +32,21 @@
     [super setMessage:message];
     
     if (message.isSelf) {
-        self.audioAniImageView.image = [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_normal"] imageWithTintColor:[UIColor whiteColor]];
+        self.audioAniImageView.image = [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_normal"] XO_imageWithTintColor:[UIColor whiteColor]];
         self.audioAniImageView.animationImages = @[
-                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_1"] imageWithTintColor:[UIColor whiteColor]],
-                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_2"] imageWithTintColor:[UIColor whiteColor]],
-                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_3"] imageWithTintColor:[UIColor whiteColor]],
-                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_normal"] imageWithTintColor:[UIColor whiteColor]]];
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_1"] XO_imageWithTintColor:[UIColor whiteColor]],
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_2"] XO_imageWithTintColor:[UIColor whiteColor]],
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_playing_3"] XO_imageWithTintColor:[UIColor whiteColor]],
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_sender_normal"] XO_imageWithTintColor:[UIColor whiteColor]]];
         self.audioTimeLabel.textColor = [UIColor whiteColor];
     }
     else {
-        self.audioAniImageView.image = [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_normal"] imageWithTintColor:[UIColor darkTextColor]];
+        self.audioAniImageView.image = [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_normal"] XO_imageWithTintColor:[UIColor darkTextColor]];
         self.audioAniImageView.animationImages = @[
-                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_1"] imageWithTintColor:[UIColor darkTextColor]],
-                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_2"] imageWithTintColor:[UIColor darkTextColor]],
-                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_3"] imageWithTintColor:[UIColor darkTextColor]],
-                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_normal"] imageWithTintColor:[UIColor darkTextColor]]];
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_1"] XO_imageWithTintColor:[UIColor darkTextColor]],
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_2"] XO_imageWithTintColor:[UIColor darkTextColor]],
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_playing_3"] XO_imageWithTintColor:[UIColor darkTextColor]],
+                                                   [[UIImage xo_imageNamedFromChatBundle:@"message_voice_receiver_normal"] XO_imageWithTintColor:[UIColor darkTextColor]]];
         self.audioTimeLabel.textColor = [UIColor darkTextColor];
     }
     TIMSoundElem *soundElem = (TIMSoundElem *)[message getElem:0];

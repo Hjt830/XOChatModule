@@ -89,7 +89,7 @@ static float const kDefaultMargin = 8.0f;
          比如下面方法中的拉伸区域：UIEdgeInsetsMake(28, 20, 15, 20)
          */
         UIEdgeInsets senderInset = UIEdgeInsetsMake(kDefaultMargin/2, kDefaultMargin/2, kDefaultMargin/2, kDefaultMargin + 1);
-        self.messageBackgroundImageView.image = [[[UIImage xo_imageNamedFromChatBundle:@"message_sender_background_normal"] imageWithTintColor:AppTinColor] resizableImageWithCapInsets:senderInset resizingMode:UIImageResizingModeStretch];
+        self.messageBackgroundImageView.image = [[[UIImage xo_imageNamedFromChatBundle:@"message_sender_background_normal"] XO_imageWithTintColor:AppTinColor] resizableImageWithCapInsets:senderInset resizingMode:UIImageResizingModeStretch];
         [self.messageSendStatusImageView setHidden:NO];
         
         if (TIM_MSG_STATUS_SEND_FAIL == message.status) {
@@ -117,7 +117,7 @@ static float const kDefaultMargin = 8.0f;
         
         UIEdgeInsets receiverInset = UIEdgeInsetsMake(kDefaultMargin/2, kDefaultMargin + 2, kDefaultMargin/2, kDefaultMargin/2 + 1);
         [self.messageBackgroundImageView setHidden:NO];
-        [self.messageBackgroundImageView setImage:[[[UIImage xo_imageNamedFromChatBundle:@"message_receiver_background_normal"] imageWithTintColor:[UIColor whiteColor]] resizableImageWithCapInsets:receiverInset resizingMode:UIImageResizingModeStretch]];
+        [self.messageBackgroundImageView setImage:[[[UIImage xo_imageNamedFromChatBundle:@"message_receiver_background_normal"] XO_imageWithTintColor:[UIColor whiteColor]] resizableImageWithCapInsets:receiverInset resizingMode:UIImageResizingModeStretch]];
     }
 }
 

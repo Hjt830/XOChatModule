@@ -11,9 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIImage (XOChatExtension)
 
-- (UIImage *)imageWithTintColor:(UIColor *)tintColor;
+- (UIImage *)XO_imageWithTintColor:(UIColor *)tintColor;
 
-- (UIImage *)imageWithTintColor:(UIColor *)tintColor blendMode:(CGBlendMode)blendMode;
+- (UIImage *)XO_imageWithTintColor:(UIColor *)tintColor blendMode:(CGBlendMode)blendMode;
 
 @end
 

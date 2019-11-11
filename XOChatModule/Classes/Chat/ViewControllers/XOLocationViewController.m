@@ -667,7 +667,7 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 - (void)navigationWithAMap
 {
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"iosamap://"]]) {
-        NSString *urlsting =[[NSString stringWithFormat:@"iosamap://path?sourceApplication=%@&sid=BGVIS1&slat=%f&slon=%f&sname=%@&did=BGVIS2&dlat=%f&dlon=%f&dname=%@&dev=0&m=0&t=0", @"xochat", self.startLocation.latitude, self.startLocation.longitude, @"我的位置", self.location.latitude, self.location.longitude, self.address] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *urlsting =[[NSString stringWithFormat:@"iosamap://path?sourceApplication=%@&sid=BGVIS1&slat=%f&slon=%f&sname=%@&did=BGVIS2&dlat=%f&dlon=%f&dname=%@&dev=0&m=0&t=0", @"xochat", self.startLocation.latitude, self.startLocation.longitude, @"我的位置", self.location.latitude, self.location.longitude, self.address] URLEncodedString];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlsting]];
     }
     else {
@@ -687,7 +687,7 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 - (void)navigationWithBaiduMap
 {
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"baidumap://"]]) {
-        NSString *urlsting =[[NSString stringWithFormat:@"baidumap://map/direction?origin={{%@}}&destination=latlng:%f,%f|name=%@&mode=driving&coord_type=gcj02", @"我的位置", self.location.latitude, self.location.longitude, self.address] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *urlsting =[[NSString stringWithFormat:@"baidumap://map/direction?origin={{%@}}&destination=latlng:%f,%f|name=%@&mode=driving&coord_type=gcj02", @"我的位置", self.location.latitude, self.location.longitude, self.address] URLEncodedString];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlsting]];
     }
     else {
@@ -717,7 +717,7 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 {
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"comgooglemaps://"]]) {
          NSString *urlString = [[NSString stringWithFormat:@"comgooglemaps://?x-source=%@&x-success=%@&saddr=&daddr=%f,%f&directionsmode=driving",
-          @"weixun", @"weixun", self.location.latitude, self.location.longitude] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+          @"weixun", @"weixun", self.location.latitude, self.location.longitude] URLEncodedString];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
     }
     else {

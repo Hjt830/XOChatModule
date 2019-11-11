@@ -22,6 +22,7 @@
 #define TableHeaderViewMaxHeight 200.0f
 
 static NSString * const ConversationListCellID = @"ConversationListCellID";
+static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 
 @interface XOConversationListController () <UITableViewDataSource, UITableViewDelegate, XOChatClientProtocol, XOMessageDelegate, XOConversationDelegate>
 {
@@ -150,7 +151,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
         self.systemView.frame = CGRectMake(_safeInset.left, 10, self.view.width - (_safeInset.left + _safeInset.right), 70);
         self.onlineChatView.frame = CGRectMake(_safeInset.left, self.systemView.bottom + Margin, self.view.width - (_safeInset.left + _safeInset.right), 70);
     }
-    self.tableView.frame = CGRectMake(_safeInset.left + 10, self.headerView.height + Margin, self.view.width - 20 - (_safeInset.left + _safeInset.right), self.view.height - (self.headerView.height + Margin));
+    self.tableView.frame = CGRectMake(_safeInset.left, self.headerView.height + Margin, self.view.width - (_safeInset.left + _safeInset.right), self.view.height - (self.headerView.height + Margin));
 }
 
 #pragma mark ========================= touch event =========================
@@ -232,6 +233,7 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
         _tableView.backgroundColor = [UIColor clearColor];
         
         [_tableView registerClass:[XOConversationListCell class] forCellReuseIdentifier:ConversationListCellID];
+        [_tableView registerClass:[UITableViewHeaderFooterView class] forHeaderFooterViewReuseIdentifier:ConversationHeadFootID];
     }
     return _tableView;
 }
@@ -524,6 +526,24 @@ static NSString * const ConversationListCellID = @"ConversationListCellID";
     }];
     return @[topRowAction, deleteRowAction];
 }
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.01;
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 0.01;
+}
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    return [tableView dequeueReusableHeaderFooterViewWithIdentifier:ConversationHeadFootID];
+}
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    return [tableView dequeueReusableHeaderFooterViewWithIdentifier:ConversationHeadFootID];
+}
+
 
 - (void)refreshByGenralSettingChange:(XOGenralChangeType)genralType userInfo:(NSDictionary *)userInfo
 {

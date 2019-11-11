@@ -7,7 +7,7 @@
 //
 
 #import "XOContactManager.h"
-#import <FMDB/FMDB.h>
+#import <fmdb/FMDB.h>
 #import <XOBaseLib/XOBaseLib.h>
 #import <GCDMulticastDelegate/GCDMulticastDelegate.h>
 
@@ -213,34 +213,34 @@ FOUNDATION_EXTERN_INLINE NSString * CreateGroupTableSql() {
 
 // 插入联系人SQL
 FOUNDATION_EXTERN_INLINE NSString * InsertContactSql(TIMFriend *friend) {
-    return [NSString stringWithFormat:@"INSERT INTO %@ (identifier, remark, addWording, addSource, addTime) VALUES ('%@', '%@', '%@', '%@', %llu)", ContactTableName, friend.identifier, friend.remark, friend.addWording, friend.addSource, friend.addTime];
+    return [NSString stringWithFormat:@"INSERT INTO %@ (identifier, remark, addWording, addSource, addTime) VALUES ('%@', '%@', '%@', '%@', %llu)", ContactTableName, friend.identifier, friend.remark, friend.addWording, friend.addSource, (unsigned long long)friend.addTime];
 }
 
 // 插入联系人信息SQL
 FOUNDATION_EXTERN_INLINE NSString * InsertContactProfileSql(TIMUserProfile *profile) {
     NSString *signature = profile.selfSignature.length < 4 ? nil : [[NSString alloc] initWithData:profile.selfSignature encoding:NSUTF8StringEncoding];
-    return [NSString stringWithFormat:@"INSERT INTO %@ (identifier, nickname, allowType, faceURL, selfSignature, gender, birthday, language, level, role) VALUES ('%@', '%@', %ld, '%@', '%@', %ld, %u, %u, %u, %u)", ContactProfileTableName, profile.identifier, profile.nickname, profile.allowType, profile.faceURL, signature, profile.gender, profile.birthday, profile.language, profile.level, profile.role];
+    return [NSString stringWithFormat:@"INSERT INTO %@ (identifier, nickname, allowType, faceURL, selfSignature, gender, birthday, language, level, role) VALUES ('%@', '%@', %ld, '%@', '%@', %ld, %u, %u, %u, %u)", ContactProfileTableName, profile.identifier, profile.nickname, profile.allowType, profile.faceURL, signature, profile.gender, profile.birthday, (unsigned int)profile.language, (unsigned int)profile.level, (unsigned int)profile.role];
 }
 
 // 插入群SQL
 FOUNDATION_EXTERN_INLINE NSString * InsertGroupSql(TIMGroupInfo *group) {
-    return [NSString stringWithFormat:@"INSERT INTO %@ (groupId, groupName, owner, groupType, createTime, lastInfoTime, lastMsgTime, maxMemberNum, memberNum, addOpt, notification, introduction, faceURL, onlineMemberNum, isSearchable, isMemberVisible, allShutup) VALUES ('%@', '%@', '%@', '%@', %u, %u, %u, %u, %u, %ld, '%@', '%@', '%@', %u, %ld, %ld, %d)", GroupTableName, group.group, group.groupName, group.owner, group.groupType, group.createTime, group.lastInfoTime, group.lastMsgTime, group.maxMemberNum, group.memberNum, group.addOpt, group.notification, group.introduction, group.faceURL, group.onlineMemberNum, group.isSearchable, group.isMemberVisible, group.allShutup];
+    return [NSString stringWithFormat:@"INSERT INTO %@ (groupId, groupName, owner, groupType, createTime, lastInfoTime, lastMsgTime, maxMemberNum, memberNum, addOpt, notification, introduction, faceURL, onlineMemberNum, isSearchable, isMemberVisible, allShutup) VALUES ('%@', '%@', '%@', '%@', %u, %u, %u, %u, %u, %ld, '%@', '%@', '%@', %u, %ld, %ld, %d)", GroupTableName, group.group, group.groupName, group.owner, group.groupType, (unsigned int)group.createTime, (unsigned int)group.lastInfoTime, (unsigned int)group.lastMsgTime, (unsigned int)group.maxMemberNum, (unsigned int)group.memberNum, group.addOpt, group.notification, group.introduction, group.faceURL, (unsigned int)group.onlineMemberNum, group.isSearchable, group.isMemberVisible, group.allShutup];
 }
 
 // 更新联系人SQL
 FOUNDATION_EXTERN_INLINE NSString * UpdateContactSql(TIMFriend *friend) {
-    return [NSString stringWithFormat:@"UPDATE %@ SET identifier = %@, remark = '%@', addWording = '%@', addSource = '%@', addTime = %llu", ContactTableName, friend.identifier, friend.remark, friend.addWording, friend.addSource, friend.addTime];
+    return [NSString stringWithFormat:@"UPDATE %@ SET identifier = %@, remark = '%@', addWording = '%@', addSource = '%@', addTime = %llu", ContactTableName, friend.identifier, friend.remark, friend.addWording, friend.addSource, (unsigned long long)friend.addTime];
 }
 
 // 更新联系人信息SQL
 FOUNDATION_EXTERN_INLINE NSString * UpdateContactProfileSql(TIMUserProfile *profile) {
     NSString *signature = profile.selfSignature.length < 4 ? nil : [[NSString alloc] initWithData:profile.selfSignature encoding:NSUTF8StringEncoding];
-    return [NSString stringWithFormat:@"UPDATE %@ SET identifier = '%@', nickname = '%@', allowType = %ld, faceURL = '%@', selfSignature = '%@', gender = %ld, birthday = %u, language = %u, level = %u, role = %u", ContactProfileTableName, profile.identifier, profile.nickname, profile.allowType, profile.faceURL, signature, profile.gender, profile.birthday, profile.language, profile.level, profile.role];
+    return [NSString stringWithFormat:@"UPDATE %@ SET identifier = '%@', nickname = '%@', allowType = %ld, faceURL = '%@', selfSignature = '%@', gender = %ld, birthday = %u, language = %u, level = %u, role = %u", ContactProfileTableName, profile.identifier, profile.nickname, profile.allowType, profile.faceURL, signature, (long)profile.gender, (unsigned int)profile.birthday, (unsigned int)profile.language, (unsigned int)profile.level, (unsigned int)profile.role];
 }
 
 // 更新群SQL
 FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
-    return [NSString stringWithFormat:@"UPDATE %@ SET groupId = '%@', groupName = '%@', owner = '%@', groupType = '%@', createTime = %u, lastInfoTime = %u, lastMsgTime = %u, maxMemberNum = %u, memberNum = %u, addOpt = %ld, notification = '%@', introduction = '%@', faceURL = '%@', onlineMemberNum = %u, isSearchable = %ld, isMemberVisible = %ld, allShutup = %d", GroupTableName, group.group, group.groupName, group.owner, group.groupType, group.createTime, group.lastInfoTime, group.lastMsgTime, group.maxMemberNum, group.memberNum, group.addOpt, group.notification, group.introduction, group.faceURL, group.onlineMemberNum, group.isSearchable, group.isMemberVisible, group.allShutup];
+    return [NSString stringWithFormat:@"UPDATE %@ SET groupId = '%@', groupName = '%@', owner = '%@', groupType = '%@', createTime = %u, lastInfoTime = %u, lastMsgTime = %u, maxMemberNum = %u, memberNum = %u, addOpt = %ld, notification = '%@', introduction = '%@', faceURL = '%@', onlineMemberNum = %u, isSearchable = %ld, isMemberVisible = %ld, allShutup = %d", GroupTableName, group.group, group.groupName, group.owner, group.groupType, (unsigned int)group.createTime, (unsigned int)group.lastInfoTime, (unsigned int)group.lastMsgTime, (unsigned int)group.maxMemberNum, (unsigned int)group.memberNum, group.addOpt, group.notification, group.introduction, group.faceURL, (unsigned int)group.onlineMemberNum, group.isSearchable, group.isMemberVisible, group.allShutup];
 }
 
 
@@ -414,7 +414,7 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
             friend.remark       = [rs stringForColumn:@"remark"];
             friend.addWording   = [rs stringForColumn:@"addWording"];
             friend.addSource    = [rs stringForColumn:@"addSource"];
-            friend.addTime      = [rs longLongIntForColumn:@"addTime"];
+            friend.addTime      = [rs unsignedLongLongIntForColumn:@"addTime"];
             
             // 查询指定联系人信息
             NSString * profileSql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE identifier = '%@'", ContactProfileTableName, friend.identifier];
