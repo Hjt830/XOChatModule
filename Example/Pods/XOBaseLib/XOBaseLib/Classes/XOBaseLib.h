@@ -25,7 +25,6 @@
 #import "XOBaseConfig.h"
 
 // 工具类
-#import "XOHttpTool.h"
 #import "XOKeyChainTool.h"
 #import "XOUserDefault.h"
 
@@ -36,6 +35,7 @@
 #import "NSBundle+XOBaseLib.h"
 #import "UIImage+XOBaseLib.h"
 #import "UIView+Frame.h"
+#import "UIViewController+XOExtension.h"
 
 // 管理类
 #import "XOSettingManager.h"
@@ -48,6 +48,7 @@
 #import "XOBaseTableViewController.h"
 #import "XOBaseNavigationController.h"
 #import "XOBaseTabbarController.h"
+#import "XOBaseModel.h"
 
 
 #endif /* XOBaseLib_h */

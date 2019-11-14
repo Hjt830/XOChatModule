@@ -16,12 +16,14 @@
 
 #define TXTIMAppID      @"1400267062"
 
-#if 0
+#if 1
 
 // 13226262626
 #define Token           @"ac7295f5e92742dea25260e9a780db91"
 #define TIM_UserId      @"10911383a9234ad8bb2fdef8d9e2d7bc"
-#define TIM_UserSig     @"eJw1kMtugzAQRf*FbarENgTblboqLQoKkRCUKtkgG9vgNjxi3NKH8u9JENmeM6O5d-6dbJsuWd9rUTBbuEY4jw5wHiYsf3ptZMGUleaK0ZoiAO5SC9larfSkIKAQusRlFLkeE4RzpIRURFCJBOblvDPo6jocv7w9b5Jg9-EewUYcw4WxtPayP*Tlq2ao9m16hDT3m8OYm3ZV46jaVPxQneDudavkPhwX6JTKIVZZFCYjzYOQf8c4obwLSN2VT-dj4rOYit3yeQAgHwMfzdLqRt74GkOKESZ05qwsu6-WFva3l9Mnzhccpldm"
+#define TIM_UserSig     @"eJw1kMtugzAQRf*FddX4kWDcHSoskhCpoVERK8vYho5IwAU3kFb99xJEpFmdc0fz*PVOyfuztBa0kE7QTnsvHvKeZmxGC50RsnSmmzDZcILQQ4I2jYMSZoURx5gGVHJC11IHRUFKbcpAc0M0K9TS00M1hQ9x-ro9Rm*hghy6EdVtNiAeY8qyZDAUsl1dpfE*tb48hr0hH*H2M0wk0b31k1V147HeNe3huor607U8pzUglbdfKcvH8xAlP49huhbzYff91ggRnyGfLNLBxdz5hlGGyVQLl0q1340T7mbN-Im-f0nmV-U_"
+#define NickName        @"13226262626"
+#define Avatar          @"http://192.168.1.180:9000/xxoogo/97e8118225a549529972a08c18f6f718.jpg"
 
 #else
 
@@ -29,6 +31,8 @@
 #define Token           @"0db1788e4d7e44adb7ccd8dfd6dfdf6c"
 #define TIM_UserId      @"fddd69261dc44ebe928bc81ebc5bf1a7"
 #define TIM_UserSig     @"eJw1kF1PwjAYhf-LbjHalnVbTbgoZCEknUgU9K7p10ahzNkVGRr-u3Nht8-znpyc9yd6ZS-3omms5iLwqdfRYwSiuwGbrrHecFEG43uMMEEAjNJqUwdb2kGVWuuEoARqFcdGGoIyqTJopMKyhCK9ZVpb9cdFvl2s8vqbLa7xRUlBl764oDfPkGtMmLDnuV2fiBD73boi2klqc3qAT*7d486158kX*9yvugBVkdXHebuherdRlXuAyxbQA5iNZfrIh2F9JYwBQEkKEnSTwZ7MP8cpJCkieFwllPo414GHa2OGT-z*ASD8WMY_"
+#define NickName        @"13225252525"
+#define Avatar          @"http://192.168.1.180:9000/xxoogo/9c7041d2f6bd44f89a5befccb629e553.jpg"
 
 #endif
 
@@ -68,8 +72,8 @@
         NSLog(@"============ 云通信登录成功 ================");
         
         NSMutableDictionary *setting = [NSMutableDictionary dictionaryWithCapacity:3];
-        [setting setValue:@"" forKey:TIMProfileTypeKey_Nick];       // 设置昵称
-        [setting setValue:@"" forKey:TIMProfileTypeKey_FaceUrl];    // 设置头像地址
+        [setting setValue:NickName forKey:TIMProfileTypeKey_Nick];       // 设置昵称
+        [setting setValue:Avatar forKey:TIMProfileTypeKey_FaceUrl];    // 设置头像地址
         [setting setValue:@(TIM_FRIEND_ALLOW_ANY) forKey:TIMProfileTypeKey_AllowType];  // 设置无需验证加好友
         [setting setValue:@(TIM_GENDER_MALE) forKey:TIMProfileTypeKey_Gender];          // 设置性别
         [[TIMManager sharedInstance].friendshipManager modifySelfProfile:setting succ:^{

@@ -25,6 +25,9 @@
       "XOChatModule/Assets/*"
     ]
   },
+  "pod_target_xcconfig": {
+    "VALID_ARCHS[sdk=iphonesimulator*]": ""
+  },
   "vendored_libraries": "XOChatModule/Classes/Lib/lame/libmp3lame.a",
   "frameworks": [
     "UIKit",
@@ -36,13 +39,10 @@
       "~> 4.4.627"
     ],
     "XOBaseLib": [
-      "~> 0.2.6"
+      "~> 0.3.1"
     ],
     "TZImagePickerController": [
       "~> 3.2.1"
-    ],
-    "CTMediator": [
-      "~> 25"
     ],
     "GCDMulticastDelegate": [
       "~> 1.0.0"
@@ -64,6 +64,9 @@
     ],
     "FMDB": [
       "~> 2.7.5"
+    ],
+    "YYModel": [
+      "~> 1.0.4"
     ]
   }
 }
