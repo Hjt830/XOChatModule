@@ -7,29 +7,30 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "GroupManager.h"
+#import <ImSDK/ImSDK.h>
+#import <XOBaseLib/XOBaseLib.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, GroupEditType) {
-    GroupEditTypeName = 100,
-    GroupEditTypeNotice = 101,
+    GroupEditTypeGroupName = 100,
+    GroupEditTypeNotification = 101,
 };
 
 @class GroupInfoEditViewController;
 @protocol GroupInfoEditViewControllerProtocol <NSObject>
 
-- (void)groupInfoEdit:(GroupInfoEditViewController *)editVC didEditSuccess:(NSString *)modifyText;
+- (void)groupInfoEdit:(GroupInfoEditViewController *)editVC didEditSuccess:(NSString *)modifyText editType:(GroupEditType)type;
 
 @end
 
-@interface GroupInfoEditViewController : UIViewController
+@interface GroupInfoEditViewController : XOBaseViewController
 
 @property (nonatomic, weak) id       <GroupInfoEditViewControllerProtocol>      delegate;
 
 @property (nonatomic, copy) NSString                    *groupId;
 @property (nonatomic, assign) GroupEditType             editType;
-@property (nonatomic, strong) XOGroupInfoModel          *xoGroupModel;
+@property (nonatomic, strong) TIMGroupInfo              *groupInfo;
 @property (nonatomic, assign) BOOL                      isOwner; // 是否是群主
 
 @end

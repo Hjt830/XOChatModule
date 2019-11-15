@@ -15,12 +15,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface XOContactManager : NSObject <TIMFriendshipListener>
 
+@property (nonatomic, strong, readonly) NSArray               <NSString *>* muteArray;  // 免打扰群
+@property (nonatomic, strong, readonly) NSArray               <NSString *>* toppingArray;  // 置顶群
+
+
 + (instancetype)defaultManager;
 
 // 同步好友列表
 - (void)asyncFriendList;
 // 同步群列表
 - (void)asyncGroupList;
+
+
+// 是否免打扰群
+- (BOOL)isMuteGroup:(NSString *)groupId;
+// 增加免打扰群
+- (BOOL)addMuteListWithGroupId:(NSString *)groupId;
+// 删除免打扰群
+- (BOOL)removeMuteListWithGroupId:(NSString *)groupId;
+
+// 是否置顶了群
+- (BOOL)isToppingGroup:(NSString *)groupId;
+// 增加置顶群
+- (BOOL)addToppingListWithGroupId:(NSString *)groupId;
+// 删除置顶群
+- (BOOL)removeToppingListWithGroupId:(NSString *)groupId;
 
 /**
  *  @brief 添加|删除代理
@@ -106,12 +125,17 @@ extern XOTableName const GroupTableName;
 /**
  * @brief 查询联系人信息
  */
-- (void)getContactProfile:(NSString *)identifier handler:(void(^ _Nullable)(TIMUserProfile * _Nullable friendList))complection;
+- (void)getContactProfile:(NSString *)identifier handler:(void(^ _Nullable)(TIMUserProfile * _Nullable profile))complection;
 
 /**
  * @brief 查询所有的联系人
  */
 - (void)getAllContactsList:(void(^ _Nullable)(NSArray <TIMFriend *> * _Nullable friendList))complection;
+
+/**
+ * @brief 查询群信息
+ */
+- (void)getGroupInfo:(NSString *)groupId handler:(void(^ _Nullable)(TIMGroupInfo * _Nullable groupInfo))complection;
 
 /**
  * @brief 查询所有的群

@@ -8,22 +8,23 @@
 
 #import "GroupSettingInfoController.h"
 #import "GroupInfoEditViewController.h"
-#import "CreateGroupViewController.h"
-#import "GroupManager.h"
+#import "XOCreateGroupViewController.h"
 
-#define BackgroundColor RGBA(240, 240, 240, 1.0)
+#import "NSBundle+ChatModule.h"
+#import "UIImage+XOChatBundle.h"
+#import "UIImage+XOChatExtension.h"
+#import <XOBaseLib/XOBaseLib.h>
 
 static NSString * const GroupMemberSwitchCellID         = @"GroupMemberSwitchCellID";
 static NSString * const GroupMemberSettingCellID        = @"GroupMemberSettingCellID";
 static NSString * const GroupMemberSettingTailCellID    = @"GroupMemberSettingTailCellID";
 static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIconCellID";
 
-@interface GroupSettingInfoController () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, GroupInfoEditViewControllerProtocol, CreateGroupViewControllerDelegate>
+@interface GroupSettingInfoController () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, GroupInfoEditViewControllerProtocol, XOCreateGroupDelegate>
 {
-    XOGroupInfoModel        *_groupInfoModel;
+    TIMGroupInfo        *_groupInfo;
 }
 @property (nonatomic, assign) BOOL                      isHoster; // 是否是群主
-@property (nonatomic, strong) NSArray                   *groupMembers;
 
 @property (nonatomic, strong) UIView                    *tableHeaderView;
 @property (nonatomic, strong) UIView                    *tableHeaderBackgroundView;
@@ -34,8 +35,9 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 
 @property (nonatomic, strong) NSArray                   *menus;
 
-@property (nonatomic, assign) BOOL                      isShowAll;   // 是否展示了所有人
-@property (nonatomic, strong) NSMutableArray            *showMembers;// 展示的群成员
+@property (nonatomic, strong) NSArray  <TIMGroupMemberInfo *>           *groupMembers;  // 所有的群成员
+@property (nonatomic, strong) NSMutableArray <TIMGroupMemberInfo *>     *showMembers;   // 展示的群成员
+@property (nonatomic, assign) BOOL                                      isShowAll;      // 是否展示了所有人
 
 
 @end
@@ -46,54 +48,32 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(groupListInfoUpdate:) name:GroupListInfoDidUpdateNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(groupListInfoUpdate:) name:GroupListInfoDidUpdateNotification object:nil];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:GroupListInfoDidUpdateNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] removeObserver:self name:GroupListInfoDidUpdateNotification object:nil];
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    self.view.backgroundColor = BackgroundColor;
-    self.title = [NSString stringWithFormat:NSLocalizedString(@"live.chatinfo", nil)];
-    self.isShowAll = NO;
+    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.title = [NSString stringWithFormat:@"%@(%u)", XOChatLocalizedString(@"group.setting.title"), self.groupInfo.memberNum];
+    
+    self.isShowAll = NO; // 不显示加号
     
     [self setupSubViews];
     
-    [self loadGroupMember];
+    [self initilization];
 }
 
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
-    
-    [self layoutSubViews];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:NO];
-    self.navigationController.navigationBar.hidden = NO;
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:NO];
-    self.navigationController.navigationBar.hidden = NO;
-}
-
-- (void)layoutSubViews
-{
-    UIButton *leftbut = [UIButton buttonWithType:UIButtonTypeCustom];
-    [leftbut setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
-    [leftbut addTarget:self action:@selector(goback) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:leftbut];
     
     if (XOIsEmptyArray(self.showMembers) || self.showMembers.count == 0) {
         self.collectionView.frame = CGRectZero;
@@ -132,6 +112,73 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
     self.tableView.tableHeaderView = self.tableHeaderView;
 }
 
+#pragma mark ========================= UI =========================
+
+- (void)setupSubViews
+{
+    [self.view addSubview:self.tableView];
+    [self.tableHeaderView addSubview:self.collectionView];
+    [self.tableHeaderView addSubview:self.allMemberBtn];
+    self.tableView.tableHeaderView = self.tableHeaderView;
+    self.tableView.tableFooterView = self.tableFooterView;
+}
+
+#pragma mark ========================= 群信息 =========================
+
+- (void)initilization
+{
+    NSString *groupId = XOIsEmptyString(self.groupId) ? self.groupInfo.group : self.groupId;
+    if (XOIsEmptyString(groupId)) {
+        return;
+    }
+    
+    // 获取群信息
+    [self getGroupInfoWith:groupId complection:^(BOOL finish, TIMGroupInfo *groupInfo) {
+        if (finish) {
+            self.groupInfo = groupInfo;
+            [self layoutGroupSettingView];
+        }
+        else {
+            if (self.groupInfo) {
+                [self layoutGroupSettingView];
+            }
+            else {
+                // 查询数据库
+                [[XOContactManager defaultManager] getGroupInfo:groupId handler:^(TIMGroupInfo * _Nullable groupInfo) {
+                    self.groupInfo = groupInfo;
+                    [self layoutGroupSettingView];
+                }];
+            }
+        }
+    }];
+}
+
+// 布局群信息列表
+- (void)layoutGroupSettingView
+{
+    self.isHoster = [self.groupInfo.owner isEqualToString:[XOKeyChainTool getUserName]];
+    if (self.isHoster) {
+        self.menus = @[XOChatLocalizedString(@"group.setting.groupname"),
+                       XOChatLocalizedString(@"group.setting.notification"),
+                       XOChatLocalizedString(@"group.setting.topping"),
+                       XOChatLocalizedString(@"group.setting.mute"),
+                       XOChatLocalizedString(@"group.setting.exit"),
+                       XOChatLocalizedString(@"group.setting.disband")];
+    } else {
+        self.menus = @[XOChatLocalizedString(@"group.setting.groupname"),
+                       XOChatLocalizedString(@"group.setting.notification"),
+                       XOChatLocalizedString(@"group.setting.topping"),
+                       XOChatLocalizedString(@"group.setting.mute"),
+                       XOChatLocalizedString(@"group.setting.exit")];
+    }
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];
+
+    [self loadGroupMember];
+}
+
+// 布局群成员头像
 - (void)initilizationMembers
 {
     // 未展开时 -- 最多展示5排
@@ -188,101 +235,79 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         }
     }
     
-    [self layoutSubViews];
+    [self.view setNeedsLayout];
     [self.collectionView reloadData];
 }
 
-- (void)setupSubViews
-{
-    [self.view addSubview:self.tableView];
-    [self.tableHeaderView addSubview:self.collectionView];
-    [self.tableHeaderView addSubview:self.allMemberBtn];
-    self.tableView.tableHeaderView = self.tableHeaderView;
-    self.tableView.tableFooterView = self.tableFooterView;
-}
+#pragma mark ========================= request =========================
 
-- (void)setGroup:(IMAGroup *)group
+- (void)getGroupInfoWith:(NSString *)groupId complection:(void(^)(BOOL finish, TIMGroupInfo *groupInfo))complectionHandler
 {
-    _group = group;
-    
-    _isHoster = [group isCreatedByMe];
-    
-    if (!XOIsEmptyArray([group members])) {
-        _groupMembers = [group members];
-    }
-    
-    if (_isHoster) {
-        self.menus = @[NSLocalizedString(@"live.groupnm", nil), NSLocalizedString(@"live.groupnt", nil), NSLocalizedString(@"live.Stickytop", nil), NSLocalizedString(@"live.mutenotif", nil), NSLocalizedString(@"live.deletele", nil), NSLocalizedString(@"live.Disband", nil)];
-    } else {
-        self.menus = @[NSLocalizedString(@"live.groupnm", nil), NSLocalizedString(@"live.groupnt", nil), NSLocalizedString(@"live.Stickytop", nil), NSLocalizedString(@"live.mutenotif", nil), NSLocalizedString(@"live.deletele", nil)];
-    }
-    [self.tableView reloadData];
-    
-    [self refreshGroupInfo];
-}
+    if (!XOIsEmptyString(groupId)) {
 
-- (void)refreshGroupInfo
-{
-    [[GroupManager shareManager] getGroupInfoModel:self.group.groupId complection:^(BOOL finish, XOGroupInfoModel * _Nullable infoModel) {
-        if (finish) {
-            self->_groupInfoModel = infoModel;
-            if (self->_groupInfoModel) {
-                [self.tableView reloadData];
+        [[TIMGroupManager sharedInstance] getGroupInfo:@[groupId] succ:^(NSArray<TIMGroupInfo *> *arr) {
+            
+            if (arr.count > 0) {
+                if (complectionHandler) {
+                    complectionHandler (YES, arr[0]);
+                }
+            } else {
+                if (complectionHandler) {
+                    complectionHandler (NO, nil);
+                }
             }
+        } fail:^(int code, NSString *msg) {
+            if (complectionHandler) {
+                complectionHandler (NO, nil);
+            }
+        }];
+    }
+    else {
+        if (complectionHandler) {
+            complectionHandler (NO, nil);
         }
-    }];
+    }
+}
+
+- (void)loadGroupMember
+{
+    if (!XOIsEmptyString(self.groupInfo.group)) {
+        [[TIMGroupManager sharedInstance] getGroupMembers:self.groupInfo.group succ:^(NSArray <TIMGroupMemberInfo *>* members) {
+            
+            // 按照加入时间排序
+            NSMutableArray <TIMGroupMemberInfo *>*sortArray = [members sortedArrayUsingComparator:^NSComparisonResult(TIMGroupMemberInfo *  _Nonnull obj1, TIMGroupMemberInfo *  _Nonnull obj2) {
+                return obj1.joinTime < obj2.joinTime;
+            }].mutableCopy;
+            // 将群主排到第一个
+            [sortArray enumerateObjectsUsingBlock:^(TIMGroupMemberInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if (TIM_GROUP_MEMBER_ROLE_SUPER == obj.role) {
+                    [sortArray removeObject:obj];
+                    [sortArray insertObject:obj atIndex:0];
+                    *stop = YES;
+                }
+            }];
+            self.groupMembers = sortArray;
+            
+            [self initilizationMembers];
+            
+            self.title = [NSString stringWithFormat:@"%@(%u)", XOChatLocalizedString(@"group.setting.title"), self.groupInfo.memberNum];
+            
+        } fail:^(int code, NSString *msg) {
+            NSLog(@"获取群成员失败: %d  错误信息: %@", code, msg);
+        }];
+    }
 }
 
 #pragma mark ========================= noti =========================
 
 - (void)groupListInfoUpdate:(NSNotification *)noti
 {
-    [self refreshGroupInfo];
-}
-
-#pragma mark ========================= memeber =========================
-
-- (void)loadGroupMember
-{
-    if (_group && !XOIsEmptyString(_group.groupId)) {
-        
-#if UserNewInterFace
-        
-        NSDictionary *param = @{@"groupId": _group.groupId};
-        [DYRequest requestWithURLStr:@"/friend/charGroup/queryMember" params:param HaveArrOrNo:NO Finish:^(id result) {
-            ResponseBean *response = [ResponseBean yy_modelWithJSON:result];
-            if (XOHttpSuccessCode == response.code) {
-                NSArray <NSDictionary *>* list = response.data;
-                self.groupMembers = list;
-                
-                [self initilizationMembers];
-                
-                self.title = [NSString stringWithFormat:NSLocalizedString(@"live.chatinfold", nil), (long)self.groupMembers.count];
-            }
-        } Fail:^(NSError *error) {
-            NSLog(@"reques.error: %@",error);
-        }];
-        
-#else
-        
-        HttpPost *http = [HttpPost getGroupMemberList:_group.groupId];
-        [http startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
-            
-            ResponseBean *response = [ResponseBean yy_modelWithJSON:request.responseJSONObject];
-            NSArray <NSDictionary *>* list = response.data[@"list"];
-            self.groupMembers = list;
-            
-            [self initilizationMembers];
-            
-            self.title = [NSString stringWithFormat:NSLocalizedString(@"live.chatinfold", nil), (long)self.groupMembers.count];
-            
-        } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
-            
-            NSLog(@"reques.error: %@", request.error);
-        }];
-        
-#endif
-    }
+    [self getGroupInfoWith:self.groupId complection:^(BOOL finish, TIMGroupInfo *groupInfo) {
+        if (finish) {
+            self.groupInfo = groupInfo;
+            [self loadGroupMember];
+        }
+    }];
 }
 
 #pragma mark ========================= lazy load =========================
@@ -297,7 +322,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         _tableView.sectionHeaderHeight = 15.0f;
         _tableView.sectionFooterHeight = 0.0f;
         _tableView.rowHeight = 60.0f;
-        _tableView.backgroundColor = BackgroundColor;
+        _tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         
         [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:GroupMemberSettingCellID];
@@ -330,7 +355,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 {
     if (!_tableHeaderView) {
         _tableHeaderView = [[UIView alloc] init];
-        _tableHeaderView.backgroundColor = BackgroundColor;
+        _tableHeaderView.backgroundColor = [UIColor groupTableViewBackgroundColor];
         
         _tableHeaderBackgroundView = [[UIView alloc] init];
         _tableHeaderBackgroundView.backgroundColor = [UIColor whiteColor];
@@ -343,7 +368,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 {
     if (!_tableFooterView) {
         _tableFooterView = [[UIView alloc] init];
-        _tableFooterView.backgroundColor = BackgroundColor;
+        _tableFooterView.backgroundColor = [UIColor groupTableViewBackgroundColor];
         
         NSArray *array = self.isHoster ? @[NSLocalizedString(@"live.deletele", nil), NSLocalizedString(@"live.Disband", nil)] : @[NSLocalizedString(@"live.deletele", nil)];
         for (int i = 0; i < array.count; i++) {
@@ -372,7 +397,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
     return _allMemberBtn;
 }
 
-- (NSMutableArray *)showMembers
+- (NSMutableArray <TIMGroupMemberInfo *>*)showMembers
 {
     if (!_showMembers) {
         _showMembers = [NSMutableArray array];
@@ -428,50 +453,61 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         GroupMemberSwitchCell *cell = [tableView dequeueReusableCellWithIdentifier:GroupMemberSwitchCellID forIndexPath:indexPath];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = title;
+        cell.textLabel.font = [UIFont boldSystemFontOfSize:15];
         
         if (2 == indexPath.section) {
-            if ([_groupInfoModel.topFlag boolValue]) {
+            if ([[XOContactManager defaultManager] isToppingGroup:self.groupInfo.group]) {
                 [cell setOn:YES];
             } else {
                 [cell setOn:NO];
             }
         } else {
-            if ([_groupInfoModel.isMute boolValue]) {
+            if ([[XOContactManager defaultManager] isMuteGroup:self.groupInfo.group]) {
                 [cell setOn:YES];
             } else {
                 [cell setOn:NO];
             }
         }
         
-        __weak GroupMemberSwitchCell *preCell = cell;
+        __weak GroupSettingInfoController *wself = self;
+        __weak GroupMemberSwitchCell *wCell = cell;
         cell.switchClick = ^(BOOL on) {
-            if (2 == indexPath.section) {
-                // 置顶 | 取消置顶
-                [preCell setIsLocked:YES];
-                [self topTheConversaion:on complection:^(BOOL finish, BOOL result) {
-                    [preCell setIsLocked:NO];
-                    if (finish) {
-                        // 操作成功
-                        _groupInfoModel.topFlag = @(on);
-                    } else {
-                        // 操作失败, 回退状态
-                        [preCell setOn:!on];
-                    }
-                }];
+            __strong GroupSettingInfoController *sself = wself;
+            __strong GroupMemberSwitchCell *sCell = wCell;
+
+            // 置顶 | 取消置顶
+            if (2 == indexPath.section)
+            {
+                BOOL result = NO;
+                [sCell setIsLocked:YES];
+                if (on) { // 置顶
+                    result = [[XOContactManager defaultManager] addToppingListWithGroupId:sself.groupInfo.group];
+                } else { // 取消置顶
+                    result = [[XOContactManager defaultManager] removeToppingListWithGroupId:sself.groupInfo.group];
+                }
+                [sCell setIsLocked:NO];
+
+                // 操作失败, 回退状态
+                if (!result) {
+                    [sCell setOn:!on];
+                }
             }
-            else if (3 == indexPath.section) {
-                // 消息免打扰
-                [preCell setIsLocked:YES];
-                [[GroupManager shareManager] modifyGroupMute:on withGroupId:self.group.groupId complection:^(BOOL finish, NSError * _Nonnull error) {
-                    [preCell setIsLocked:NO];
-                    if (finish) {
-                        // 操作成功
-                        _groupInfoModel.isMute = @(on);
-                    } else {
-                        // 操作失败, 回退状态
-                        [preCell setOn:!on];
-                    }
-                }];
+            // 免打扰 | 取消免打扰
+            else if (3 == indexPath.section)
+            {
+                BOOL result = NO;
+                [sCell setIsLocked:YES];
+                if (on) { // 置顶
+                    result = [[XOContactManager defaultManager] addMuteListWithGroupId:sself.groupInfo.group];
+                } else { // 取消置顶
+                    result = [[XOContactManager defaultManager] removeMuteListWithGroupId:sself.groupInfo.group];
+                }
+                [sCell setIsLocked:NO];
+                
+                // 操作失败, 回退状态
+                if (!result) {
+                    [sCell setOn:!on];
+                }
             }
         };
         
@@ -487,15 +523,23 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
     }
     else {
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:GroupMemberSettingCellID];
+        cell.detailTextLabel.font = [UIFont systemFontOfSize:13];
+        cell.detailTextLabel.textColor = [UIColor lightGrayColor];
+        
         if (indexPath.section == 0) {
-            cell.detailTextLabel.font = [UIFont systemFontOfSize:13];
-            cell.detailTextLabel.textColor = [UIColor lightGrayColor];
-            if (!XOIsEmptyString(_groupInfoModel.name)) {
-                cell.detailTextLabel.text = _groupInfoModel.name;
+            if (!XOIsEmptyString(self.groupInfo.groupName)) {
+                cell.detailTextLabel.text = self.groupInfo.groupName;
+            }
+        }
+        else {
+            cell.detailTextLabel.numberOfLines = 2;
+            if (!XOIsEmptyString(self.groupInfo.notification)) {
+                cell.detailTextLabel.text = self.groupInfo.notification;
             }
         }
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.textLabel.font = [UIFont boldSystemFontOfSize:15];
         cell.textLabel.text = title;
         
         return cell;
@@ -506,14 +550,14 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 {
     switch (indexPath.section) {
         case 0: {
-            if (self.group.isCreatedByMe) {
+            if (self.isHoster) {
                 GroupInfoEditViewController *editVC = [[GroupInfoEditViewController alloc] init];
-                editVC.editType = GroupEditTypeName;
-                editVC.groupId = self.group.groupId;
-                editVC.xoGroupModel = _groupInfoModel;
+                editVC.editType = GroupEditTypeGroupName;
+                editVC.groupId = self.groupInfo.group;
+                editVC.groupInfo = self.groupInfo;
                 editVC.delegate = self;
-                editVC.isOwner = self.group.isCreatedByMe;
-                [[BaseAppDelegate sharedAppDelegate] pushViewController:editVC withBackTitle:@"back"];
+                editVC.isOwner = self.isHoster;
+                [self.navigationController pushViewController:editVC animated:YES];
             } else {
                 [SVProgressHUD showWithStatus:NSLocalizedString(@"msg.groupname.editTip", nil)];
                 [SVProgressHUD dismissWithDelay:0.5];
@@ -522,85 +566,81 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
             break;
         case 1: {
             GroupInfoEditViewController *editVC = [[GroupInfoEditViewController alloc] init];
-            editVC.editType = GroupEditTypeNotice;
-            editVC.groupId = self.group.groupId;
-            editVC.xoGroupModel = _groupInfoModel;
+            editVC.editType = GroupEditTypeNotification;
+            editVC.groupId = self.groupInfo.group;
+            editVC.groupInfo = self.groupInfo;
             editVC.delegate = self;
-            editVC.isOwner = self.group.isCreatedByMe;
-            [[BaseAppDelegate sharedAppDelegate] pushViewController:editVC withBackTitle:@"back"];
+            editVC.isOwner = self.isHoster;
+            [self.navigationController pushViewController:editVC animated:YES];
         }
             break;
             
         case 4:{  // 退群
             // 如果是群主
-            if (self.group.isCreatedByMe && !XOIsEmptyArray(self.groupMembers)) {
-                NSString *oldOwnerId = [XOUserInfoManager shareManager].memId;
+            if (self.isHoster && !XOIsEmptyArray(self.groupMembers)) {
                 // 如果群成员个数只有两个, 则直接解散群
                 if (self.groupMembers.count <= 2) {
-                    NSString *name = [XOUserInfoManager shareManager].userInfo.realName;
-                    [self sendCustomMessage:name memId:nil type:CustomMsgType_Disband handler:nil];
-                    [self disbandGroup:self.group.groupId];
+                    [self disbandGroup:^(BOOL finish) {
+                        if (finish) NSLog(@"解散群成功: %@", self.groupInfo.groupName);
+                        else NSLog(@"解散群失败: %@", self.groupInfo.groupName);
+                    }];
                 }
-                // 否则先转让群主, 再退群
+                // 否则先转让群, 再退群
                 else {
-                    NSString *newOwnerId = self.groupMembers[1][@"memId"];
-                    __block NSString *name = self.groupMembers[1][@"realName"];
+                    __block NSString *newOwnerId = nil;
+                    [self.groupMembers enumerateObjectsUsingBlock:^(TIMGroupMemberInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                        if (obj.role != TIM_GROUP_MEMBER_ROLE_SUPER) {
+                            newOwnerId = obj.member;
+                            *stop = YES;
+                        }
+                    }];
+                    
                     if (!XOIsEmptyString(newOwnerId)) {
-                        [self changeGroupOwner:oldOwnerId toTargetGroupOwner:newOwnerId complection:^(BOOL finish) {
+                        // 转让群
+                        [self changeGroupToNewOwner:newOwnerId complection:^(BOOL finish) {
                             if (finish) {
-                                // 发送一条自定义消息到群聊中
-                                [self sendCustomMessage:name memId:nil type:CustomMsgType_ChangeOwner handler:nil];
+                                NSLog(@"转让群成功: %@", self.groupInfo.groupName);
+                                
                                 // 退群
-                                [self exitGroup:self.group.groupId];
+                                [self exitGroup:^(BOOL finish) {
+                                    if (finish) NSLog(@"退出群成功: %@", self.groupInfo.groupName);
+                                    else NSLog(@"退出群失败: %@", self.groupInfo.groupName);
+                                }];
                             }
+                            else {
+                                NSLog(@"转让群失败: %@", self.groupInfo.groupName);
+                            }
+                        }];
+                    }
+                    else {
+                        // 解散群
+                        [self disbandGroup:^(BOOL finish) {
+                            if (finish) NSLog(@"解散群成功: %@", self.groupInfo.groupName);
+                            else NSLog(@"解散群失败: %@", self.groupInfo.groupName);
                         }];
                     }
                 }
             }
-            // 不是群主
+            // 不是群主, 直接退群
             else {
-                [self exitGroup:self.group.groupId];
+                [self exitGroup:^(BOOL finish) {
+                    if (finish) NSLog(@"退出群成功: %@", self.groupInfo.groupName);
+                    else NSLog(@"退出群失败: %@", self.groupInfo.groupName);
+                }];
             }
         }
             break;
             
-        case 5:  // 解散群
+        case 5:  // 群主解散群
         {
-            NSString *name = [XOUserInfoManager shareManager].userInfo.realName;
-            [self sendCustomMessage:name memId:nil type:CustomMsgType_Disband handler:nil];
-            [self disbandGroup:self.group.groupId];
+            [self disbandGroup:^(BOOL finish) {
+                if (finish) NSLog(@"解散群成功: %@", self.groupInfo.groupName);
+                else NSLog(@"解散群失败: %@", self.groupInfo.groupName);
+            }];
         }
             break;
         default:
             break;
-    }
-}
-
-// 发送自定义消息
-- (void)sendCustomMessage:(NSString * _Nullable)content memId:(NSString * _Nullable)memId type:(CustomMsgType)type handler:(void(^)(void))handler
-{
-    IMAConversation *conversation = [[IMAPlatform sharedInstance].conversationMgr chatWith:self.group];
-    if (conversation) {
-        // XML 协议的自定义消息
-        NSString * xml = [[GroupManager shareManager] getCustomMessageContentWith:content memId:memId type:type];
-        // 转换为 NSData
-        NSData *data = [xml dataUsingEncoding:NSUTF8StringEncoding];
-        TIMCustomElem * custom_elem = [[TIMCustomElem alloc] init];
-        [custom_elem setData:data];
-        TIMMessage * msg = [[TIMMessage alloc] init];
-        [msg addElem:custom_elem];
-        IMAMsg *imaMsg = [IMAMsg msgWith:msg];
-        [conversation sendMessage:imaMsg completion:^(NSArray *imamsgList, BOOL succ, int code) {
-            if (handler) {
-                handler ();
-            }
-            
-            if (succ) {
-                NSLog(@"SendMsg Succ");
-            } else {
-                NSLog(@"SendMsg Failed:%d", code);
-            }
-        }];
     }
 }
 
@@ -627,12 +667,8 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         cell.showDel = NO;
         // 设置头像
         if (indexPath.item < self.showMembers.count) {
-            NSDictionary *info = self.showMembers[indexPath.item];
-            cell.imageUrl = info[@"picture"];
-            cell.name = info[@"realName"];
-        } else {
-            cell.imageUrl = @"";
-            cell.name = @"";
+            TIMGroupMemberInfo *info = self.showMembers[indexPath.item];
+            cell.memberInfo = info;
         }
     }
     
@@ -647,66 +683,63 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    // 添加群成员
-    if (indexPath.item == self.showMembers.count) {
-        
-        __block NSMutableArray <NSString *>* arr = [NSMutableArray array];
-        [self.groupMembers enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            NSString *memId = obj[@"memId"];
-            if (!XOIsEmptyString(memId)) {
-                [arr addObject:memId];
-            }
-        }];
-        
-        CreateGroupViewController *selectVC = [[CreateGroupViewController alloc] init];
-        selectVC.memberType = GroupMemberType_Add;
-        selectVC.existMemberIds = arr;
-        selectVC.delegate = self;
-        [[BaseAppDelegate sharedAppDelegate] pushViewController:selectVC];
-    }
-    // 剔除群成员
-    else if (indexPath.item > self.showMembers.count) {
-        __block NSMutableArray <NSDictionary *>* arr = [NSMutableArray array];
-        [self.groupMembers enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            NSString *memId = obj[@"memId"];
-            if (!XOIsEmptyString(memId) && ![memId isEqualToString:[XOUserInfoManager shareManager].memId]) {
-                [arr addObject:obj];
-            }
-        }];
-        
-        CreateGroupViewController *selectVC = [[CreateGroupViewController alloc] init];
-        selectVC.memberType = GroupMemberType_Remove;
-        selectVC.groupMembers = arr;
-        selectVC.delegate = self;
-        [[BaseAppDelegate sharedAppDelegate] pushViewController:selectVC];
-    }
+//    // 添加群成员
+//    if (indexPath.item == self.showMembers.count) {
+//
+//        __block NSMutableArray <NSString *>* arr = [NSMutableArray array];
+//        [self.groupMembers enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//            NSString *memId = obj[@"memId"];
+//            if (!XOIsEmptyString(memId)) {
+//                [arr addObject:memId];
+//            }
+//        }];
+//
+//        XOCreateGroupViewController *selectVC = [[XOCreateGroupViewController alloc] init];
+//        selectVC.memberType = GroupMemberType_Add;
+//        selectVC.existMemberIds = arr;
+//        selectVC.delegate = self;
+//        [[BaseAppDelegate sharedAppDelegate] pushViewController:selectVC];
+//    }
+//    // 剔除群成员
+//    else if (indexPath.item > self.showMembers.count) {
+//        __block NSMutableArray <NSDictionary *>* arr = [NSMutableArray array];
+//        [self.groupMembers enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//            NSString *memId = obj[@"memId"];
+//            if (!XOIsEmptyString(memId) && ![memId isEqualToString:[XOUserInfoManager shareManager].memId]) {
+//                [arr addObject:obj];
+//            }
+//        }];
+//
+//        XOCreateGroupViewController *selectVC = [[XOCreateGroupViewController alloc] init];
+//        selectVC.memberType = GroupMemberType_Remove;
+//        selectVC.groupMembers = arr;
+//        selectVC.delegate = self;
+//        [[BaseAppDelegate sharedAppDelegate] pushViewController:selectVC];
+//    }
 }
 
 #pragma mark ========================= GroupInfoEditViewControllerProtocol =========================
 
 - (void)groupInfoEdit:(GroupInfoEditViewController *)editVC didEditSuccess:(NSString *)modifyText
 {
-    if (GroupEditTypeName == editVC.editType) {
-        _groupInfoModel.name = modifyText;
-        self.group.groupInfo.groupName = modifyText;
+    if (GroupEditTypeGroupName == editVC.editType) {
+        self.groupInfo.groupName = modifyText;
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.tableView reloadData];
         }];
-        
-        [self sendCustomMessage:modifyText memId:nil type:CustomMsgType_ModifyName handler:nil];
     }
-    else if (GroupEditTypeNotice == editVC.editType) {
-        _groupInfoModel.notice = modifyText;
-        self.group.groupInfo.notification = modifyText;
-        
-        [self sendCustomMessage:modifyText memId:nil type:CustomMsgType_ModifyNotice handler:nil];
+    else if (GroupEditTypeNotification == editVC.editType) {
+        self.groupInfo.notification = modifyText;
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.tableView reloadData];
+        }];
     }
 }
 
 #pragma mark ========================= CreateGroupViewControllerDelegate =========================
 
 // 添加群成员回调
-- (void)addGroupMember:(CreateGroupViewController *)groupViewController selectMember:(NSArray <NSDictionary *> *)selectMember
+- (void)addGroupMember:(XOCreateGroupViewController *)groupViewController selectMember:(NSArray <NSDictionary *> *)selectMember
 {
     if (!XOIsEmptyArray(selectMember)) {
         [self addGroupMembers:selectMember];
@@ -714,7 +747,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 }
 
 // 剔除群成员回调
-- (void)removeGroupMember:(CreateGroupViewController *)groupViewController selectMember:(NSArray<NSDictionary *> *)selectMember
+- (void)removeGroupMember:(XOCreateGroupViewController *)groupViewController selectMember:(NSArray<NSDictionary *> *)selectMember
 {
     if (!XOIsEmptyArray(selectMember)) {
         [self removeGroupMembers:selectMember];
@@ -723,370 +756,83 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 
 #pragma mark ========================= API =========================
 
-// 群聊置顶 | 取消置顶
-- (void)topTheConversaion:(BOOL)top complection:(void(^)(BOOL finish, BOOL result))handler
-{
-#if UserNewInterFace
-    
-    if (XOIsEmptyString(self.group.groupId)) {
-        NSLog(@"修改群信息的groupId不能为空");
-        return;
-    }
-    NSDictionary *param = @{@"groupId":self.group.groupId, @"topFlag": @(0)};
-    [DYRequest requestWithURLStr:@"/friend/charGroup/top" params:param HaveArrOrNo:YES Finish:^(id result) {
-        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:result];
-        if (XOHttpSuccessCode == reponse.code) {
-            if (handler) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    handler(YES, top);
-                }];
-            }
-
-            [[GroupManager shareManager] modifyGroupTop:top withGroupId:self.group.groupId complection:^(BOOL finish, NSError * _Nonnull error) {
-                if (finish) {
-                    [[NSNotificationCenter defaultCenter] postNotificationName:XOMessageConversationTopNotifiation object:nil];
-                }
-            }];
-        }
-        else {
-            if (handler) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    handler(NO, top);
-                }];
-            }
-
-            [SVProgressHUD showWithStatus:@"top fail"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
-        }
-    } Fail:^(NSError *error) {
-        if (handler) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                handler(NO, top);
-            }];
-        }
-
-        [SVProgressHUD showWithStatus:@"top fail"];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
-    
-#else
-
-    HttpPost *http = [HttpPost groupToTop:self.group.groupId top:top];
-    [http startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
-
-        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:request.responseObject];
-        if (XOHttpSuccessCode == reponse.code) {
-            if (handler) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    handler(YES, top);
-                }];
-            }
-
-            [[GroupManager shareManager] modifyGroupTop:top withGroupId:self.group.groupId complection:^(BOOL finish, NSError * _Nonnull error) {
-                if (finish) {
-                    [[NSNotificationCenter defaultCenter] postNotificationName:XOMessageConversationTopNotifiation object:nil];
-                }
-            }];
-        }
-        else {
-            if (handler) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    handler(NO, top);
-                }];
-            }
-
-            [SVProgressHUD showWithStatus:@"top fail"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
-        }
-    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
-
-        if (handler) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                handler(NO, top);
-            }];
-        }
-
-        [SVProgressHUD showWithStatus:@"top fail"];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
-    
-#endif
-}
-
 // 解散群
-- (void)disbandGroup:(NSString *)groupId
+- (void)disbandGroup:(void(^)(BOOL finish))complectionHandler
 {
-    if (XOIsEmptyString(groupId)) {
+    if (XOIsEmptyString(self.groupInfo.group)) {
         NSLog(@"修改群信息的groupId不能为空");
         return;
     }
     
-#if UserNewInterFace
-    
-    NSDictionary *param = @{@"groupId": groupId};
-    [DYRequest requestWithURLStr:@"/friend/charGroup/destroyGroup" params:param HaveArrOrNo:YES Finish:^(id result) {
-        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:result];
-        if (XOHttpSuccessCode == reponse.code) {
-            IMAConversation *conv = [[IMAPlatform sharedInstance].conversationMgr queryConversationWith:self.group];
-            if (conv) {
-                [[IMAPlatform sharedInstance].conversationMgr deleteConversation:conv needUIRefresh:YES];
-            }
-            // 删除本地群
-            [[GroupManager shareManager] removeGroup:@{@"groupId": groupId}];
-
-            [SVProgressHUD showWithStatus:@"disband group success"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-                [self.navigationController popToRootViewControllerAnimated:YES];
-            });
-        }
-        else {
-            [SVProgressHUD showWithStatus:@"disband group fail"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
-        }
-    } Fail:^(NSError *error) {
-        [SVProgressHUD showWithStatus:@"disband group fail"];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
-    
-#else
-    
-    [SVProgressHUD show];
-    HttpPost *http = [HttpPost disbandGroup:groupId];
-    [http startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
+    [[TIMGroupManager sharedInstance] deleteGroup:self.groupInfo.group succ:^{
         
-        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:request.responseObject];
-        if (XOHttpSuccessCode == reponse.code) {
-            
-            IMAConversation *conv = [[IMAPlatform sharedInstance].conversationMgr queryConversationWith:self.group];
-            if (conv) {
-                [[IMAPlatform sharedInstance].conversationMgr deleteConversation:conv needUIRefresh:YES];
+        [[XOContactManager defaultManager] deleteGroup:self.groupInfo handler:^(BOOL result) {
+            if (result) {
+                NSLog(@"删除本地群成功");
+            } else {
+                NSLog(@"删除本地群失败");
             }
-            // 删除本地群
-            [[GroupManager shareManager] removeGroup:@{@"groupId": groupId}];
-            
-            [[IMAPlatform sharedInstance].conversationMgr asyncConversationList];
-            
-            [SVProgressHUD showWithStatus:@"disband group success"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-                [self.navigationController popToRootViewControllerAnimated:YES];
-            });
+        }];
+        
+        if (complectionHandler) {
+            complectionHandler (YES);
         }
-        else {
-            [SVProgressHUD showWithStatus:@"disband group fail"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
+    } fail:^(int code, NSString *msg) {
+        if (complectionHandler) {
+            complectionHandler (NO);
         }
-
-    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
-
-        [SVProgressHUD showWithStatus:@"disband group fail"];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
     }];
-    
-#endif
 }
 
 // 退群
-- (void)exitGroup:(NSString *)groupId
+- (void)exitGroup:(void(^)(BOOL finish))complectionHandler
 {
-    if (XOIsEmptyString(groupId)) {
+    if (XOIsEmptyString(self.groupInfo.group)) {
         NSLog(@"修改群信息的groupId不能为空");
         return;
     }
     
-    // 发送退群消息
-//    XOUserInfoModel *infoModel = [XOUserInfoManager shareManager].userInfo;
-//    [self sendCustomMessage:infoModel.realName memId:infoModel.memId type:CustomMsgType_ExitGroup  handler:^(void){
-    
-#if UserNewInterFace
+    [[TIMGroupManager sharedInstance] quitGroup:self.groupInfo.group succ:^{
         
-        NSDictionary *param = @{@"groupId": groupId};
-        [DYRequest requestWithURLStr:@"/friend/charGroup/signOut" params:param HaveArrOrNo:YES Finish:^(id result) {
-            ResponseBean *reponse = [ResponseBean yy_modelWithJSON:result];
-            if (XOHttpSuccessCode == reponse.code) {
-
-                IMAConversation *conv = [[IMAPlatform sharedInstance].conversationMgr queryConversationWith:self.group];
-                if (conv) {
-                    [[IMAPlatform sharedInstance].conversationMgr deleteConversation:conv needUIRefresh:YES];
-                }
-
-                // 删除本地群
-                [[GroupManager shareManager] removeGroup:@{@"groupId": groupId}];
-
-                [SVProgressHUD showWithStatus:@"exit success"];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [SVProgressHUD dismiss];
-                    [self.navigationController popToRootViewControllerAnimated:YES];
-                });
+        [[XOContactManager defaultManager] deleteGroup:self.groupInfo handler:^(BOOL result) {
+            if (result) {
+                NSLog(@"删除本地群成功");
+            } else {
+                NSLog(@"删除本地群失败");
             }
-            else {
-                [SVProgressHUD showWithStatus:@"exit fail"];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [SVProgressHUD dismiss];
-                });
-            }
-        } Fail:^(NSError *error) {
-            [SVProgressHUD showWithStatus:@"exit fail"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
         }];
-
-#else
         
-        HttpPost *http = [HttpPost groupExit:groupId];
-        [http startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
-
-            ResponseBean *reponse = [ResponseBean yy_modelWithJSON:request.responseObject];
-            if (XOHttpSuccessCode == reponse.code) {
-                IMAConversation *conv = [[IMAPlatform sharedInstance].conversationMgr queryConversationWith:self.group];
-                if (conv) {
-                    [[IMAPlatform sharedInstance].conversationMgr deleteConversation:conv needUIRefresh:YES];
-                }
-                
-                [[IMAPlatform sharedInstance].conversationMgr asyncConversationList];
-                
-                // 删除本地群
-                [[GroupManager shareManager] removeGroup:@{@"groupId": groupId}];
-                
-                [SVProgressHUD showWithStatus:@"exit success"];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [SVProgressHUD dismiss];
-                    [self.navigationController popToRootViewControllerAnimated:YES];
-                });
-            }
-            else {
-                [SVProgressHUD showWithStatus:@"exit fail"];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [SVProgressHUD dismiss];
-                });
-            }
-
-        } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
-
-            [SVProgressHUD showWithStatus:@"exit fail"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
-        }];
-
-#endif
-//    }];
+        if (complectionHandler) {
+            complectionHandler (YES);
+        }
+    } fail:^(int code, NSString *msg) {
+        if (complectionHandler) {
+            complectionHandler (NO);
+        }
+    }];
 }
 
 // 转让群主
-- (void)changeGroupOwner:(NSString *)oldGroupOwner toTargetGroupOwner:(NSString *)groupOwner complection:(void(^)(BOOL finish))handler
+- (void)changeGroupToNewOwner:(NSString *)ownerId complection:(void(^)(BOOL finish))complectionHandler
 {
-    if (XOIsEmptyString(self.group.groupId)) {
+    if (XOIsEmptyString(self.groupInfo.group)) {
         NSLog(@"转让群主的groupId不能为空");
         return;
     }
-    
-    if (XOIsEmptyString(oldGroupOwner)) {
+    if (XOIsEmptyString(ownerId)) {
         NSLog(@"转让群主的oldGroupOwner不能为空");
         return;
     }
     
-    if (XOIsEmptyString(groupOwner)) {
-        NSLog(@"转让群主的groupOwner不能为空");
-        return;
-    }
-    
-#if UserNewInterFace
-    
-    NSDictionary *param = @{@"groupId":self.group.groupId, @"targetGroupOwner": groupOwner};
-    [DYRequest requestWithURLStr:@"/friend/charGroup/changeGroupOwner" params:param HaveArrOrNo:YES Finish:^(id result) {
-        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:result];
-        if (XOHttpSuccessCode == reponse.code) {
-            if (handler) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    handler (YES);
-                }];
-            }
+    [[TIMGroupManager sharedInstance] modifyGroupOwner:self.groupInfo.group user:ownerId succ:^{
+        if (complectionHandler) {
+            complectionHandler (YES);
         }
-        else {
-            if (handler) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    handler (NO);
-                }];
-            }
-
-            [SVProgressHUD showWithStatus:@"transfer fail"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
+    } fail:^(int code, NSString *msg) {
+        if (complectionHandler) {
+            complectionHandler (NO);
         }
-    } Fail:^(NSError *error) {
-        if (handler) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                handler (NO);
-            }];
-        }
-
-        [SVProgressHUD showWithStatus:@"transfer fail"];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
     }];
-    
-#else
-    
-    HttpPost *http = [HttpPost changeGroupOwner:self.group.groupId from:oldGroupOwner toTargetGroupOwner:groupOwner];
-    [http startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
-
-        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:request.responseObject];
-        if (XOHttpSuccessCode == reponse.code) {
-            if (handler) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    handler (YES);
-                }];
-            }
-        }
-        else {
-            if (handler) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    handler (NO);
-                }];
-            }
-
-            [SVProgressHUD showWithStatus:@"transfer fail"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
-        }
-
-    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
-
-        if (handler) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                handler (NO);
-            }];
-        }
-
-        [SVProgressHUD showWithStatus:@"transfer fail"];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
-    
-#endif
 }
 
 // 添加群成员
@@ -1112,7 +858,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         }
     }];
     
-    if (XOIsEmptyString(self.group.groupId)) {
+    if (XOIsEmptyString(self.groupInfo.group)) {
         NSLog(@"修改群信息的groupId不能为空");
         return;
     }
@@ -1121,64 +867,64 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         NSLog(@"加人列表ID数组不能为空");
         return;
     }
-    
-#if UserNewInterFace
-    
-    NSDictionary *param = @{@"groupId": self.group.groupId, @"memerIds": memberIds};
-    [DYRequest requestWithURLStr:@"/friend/charGroup/addMember" params:param HaveArrOrNo:YES Finish:^(id result) {
-        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:result];
-        if (XOHttpSuccessCode == reponse.code) {
-            // 重新加载群成员
-            [self loadGroupMember];
-
-            if (!XOIsEmptyString(names)) {
-                [self sendCustomMessage:names memId:nil type:CustomMsgType_AddMember handler:nil];
-            }
-        }
-        else {
-            [SVProgressHUD showWithStatus:@"add members fail"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
-        }
-    } Fail:^(NSError *error) {
-        [SVProgressHUD showWithStatus:@"add members fail"];
-         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-             [SVProgressHUD dismiss];
-        });
-    }];
-
-#else
-    
-    HttpPost *http = [HttpPost groupAdd:self.group.groupId members:memberIds];
-    [http startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
-
-        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:request.responseJSONObject];
-        if (XOHttpSuccessCode == reponse.code) {
-            // 重新加载群成员
-            [self loadGroupMember];
-
-            if (!XOIsEmptyString(names)) {
-                [self sendCustomMessage:names type:CustomMsgType_AddMember handler:nil];
-            }
-
-        }
-        else {
-            [SVProgressHUD showWithStatus:@"add members fail"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
-        }
-
-    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
-
-        [SVProgressHUD showWithStatus:@"add members fail"];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
-    
-#endif
+//
+//#if UserNewInterFace
+//
+//    NSDictionary *param = @{@"groupId": self.group.groupId, @"memerIds": memberIds};
+//    [DYRequest requestWithURLStr:@"/friend/charGroup/addMember" params:param HaveArrOrNo:YES Finish:^(id result) {
+//        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:result];
+//        if (XOHttpSuccessCode == reponse.code) {
+//            // 重新加载群成员
+//            [self loadGroupMember];
+//
+//            if (!XOIsEmptyString(names)) {
+//                [self sendCustomMessage:names memId:nil type:CustomMsgType_AddMember handler:nil];
+//            }
+//        }
+//        else {
+//            [SVProgressHUD showWithStatus:@"add members fail"];
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                [SVProgressHUD dismiss];
+//            });
+//        }
+//    } Fail:^(NSError *error) {
+//        [SVProgressHUD showWithStatus:@"add members fail"];
+//         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//             [SVProgressHUD dismiss];
+//        });
+//    }];
+//
+//#else
+//
+//    HttpPost *http = [HttpPost groupAdd:self.group.groupId members:memberIds];
+//    [http startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
+//
+//        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:request.responseJSONObject];
+//        if (XOHttpSuccessCode == reponse.code) {
+//            // 重新加载群成员
+//            [self loadGroupMember];
+//
+//            if (!XOIsEmptyString(names)) {
+//                [self sendCustomMessage:names type:CustomMsgType_AddMember handler:nil];
+//            }
+//
+//        }
+//        else {
+//            [SVProgressHUD showWithStatus:@"add members fail"];
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                [SVProgressHUD dismiss];
+//            });
+//        }
+//
+//    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
+//
+//        [SVProgressHUD showWithStatus:@"add members fail"];
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [SVProgressHUD dismiss];
+//        });
+//    }];
+//
+//#endif
 }
 
 // 删除群成员
@@ -1204,75 +950,75 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         }
     }];
     
-    [removeMemberIds enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSString *memId = obj[@"memId"];
-        NSString *name = obj[@"realName"];
-        if (!XOIsEmptyString(name) && !XOIsEmptyString(memId)) {
-            [self sendCustomMessage:name memId:memId type:CustomMsgType_ExitGroup handler:nil];
-        }
-    }];
-    
-#if UserNewInterFace
-        
-    if (XOIsEmptyString(self.group.groupId)) {
-        NSLog(@"修改群信息的groupId不能为空");
-        return;
-    }
-
-    if (XOIsEmptyArray(memberIds)) {
-        NSLog(@"加人列表ID数组不能为空");
-        return;
-    }
-    NSDictionary *param = @{@"groupId": self.group.groupId, @"memerIds": memberIds};
-    [DYRequest requestWithURLStr:@"/friend/charGroup/delMember" params:param HaveArrOrNo:YES Finish:^(id result) {
-        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:result];
-        if (XOHttpSuccessCode == reponse.code) {
-            // 重新加载群成员
-            [self loadGroupMember];
-        }
-        else {
-            [SVProgressHUD showWithStatus:@"remove members fail"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
-        }
-    } Fail:^(NSError *error) {
-        [SVProgressHUD showWithStatus:@"remove members fail"];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
-    
-#else
-    
-    HttpPost *http = [HttpPost groupKick:self.group.groupId members:memberIds];
-    [http startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
-
-        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:request.responseJSONObject];
-        if (XOHttpSuccessCode == reponse.code) {
-            // 重新加载群成员
-            [self loadGroupMember];
-
-            if (!XOIsEmptyString(names)) {
-                [self sendCustomMessage:names type:CustomMsgType_ExitGroup handler:nil];
-            }
-        }
-        else {
-            [SVProgressHUD showWithStatus:@"remove members fail"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
-        }
-
-    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
-
-        [SVProgressHUD showWithStatus:@"remove members fail"];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [SVProgressHUD dismiss];
-        });
-    }];
-    
-#endif
+//    [removeMemberIds enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//        NSString *memId = obj[@"memId"];
+//        NSString *name = obj[@"realName"];
+//        if (!XOIsEmptyString(name) && !XOIsEmptyString(memId)) {
+//            [self sendCustomMessage:name memId:memId type:CustomMsgType_ExitGroup handler:nil];
+//        }
+//    }];
+//
+//#if UserNewInterFace
+//
+//    if (XOIsEmptyString(self.group.groupId)) {
+//        NSLog(@"修改群信息的groupId不能为空");
+//        return;
+//    }
+//
+//    if (XOIsEmptyArray(memberIds)) {
+//        NSLog(@"加人列表ID数组不能为空");
+//        return;
+//    }
+//    NSDictionary *param = @{@"groupId": self.group.groupId, @"memerIds": memberIds};
+//    [DYRequest requestWithURLStr:@"/friend/charGroup/delMember" params:param HaveArrOrNo:YES Finish:^(id result) {
+//        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:result];
+//        if (XOHttpSuccessCode == reponse.code) {
+//            // 重新加载群成员
+//            [self loadGroupMember];
+//        }
+//        else {
+//            [SVProgressHUD showWithStatus:@"remove members fail"];
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                [SVProgressHUD dismiss];
+//            });
+//        }
+//    } Fail:^(NSError *error) {
+//        [SVProgressHUD showWithStatus:@"remove members fail"];
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [SVProgressHUD dismiss];
+//        });
+//    }];
+//
+//#else
+//
+//    HttpPost *http = [HttpPost groupKick:self.group.groupId members:memberIds];
+//    [http startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
+//
+//        ResponseBean *reponse = [ResponseBean yy_modelWithJSON:request.responseJSONObject];
+//        if (XOHttpSuccessCode == reponse.code) {
+//            // 重新加载群成员
+//            [self loadGroupMember];
+//
+//            if (!XOIsEmptyString(names)) {
+//                [self sendCustomMessage:names type:CustomMsgType_ExitGroup handler:nil];
+//            }
+//        }
+//        else {
+//            [SVProgressHUD showWithStatus:@"remove members fail"];
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                [SVProgressHUD dismiss];
+//            });
+//        }
+//
+//    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
+//
+//        [SVProgressHUD showWithStatus:@"remove members fail"];
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [SVProgressHUD dismiss];
+//        });
+//    }];
+//
+//#endif
 }
 
 
@@ -1301,7 +1047,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         if (!_switchBtn) {
             _switchBtn = [[UISwitch alloc] init];
             [_switchBtn addTarget:self action:@selector(switchOn:) forControlEvents:UIControlEventValueChanged];
-            _switchBtn.onTintColor = mainPurpleColor;
+            _switchBtn.onTintColor = AppTinColor;
             [self.contentView addSubview:_switchBtn];
         }
     }
@@ -1320,7 +1066,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
     }
     
     if (sender.isOn) {
-        _switchBtn.tintColor = mainPurpleColor;
+        _switchBtn.tintColor = AppTinColor;
     } else {
         _switchBtn.tintColor = [UIColor lightGrayColor];
     }
@@ -1371,7 +1117,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 {
     if (!_titleLabel) {
         _titleLabel = [[UILabel alloc] init];
-        _titleLabel.font = [UIFont systemFontOfSize:15];
+        _titleLabel.font = [UIFont boldSystemFontOfSize:15];
         _titleLabel.textColor = RGBOF(0xFF4081);
         _titleLabel.textAlignment = NSTextAlignmentCenter;
     }
@@ -1442,6 +1188,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         _operationImageView = [[UIImageView alloc] init];
         _operationImageView.contentMode = UIViewContentModeScaleAspectFit;
         _operationImageView.hidden = YES;
+        _operationImageView.clipsToBounds = YES;
     }
     return _operationImageView;
 }
@@ -1456,31 +1203,48 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
     return _nameLabel;
 }
 
-- (void)setImageName:(NSString *)imageName
+- (void)setMemberInfo:(TIMGroupMemberInfo *)memberInfo
 {
-    _imageName = imageName;
+    _memberInfo = memberInfo;
     
-    UIImage *image = [UIImage imageNamed:@"imageName"];
-    if (image) {
-        self.iconImageView.image = image;
+    if (!XOIsEmptyString(memberInfo.member)) {
+        // 先从本地数据库查 (好友)
+        [[XOContactManager defaultManager] getContactProfile:memberInfo.member handler:^(TIMUserProfile * _Nullable profile) {
+            if (profile) {
+                [self setNameAndIcon:profile];
+            }
+            // 本地数据库没有(陌生人), 网络查询
+            else {
+                [[TIMFriendshipManager sharedInstance] getUsersProfile:@[memberInfo.member] forceUpdate:YES succ:^(NSArray<TIMUserProfile *> *profiles) {
+                   
+                    if (profiles.count > 0) {
+                        [self setNameAndIcon:profiles[0]];
+                    } else {
+                        [self setNameAndIcon:nil];
+                    }
+                } fail:^(int code, NSString *msg) {
+                    [self setNameAndIcon:nil];
+                }];
+            }
+        }];
+    }
+    else {
+        [self setNameAndIcon:nil];
     }
 }
 
-- (void)setName:(NSString *)name
+- (void)setNameAndIcon:(TIMUserProfile *)profile
 {
-    _name = [name copy];
-    _nameLabel.text = name;
-}
-
-- (void)setImageUrl:(NSString *)imageUrl
-{
-    _imageUrl = imageUrl;
-    
-    if (!XOIsEmptyString(imageUrl)) {
-        [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"default_avatar"]];
-    } else {
-        [self.iconImageView setImage:[UIImage imageNamed:@"default_avatar"]];
-    }
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (profile) {
+            [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:profile.faceURL] placeholderImage:[UIImage xo_imageNamedFromChatBundle:@"default_avatar"]];
+            self.nameLabel.text = profile.nickname;
+        }
+        else {
+            self.nameLabel.text = @"";
+            self.iconImageView.image = [UIImage xo_imageNamedFromChatBundle:@"default_avatar"];
+        }
+    }];
 }
 
 - (void)setShowAdd:(BOOL)showAdd
@@ -1490,7 +1254,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         self.operationImageView.hidden = NO;
         self.iconImageView.hidden = YES;
         self.nameLabel.hidden = YES;
-        [self.operationImageView setImage:[UIImage imageNamed:@"groupMember_add"]];
+        [self.operationImageView setImage:[UIImage xo_imageNamedFromChatBundle:@"groupMember_add"]];
     } else {
         self.operationImageView.hidden = YES;
         self.iconImageView.hidden = NO;
@@ -1506,7 +1270,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         self.operationImageView.hidden = NO;
         self.iconImageView.hidden = YES;
         self.nameLabel.hidden = YES;
-        [self.operationImageView setImage:[UIImage imageNamed:@"groupMember_remove"]];
+        [self.operationImageView setImage:[UIImage xo_imageNamedFromChatBundle:@"groupMember_remove"]];
     } else {
         self.operationImageView.hidden = YES;
         self.iconImageView.hidden = NO;
@@ -1522,6 +1286,10 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
     self.iconImageView.frame = CGRectMake(0, 0, self.width, self.width);
     self.iconImageView.layer.cornerRadius = 6.0f;
     self.operationImageView.frame = CGRectMake(0, 0, self.width, self.width);
+    self.operationImageView.layer.cornerRadius = 5.0f;
+    self.operationImageView.layer.borderColor = [UIColor grayColor].CGColor;
+    self.operationImageView.layer.borderWidth = 1.0f;
+    self.operationImageView.layer.cornerRadius = 5.0f;
     self.nameLabel.frame = CGRectMake(0, self.width + 5, self.width, self.height - self.width - 5);
 }
 

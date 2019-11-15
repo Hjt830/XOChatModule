@@ -6,6 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <ImSDK/ImSDK.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,6 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIImage *)XO_imageWithTintColor:(UIColor *)tintColor;
 
 - (UIImage *)XO_imageWithTintColor:(UIColor *)tintColor blendMode:(CGBlendMode)blendMode;
+
++ (void)combineGroupImageWithGroupId:(NSString * _Nonnull)groupId complection:(void(^)(UIImage *image))complectionHandler;
+
++ (UIImage *)groupDefaultImageAvatar;
+
 
 @end
 

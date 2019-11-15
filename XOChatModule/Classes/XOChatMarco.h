@@ -21,4 +21,8 @@ static float const ImageHeight = 750.0;         // 图片的高度
 static float const FileWidth = 220.0f;          // 文件的宽度
 static float const FileHeight = 80.0f;          // 文件的高度
 
+// 在线客服ID
+static NSString * const OnlineServerIdentifier = @"user0";
+
+
 #endif /* XOChatMarco_h */

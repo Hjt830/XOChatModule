@@ -47,9 +47,9 @@ Pod::Spec.new do |s|
 
   s.frameworks = 'UIKit', 'Foundation', 'CoreLocation'
   s.dependency 'TXIMSDK_iOS', '~> 4.4.627'
-  s.dependency 'XOBaseLib', '~> 0.2.6'
+  s.dependency 'XOBaseLib', '~> 0.3.1'
   s.dependency 'TZImagePickerController', '~> 3.2.1'
-  s.dependency 'CTMediator', '~> 25'
+#  s.dependency 'CTMediator', '~> 25'
   s.dependency 'GCDMulticastDelegate', '~> 1.0.0'
   s.dependency 'SVProgressHUD', '~> 2.2.5'
   s.dependency 'AFNetworking', '~> 3.2.1'
@@ -57,5 +57,7 @@ Pod::Spec.new do |s|
   s.dependency 'YBImageBrowser/VideoNOSD', '~> 3.0.6'
   s.dependency 'FLAnimatedImage', '~> 1.0.12'
   s.dependency 'FMDB', '~> 2.7.5'
+  s.dependency 'YYModel', '~> 1.0.4'
+  s.dependency 'FSTextView', '~> 1.8'
 
 end

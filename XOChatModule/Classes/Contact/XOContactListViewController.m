@@ -12,6 +12,7 @@
 #import "XOChatClient.h"
 #import "CommonTool.h"
 #import "UIImage+XOChatBundle.h"
+#import "UIImage+XOChatExtension.h"
 #import "NSBundle+ChatModule.h"
 #import <XOBaseLib/XOBaseLib.h>
 
@@ -309,9 +310,13 @@ static NSString *ContactCellID = @"ContactCellID";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     XOContactListCell *cell = [tableView dequeueReusableCellWithIdentifier:ContactCellID forIndexPath:indexPath];
-    if (indexPath.row < self.contactList.count) {
+    if (0 == indexPath.section) {
         TIMFriend *contact = [self.contactList objectAtIndex:indexPath.row];
         cell.contact = contact;
+    }
+    else {
+        TIMGroupInfo *groupInfo = [self.groupList objectAtIndex:indexPath.row];
+        cell.group = groupInfo;
     }
     [cell refreshGenralSetting];
     return cell;
@@ -350,7 +355,7 @@ static NSString *ContactCellID = @"ContactCellID";
 //    [self.navigationController pushViewController:otherDetail animated:YES];
     
     XOChatViewController *chatVC = [[XOChatViewController alloc] init];
-    if (indexPath.row < self.contactList.count) {
+    if (0 == indexPath.section) {
         TIMFriend *contact = [self.contactList objectAtIndex:indexPath.row];
         chatVC.chatType = TIM_C2C;
         chatVC.conversation = [[TIMManager sharedInstance] getConversation:TIM_C2C receiver:contact.identifier];
@@ -425,15 +430,15 @@ static NSString *ContactCellID = @"ContactCellID";
     return @[deleteRowAction, editRowAction];
 }
 
-// 点击索引
-- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
-{
-    if (self.tableView == tableView) {
-        [tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:index] atScrollPosition:UITableViewScrollPositionTop animated:YES];
-        return self.contactList.count;
-    }
-    return 0;
-}
+//// 点击索引
+//- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
+//{
+//    if (self.tableView == tableView) {
+//        [tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:index] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+//        return self.contactList.count;
+//    }
+//    return 0;
+//}
 
 
 #pragma mark ====================== UISearchBarDelegate =======================
@@ -522,6 +527,13 @@ static NSString *ContactCellID = @"ContactCellID";
     _iconImageView.userInteractionEnabled = YES;
     [self.contentView addSubview:_iconImageView];
     
+    CGRect bounds = CGRectMake(0, 0, 44, 44);
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bounds byRoundingCorners:UIRectCornerAllCorners cornerRadii:bounds.size];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc]init];
+    maskLayer.frame = bounds;
+    maskLayer.path = maskPath.CGPath;
+    _iconImageView.layer.mask = maskLayer;
+    
     _nameLabel = [UILabel new];
     _nameLabel.textColor = [UIColor blackColor];
     [self.contentView addSubview:_nameLabel];
@@ -547,6 +559,33 @@ static NSString *ContactCellID = @"ContactCellID";
     else {
         _nameLabel.text = @"";
         _iconImageView.image = [UIImage xo_imageNamedFromChatBundle:@"default_avatar"];
+    }
+}
+
+- (void)setGroup:(TIMGroupInfo *)group
+{
+    _group = group;
+    if (group) {
+        
+        _nameLabel.text = !XOIsEmptyString(group.groupName) ? group.groupName : @"";
+        if (!XOIsEmptyString(group.faceURL)) {
+            [_iconImageView sd_setImageWithURL:[NSURL URLWithString:group.faceURL] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+                if (image) {
+                    [UIImage combineGroupImageWithGroupId:group.group complection:^(UIImage * _Nonnull image) {
+                        _iconImageView.image = image;
+                    }];
+                }
+                else {
+                    _iconImageView.image = [UIImage groupDefaultImageAvatar];
+                }
+            }];
+        } else {
+            _iconImageView.image = [UIImage groupDefaultImageAvatar];
+        }
+    }
+    else {
+        _nameLabel.text = @"";
+        _iconImageView.image = [UIImage groupDefaultImageAvatar];
     }
 }
 

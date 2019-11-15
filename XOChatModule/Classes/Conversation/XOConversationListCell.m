@@ -9,7 +9,10 @@
 #import "XOConversationListCell.h"
 #import "NSBundle+ChatModule.h"
 #import "UIImage+XOChatBundle.h"
+#import "UIImage+XOChatExtension.h"
 #import <XOBaseLib/XOBaseLib.h>
+#import "ZXChatHelper.h"
+#import "TIMElem+XOExtension.h"
 
 @interface XOConversationListCell ()
 
@@ -44,7 +47,6 @@
     self.backgroundColor = [UIColor whiteColor];
     
     _iconImageView = [[UIImageView alloc] init];
-    _iconImageView.layer.cornerRadius = 5;
     _iconImageView.clipsToBounds = YES;
     _iconImageView.backgroundColor = RGBA(221, 222, 224, 1);
     
@@ -86,6 +88,7 @@
     CGFloat maxHei = self.contentView.frame.size.height;
     
     self.iconImageView.frame = CGRectMake(margin * 2.0, margin, maxHei - margin * 2, maxHei - margin * 2);
+    self.iconImageView.layer.cornerRadius = (maxHei - margin * 2)/2.0;
     
     CGFloat timeWid = [self.timeLabel.text boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, 16.0) options:NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName: self.timeLabel.font} context:nil].size.width + 5.0;
     CGFloat timeLeft = maxWid - margin - timeWid;
@@ -100,8 +103,8 @@
     CGFloat msgWid = maxWid - margin - msgLeft;
     self.messageLabel.frame = CGRectMake(msgLeft, msgTop, msgWid, 20.0);
     
-    CGFloat unredLeft = CGRectGetMaxX(self.iconImageView.frame) - 9.0;
-    CGFloat unredTop  = CGRectGetMinY(self.iconImageView.frame) - 8.0;
+    CGFloat unredLeft = CGRectGetMaxX(self.iconImageView.frame) - 8.0;
+    CGFloat unredTop  = CGRectGetMinY(self.iconImageView.frame) - 5.0;
     self.unreadLabel.frame = CGRectMake(unredLeft, unredTop, 18.0, 18.0);
     
     if (self.shouldTopShow) {
@@ -126,7 +129,12 @@
         // 内容
         if ([lastMsg elemCount] > 0) {
             TIMElem *elem = [lastMsg getElem:0];
-            _messageLabel.text = [self getTextFromMessage:elem];
+            NSString *text = [elem getTextFromMessage];
+            if ([text isKindOfClass:[NSAttributedString class]]) {
+                _messageLabel.attributedText = (NSAttributedString *)text;
+            } else {
+                _messageLabel.text = text;
+            }
         } else {
             _messageLabel.text = nil;
         }
@@ -135,13 +143,34 @@
         NSString *receiverID = [conversation getReceiver];
         TIMGroupInfo *groupInfo = [[TIMGroupManager sharedInstance] queryGroupInfo:receiverID];
         
-        _nameLabel.text = groupInfo.groupName;
-        [_iconImageView sd_setImageWithURL:[NSURL URLWithString:groupInfo.faceURL] placeholderImage:[UIImage xo_imageNamedFromChatBundle:@"default_avatar"]];
+        _nameLabel.text = [NSString stringWithFormat:@"%@(%d)", [conversation getGroupName], groupInfo.memberNum];
+        
+        if (!XOIsEmptyString(groupInfo.faceURL)) {
+            [_iconImageView sd_setImageWithURL:[NSURL URLWithString:groupInfo.faceURL] placeholderImage:[UIImage xo_imageNamedFromChatBundle:@"default_avatar"]];
+            [_iconImageView sd_setImageWithURL:[NSURL URLWithString:groupInfo.faceURL] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+                if (image) {
+                    self.iconImageView.image = image;
+                } else {
+                    self.iconImageView.image = [UIImage groupDefaultImageAvatar];
+                }
+            }];
+        } else {
+            [UIImage combineGroupImageWithGroupId:receiverID complection:^(UIImage * _Nonnull image) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.iconImageView.image = image;
+                });
+            }];
+        }
         
         // 内容
         if ([lastMsg elemCount] > 0) {
             TIMElem *elem = [lastMsg getElem:0];
-            _messageLabel.text = [self getTextFromMessage:elem];
+            NSString *text = [elem getTextFromMessage];
+            if ([text isKindOfClass:[NSAttributedString class]]) {
+                _messageLabel.attributedText = (NSAttributedString *)text;
+            } else {
+                _messageLabel.text = text;
+            }
         } else {
             _messageLabel.text = nil;
         }
@@ -166,46 +195,6 @@
         _unreadLabel.hidden = NO;
     }
 }
-
-
-- (NSString *)getTextFromMessage:(TIMElem *)elem
-{
-    NSString *text = nil;
-    if ([elem isKindOfClass:[TIMTextElem class]] ||         // 文字
-        [elem isKindOfClass:[TIMGroupTipsElem class]] ||    // 群Tips
-        [elem isKindOfClass:[TIMGroupSystemElem class]])    // 群系统消息
-    {
-        text = [(TIMTextElem *)elem text];
-    }
-    else if ([elem isKindOfClass:[TIMImageElem class]]) { // 图片
-        text = XOChatLocalizedString(@"conversation.message.image");
-    }
-    else if ([elem isKindOfClass:[TIMSoundElem class]]) { // 语音
-        text = XOChatLocalizedString(@"conversation.message.sound");
-    }
-    else if ([elem isKindOfClass:[TIMVideoElem class]]) { // 视频
-        text = XOChatLocalizedString(@"conversation.message.video");
-    }
-    else if ([elem isKindOfClass:[TIMFileElem class]]) {  // 文件
-        text = XOChatLocalizedString(@"conversation.message.file");
-    }
-    else if ([elem isKindOfClass:[TIMFaceElem class]]) {  // 表情
-        text = XOChatLocalizedString(@"conversation.message.face");
-    }
-    else if ([elem isKindOfClass:[TIMLocationElem class]]) { // 地理位置
-        text = XOChatLocalizedString(@"conversation.message.location");
-    }
-    else if ([elem isKindOfClass:[TIMCustomElem class]]) {   // 自定义消息
-        // 名片
-        // 音视频
-        // 红包
-        // 转账
-    }
-    return text;
-}
-
-
-
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];

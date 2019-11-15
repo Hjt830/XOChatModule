@@ -62,3 +62,21 @@ typedef NS_ENUM(NSInteger, GroupMemberType) {
 
 @end
 
+
+
+
+
+
+@interface GroupMemberSelectCell : UITableViewCell
+
+@end
+
+
+@interface GroupMemberIconCell : UICollectionViewCell
+
+@property (nonatomic, copy) NSString             *imageName;
+@property (nonatomic, copy) NSString             *imageUrl;
+@property (nonatomic, copy) UIImage              *avatar;
+
+@end
+

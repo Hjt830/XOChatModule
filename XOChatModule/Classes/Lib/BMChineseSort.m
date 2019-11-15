@@ -135,10 +135,11 @@ dispatch_semaphore_t semaphore;
         while (cla != Nil){
             unsigned int outCount, i;
             Ivar *ivars = class_copyIvarList(cla, &outCount);
+            NSArray *arr = [key componentsSeparatedByString:@"."];
+            NSString *tempKey = [NSString stringWithFormat:@"_%@", arr.count > 0 ? arr[0] : key];
             for (i = 0; i < outCount; i++) {
                 Ivar property = ivars[i];
                 NSString *keyName = [NSString stringWithCString:ivar_getName(property) encoding:NSUTF8StringEncoding];
-                NSString *tempKey = [NSString stringWithFormat:@"_%@",key];
                 if ([keyName isEqualToString:tempKey]) {
                     containKey = YES;
                     break;
@@ -249,6 +250,7 @@ dispatch_semaphore_t semaphore;
     model.string = [model.string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     if(model.string == nil || model.string.length == 0){
         model.string = BMChineseSortSetting.share.specialCharSectionTitle;
+        model.pinYin = [self getFirstLetter:model.string];
     }else{
         //过滤 ignoreModelWithPrefix
         NSString *prefix = [model.string substringToIndex:1];

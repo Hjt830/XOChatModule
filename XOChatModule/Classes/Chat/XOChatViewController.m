@@ -9,6 +9,7 @@
 #import "XOChatViewController.h"
 #import "XOChatBoxViewController.h"
 #import "XOChatMessageController.h"
+#import "GroupSettingInfoController.h"
 
 #import "XOChatModule.h"
 
@@ -73,15 +74,21 @@
     if (TIM_GROUP == self.chatType) {
         self.title = self.conversation.getGroupName;
     } else if (TIM_C2C == self.chatType) {
-        TIMFriend *friend = [[TIMManager sharedInstance].friendshipManager queryFriend:self.receiver];
-        if (XOIsEmptyString(friend.remark)) {
-            if (XOIsEmptyString(friend.profile.nickname)) {
-                self.title = self.receiver;
+        // 客服
+        if ([self.receiver isEqualToString:OnlineServerIdentifier]) {
+            self.title = XOChatLocalizedString(@"conversation.onlineService");
+        }
+        else {
+            TIMFriend *friend = [[TIMManager sharedInstance].friendshipManager queryFriend:self.receiver];
+            if (XOIsEmptyString(friend.remark)) {
+                if (XOIsEmptyString(friend.profile.nickname)) {
+                    self.title = self.receiver;
+                } else {
+                    self.title = friend.profile.nickname;
+                }
             } else {
-                self.title = friend.profile.nickname;
+                self.title = friend.remark;
             }
-        } else {
-            self.title = friend.remark;
         }
     }
 }
@@ -93,6 +100,32 @@
     
     [self addChildViewController:self.chatBoxVC];
     [self.view addSubview:self.chatBoxVC.view];
+    
+    if (self.conversation.getType == TIM_GROUP) {
+        UIImage *image = [UIImage xo_imageNamedFromChatBundle:@"group_setting"];
+        UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+        [btn setImage:image forState:UIControlStateNormal];
+        [btn addTarget:self action:@selector(onClickChatSetting) forControlEvents:UIControlEventTouchUpInside];
+        UIBarButtonItem *bar = [[UIBarButtonItem alloc] initWithCustomView:btn];
+        self.navigationItem.rightBarButtonItem = bar;
+    }
+    else {
+        self.navigationItem.rightBarButtonItem = nil;
+    }
+}
+
+#pragma mark ========================= Touch Event =========================
+
+- (void)onClickChatSetting
+{
+    GroupSettingInfoController *groupSettingVC = [[GroupSettingInfoController alloc] init];
+    TIMGroupInfo *groupInfo = [[TIMGroupManager sharedInstance] queryGroupInfo:self.receiver];
+    if (groupInfo) {
+        groupSettingVC.groupInfo = groupInfo;
+    } else {
+        groupSettingVC.groupId = self.receiver;
+    }
+    [self.navigationController pushViewController:groupSettingVC animated:YES];
 }
 
 #pragma mark ====================== lazy load =======================

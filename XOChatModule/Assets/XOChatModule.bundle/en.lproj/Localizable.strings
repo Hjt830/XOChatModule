@@ -77,3 +77,29 @@
 "contact.delete.alertMsg"           = "Are you sure you want to delete this contact?";
 "contact.remark.title"              = "remark name";
 "contact.remark.placeholder"        = "Add a remark name";
+
+"group.create"                      = "Create Group";
+"group.friend.limitMin"             = "please choosen at least 2 people";
+"group.friend.empty"                = "The added group member cannot be empty";
+"group.friend.limitMax"             = "Add group members no more than 500";
+"group.search.placeholder"          = "nickname";
+
+"group.setting.title"               = "Group Info";
+"group.setting.griupname"           = "Group Name";
+"group.setting.notification"        = "Group Notification";
+"group.setting.groupname.empty"     = "group name is empty";
+"group.setting.notification.empty"  = "group notification is empty";
+"group.setting.groupname.limit"     = "The group name cannot exceed 40 words";
+"group.setting.notification.limit"  = "The group notification cannot exceed 50 words";
+"group.setting.modify.success"      = "modify success";
+"group.setting.modify.fail"         = "modify fail";
+"group.setting.topping"             = "Topping";
+"group.setting.mute"                = "Mute";
+"group.setting.exit"                = "Exit";
+"group.setting.disband"             = "Disband";
+
+"group.tip.invite.%@.%@.%@"         = "'%@' invite '%@' to join group '%@'";
+"group.tip.exit.%@.%@"              = "'%@' exit group '%@'";
+"group.tip.kickout.%@.%@.%@"        = "'%@' kick '%@' out of group '%@'";
+"group.tip.adminSet.%@.%@"          = "'%@' set '%@' as a group administrator";
+"group.tip.adminCancel.%@.%@"       = "'%@' canceled '%@' group administrator status";

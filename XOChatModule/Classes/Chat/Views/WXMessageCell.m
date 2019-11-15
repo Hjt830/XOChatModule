@@ -180,16 +180,17 @@ static float const kDefaultMargin = 8.0f;
 {
     if (_avatarImageView == nil) {
         float imageWidth = 40;
-        _avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, imageWidth, imageWidth)];
+        CGRect bounds = CGRectMake(0, 0, imageWidth, imageWidth);
+        _avatarImageView = [[UIImageView alloc] initWithFrame:bounds];
         [_avatarImageView setHidden:YES];
         [_avatarImageView setUserInteractionEnabled:YES];
         [_avatarImageView setImage:[UIImage xo_imageNamedFromChatBundle:@"default_avatar"]];
         
-        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:self.avatarImageView.bounds byRoundingCorners:UIRectCornerAllCorners cornerRadii:CGSizeMake(4.0, 4.0)];
-        CAShapeLayer *layer = [[CAShapeLayer alloc] init];
-        layer.path = path.CGPath;
-        layer.frame = _avatarImageView.bounds;
-        [_avatarImageView.layer setMask:layer];
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bounds byRoundingCorners:UIRectCornerAllCorners cornerRadii:bounds.size];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc]init];
+        maskLayer.frame = bounds;
+        maskLayer.path = maskPath.CGPath;
+        _avatarImageView.layer.mask = maskLayer;
     }
     return _avatarImageView;
 }

@@ -7,12 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <ImSDK/ImSDK.h>
+#import <XOBaseLib/XOBaseLib.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface GroupSettingInfoController : UIViewController
+@interface GroupSettingInfoController : XOBaseViewController
 
-@property (nonatomic, strong) IMAGroup          *group;
+@property (nonatomic, strong) TIMGroupInfo          *groupInfo;
+@property (nonatomic, copy) NSString                *groupId;
 
 @end
 
@@ -40,9 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GroupMemberSettingIconCell : UICollectionViewCell
 
-@property (nonatomic, copy) NSString             *imageName;
-@property (nonatomic, copy) NSString             *imageUrl;
-@property (nonatomic, copy) NSString             *name;
+@property (nonatomic, strong) TIMGroupMemberInfo *memberInfo;
 
 @property (nonatomic, assign) BOOL               showAdd; // 显示+
 @property (nonatomic, assign) BOOL               showDel; // 显示-

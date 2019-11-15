@@ -660,9 +660,11 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
                 return cell;
             }
             
-            WXMessageCell *msgCell = (WXMessageCell *)cell;
-            msgCell.delegate = self;
-            msgCell.message = message;
+            if ([cell isKindOfClass:[WXMessageCell class]]) {
+                WXMessageCell *msgCell = (WXMessageCell *)cell;
+                msgCell.delegate = self;
+                msgCell.message = message;
+            }
             
             return cell;
         }

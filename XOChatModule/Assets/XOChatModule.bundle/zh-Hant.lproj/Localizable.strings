@@ -77,3 +77,30 @@
 "contact.delete.alertMsg"           = "確定刪除該聯繫人嗎?";
 "contact.remark.title"              = "備註名";
 "contact.remark.placeholder"        = "添加備註名";
+
+"group.create"                      = "創建群聊";
+"group.create"                      = "创建群聊";
+"group.friend.limitMin"             = "請至少選擇2個人";
+"group.friend.empty"                = "添加的群成員不能爲空";
+"group.friend.limitMax"             = "添加的群成員人數不能超過500";
+"group.search.placeholder"          = "暱稱";
+
+"group.setting.title"               = "群信息";
+"group.setting.groupname"           = "群名稱";
+"group.setting.notification"        = "群公告";
+"group.setting.groupname.empty"     = "群名称為空";
+"group.setting.notification.empty"  = "群公告為空";
+"group.setting.groupname.limit"     = "群名稱長度不能超過40個字";
+"group.setting.notification.limit"  = "群公告長度不能超過50個字";
+"group.setting.modify.success"      = "修改成功";
+"group.setting.modify.fail"         = "修改失败";
+"group.setting.topping"             = "置顶";
+"group.setting.mute"                = "免打擾";
+"group.setting.exit"                = "退出";
+"group.setting.disband"             = "解散";
+
+"group.tip.invite.%@.%@.%@"         = "'%@' 邀請 '%@' 加入群 '%@'";
+"group.tip.exit.%@.%@"              = "'%@' 退出群 '%@'";
+"group.tip.kickout.%@.%@.%@"        = "'%@' 將 '%@' 踢出群 '%@'";
+"group.tip.adminSet.%@.%@"          = "'%@' 將 '%@' 設置為群管理員";
+"group.tip.adminCancel.%@.%@"       = "'%@' 取消了 '%@' 群管理員身份";

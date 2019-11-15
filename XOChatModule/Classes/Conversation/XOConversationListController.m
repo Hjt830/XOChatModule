@@ -9,9 +9,10 @@
 #import "XOConversationListController.h"
 #import "XOContactListViewController.h"
 #import "XOChatViewController.h"
+#import "XOCreateGroupViewController.h"
 
 #import "XOConversationListCell.h"
-
+#import "XOLocalPushManager.h"
 #import <XOBaseLib/XOBaseLib.h>
 #import "XOChatModule.h"
 #import "XOChatClient.h"
@@ -38,11 +39,13 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 @property (nonatomic, strong) UIView                *onlineChatView;     // 在线客服视图
 @property (nonatomic, strong) UILabel               *sysNameLabel;      // 系统消息
 @property (nonatomic, strong) UILabel               *groupNameLabel;    // 群聊消息
+@property (nonatomic, strong) UILabel               *unreadLabel;    // 群聊消息
 @property (nonatomic, assign) BOOL                  isDisConnect;       // 连接是否断开
 
 @property (nonatomic, strong) UITableView           *tableView;         // 会话列表
 
-@property (nonatomic, strong) NSArray    <TIMConversation *>* dataSource;   // 会话数据源
+@property (nonatomic, strong) NSMutableArray    <TIMConversation *>* dataSource;   // 会话数据源
+@property (nonatomic, assign) int                   unreadServerCount;
 
 @end
 
@@ -57,6 +60,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
         [[XOChatClient shareClient] addDelegate:self delegateQueue:_chatDelegate_queue];
         [[XOChatClient shareClient].conversationManager addDelegate:self delegateQueue:_chatDelegate_queue];
         [[XOChatClient shareClient].messageManager addDelegate:self delegateQueue:_chatDelegate_queue];
+        self.unreadServerCount = 0;
     }
     return self;
 }
@@ -139,14 +143,14 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 {
     // 断网状态
     if (self.isDisConnect) {
-        self.headerView.height = TableHeaderViewMaxHeight;
+        self.headerView.frame = CGRectMake(0, 0, self.view.width, TableHeaderViewMaxHeight);
         self.networkStateView.hidden = NO;
         self.systemView.frame = CGRectMake(_safeInset.left, self.networkStateView.bottom + Margin, self.view.width - (_safeInset.left + _safeInset.right), 70);
         self.onlineChatView.frame = CGRectMake(_safeInset.left, self.systemView.bottom + Margin, self.view.width - (_safeInset.left + _safeInset.right), 70);
     }
     // 连接状态
     else {
-        self.headerView.height = TableHeaderViewMinHeight;
+        self.headerView.frame = CGRectMake(0, 0, self.view.width, TableHeaderViewMinHeight);
         self.networkStateView.hidden = YES;
         self.systemView.frame = CGRectMake(_safeInset.left, 10, self.view.width - (_safeInset.left + _safeInset.right), 70);
         self.onlineChatView.frame = CGRectMake(_safeInset.left, self.systemView.bottom + Margin, self.view.width - (_safeInset.left + _safeInset.right), 70);
@@ -164,7 +168,37 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 
 - (void)groupChat
 {
-    
+    XOCreateGroupViewController *groupVC = [[XOCreateGroupViewController alloc] init];
+    groupVC.memberType = GroupMemberType_Create;
+    [self.navigationController pushViewController:groupVC animated:YES];
+}
+
+- (void)chatWithOnlineService:(UITapGestureRecognizer *)tap
+{
+    TIMConversation *conv = [[TIMManager sharedInstance] getConversation:TIM_C2C receiver:OnlineServerIdentifier];
+    if (conv) {
+        [conv setReadMessage:nil succ:^{
+            
+            self.unreadServerCount = 0;
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (self.unreadServerCount == 0) {
+                    self.unreadLabel.text = @"";
+                    self.unreadLabel.hidden = YES;
+                } else {
+                    self.unreadLabel.text = [NSString stringWithFormat:@"%d", self.unreadServerCount];
+                    self.unreadLabel.hidden = NO;
+                }
+            }];
+            
+        } fail:^(int code, NSString *msg) {
+            
+        }];
+        
+        XOChatViewController *chatVC = [[XOChatViewController alloc] init];
+        chatVC.conversation = conv;
+        chatVC.chatType = TIM_C2C;
+        [self.navigationController pushViewController:chatVC animated:YES];
+    }
 }
 
 #pragma mark ====================== load data =======================
@@ -172,10 +206,35 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 - (void)loadConversation
 {
     @synchronized (self) {
-        self.dataSource = [[TIMManager sharedInstance] getConversationList];
+        [self.dataSource removeAllObjects];
+        NSArray <TIMConversation *>* conversationList = [[TIMManager sharedInstance] getConversationList];
+        [conversationList enumerateObjectsUsingBlock:^(TIMConversation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            // 过滤系统消息 和 客服消息
+            if (obj.getType == TIM_C2C) {
+                // 客服消息
+                if ([OnlineServerIdentifier isEqualToString:obj.getReceiver]) {
+                    self.unreadServerCount += obj.getUnReadMessageNum;
+                }
+                else {
+                    [self.dataSource addObject:obj];
+                }
+            }
+            else if (obj.getType == TIM_GROUP) {
+                [self.dataSource addObject:obj];
+            }
+        }];
     };
+    
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.tableView reloadData];
+        
+        if (self.unreadServerCount == 0) {
+            self.unreadLabel.text = @"";
+            self.unreadLabel.hidden = YES;
+        } else {
+            self.unreadLabel.text = [NSString stringWithFormat:@"%d", self.unreadServerCount];
+            self.unreadLabel.hidden = NO;
+        }
     }];
 }
 
@@ -215,6 +274,14 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 }
 
 #pragma mark ====================== lazy load =======================
+
+- (NSMutableArray<TIMConversation *> *)dataSource
+{
+    if (!_dataSource) {
+        _dataSource = [NSMutableArray array];
+    }
+    return _dataSource;
+}
 
 - (UITableView *)tableView
 {
@@ -299,17 +366,36 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
         _onlineChatView = [[UIView alloc] init];
         _onlineChatView.backgroundColor = [UIColor whiteColor];
         
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chatWithOnlineService:)];
+        [_onlineChatView addGestureRecognizer:tap];
+        
         CALayer *imageLayer = [CALayer layer];
         imageLayer.contents = (__bridge id)[UIImage xo_imageNamedFromChatBundle:@"message_groupmessage"].CGImage;
         imageLayer.frame = CGRectMake(Margin, 7, 50.0, 50.0);
         imageLayer.masksToBounds = YES;
         imageLayer.cornerRadius = 25.0f;
         [_onlineChatView.layer addSublayer:imageLayer];
+        
+        _unreadLabel = [UILabel new];
+        _unreadLabel.backgroundColor = [UIColor redColor];
+        _unreadLabel.font = [UIFont systemFontOfSize:12];
+        _unreadLabel.textColor = [UIColor whiteColor];
+        _unreadLabel.textAlignment = NSTextAlignmentCenter;
+        _unreadLabel.layer.cornerRadius = 9.0;
+        _unreadLabel.clipsToBounds = YES;
+        _unreadLabel.userInteractionEnabled = YES;
+        _unreadLabel.hidden = YES;
+        CGFloat unredLeft = CGRectGetMaxX(imageLayer.frame) - 9.0;
+        CGFloat unredTop  = CGRectGetMinY(imageLayer.frame) - 5.0;
+        self.unreadLabel.frame = CGRectMake(unredLeft, unredTop, 18.0, 18.0);
+        [_onlineChatView addSubview:_unreadLabel];
+        
         self.groupNameLabel = [[UILabel alloc] init];
         self.groupNameLabel.textColor = [UIColor blackColor];
         self.groupNameLabel.frame = CGRectMake(CGRectGetMaxX(imageLayer.frame) + Margin, 25, 240, 20);
         self.groupNameLabel.text = XOChatLocalizedString(@"conversation.onlineService");
         self.groupNameLabel.font = [UIFont boldSystemFontOfSize:18.0f];
+        self.groupNameLabel.userInteractionEnabled = YES;
         [_onlineChatView addSubview:self.groupNameLabel];
     }
     return _onlineChatView;
@@ -320,7 +406,25 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 // 收到新消息
 - (void)xoOnNewMessage:(NSArray <TIMMessage *>*)msgs
 {
-    
+    // 客服角标
+    [msgs enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
+        // 客服消息
+        TIMConversation *conversation = [message getConversation];
+        if ([OnlineServerIdentifier isEqualToString:message.sender]) {
+            self.unreadServerCount += [conversation getUnReadMessageNum];
+            
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                
+                if (self.unreadServerCount == 0) {
+                    self.unreadLabel.text = @"";
+                    self.unreadLabel.hidden = YES;
+                } else {
+                    self.unreadLabel.text = [NSString stringWithFormat:@"%d", self.unreadServerCount];
+                    self.unreadLabel.hidden = NO;
+                }
+            }];
+        }
+    }];
 }
 
 // 踢下线通知
@@ -471,11 +575,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
         XOChatViewController *chatVC = [[XOChatViewController alloc] init];
         chatVC.conversation = conversation;
         chatVC.chatType = [conversation getType];
-        if (self.splitViewController) {
-            [self.splitViewController showDetailViewController:chatVC sender:self];
-        } else {
-            [self.navigationController pushViewController:chatVC animated:YES];
-        }
+        [self.navigationController pushViewController:chatVC animated:YES];
     }
 }
 

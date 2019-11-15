@@ -37,6 +37,8 @@ static XOContactManager * __contactManager = nil;
     self = [super init];
     if (self) {
         _multiDelegate = [(GCDMulticastDelegate <XOContactDelegate> *)[GCDMulticastDelegate alloc] init];
+        // 加载本地免打扰和置顶群
+        [self loadMuteListAndToppingList];
     }
     return self;
 }
@@ -175,6 +177,173 @@ static XOContactManager * __contactManager = nil;
     if ([_multiDelegate countOfClass:[delegate class]] > 0) {
         [_multiDelegate removeDelegate:delegate delegateQueue:NULL];
     }
+}
+
+
+#pragma mark ========================= 免打扰 & 置顶 =========================
+
+// 加载本地免打扰和置顶群
+- (void)loadMuteListAndToppingList
+{
+    _muteArray = [NSArray arrayWithContentsOfURL:[self MuteListURL]];
+    _toppingArray = [NSArray arrayWithContentsOfURL:[self ToppingListURL]];
+}
+
+// 是否免打扰群
+- (BOOL)isMuteGroup:(NSString *)groupId
+{
+    return [_muteArray containsObject:groupId];
+}
+// 增加免打扰
+- (BOOL)addMuteListWithGroupId:(NSString *)groupId
+{
+    if (!XOIsEmptyString(groupId)) {
+        // 为空
+        if (XOIsEmptyArray(_muteArray)) {
+            NSMutableArray *muteList = [NSMutableArray array];
+            [muteList addObject:groupId];
+            if ([muteList writeToURL:[self MuteListURL] atomically:YES]) {
+                _muteArray = muteList;
+                NSLog(@"增加免打扰群成功: %@", groupId);
+                return YES;
+            }
+            else {
+                NSLog(@"增加免打扰群失败: %@", groupId);
+                return NO;
+            }
+        }
+        // 不为空
+        else {
+            NSMutableArray *muteList = [_muteArray mutableCopy];
+            [muteList addObject:groupId];
+            if ([muteList writeToURL:[self MuteListURL] atomically:YES]) {
+                _muteArray = muteList;
+                NSLog(@"增加免打扰群成功: %@", groupId);
+                return YES;
+            }
+            else {
+                NSLog(@"增加免打扰群失败: %@", groupId);
+                return NO;
+            }
+        }
+    }
+    return NO;
+}
+
+// 删除免打扰
+- (BOOL)removeMuteListWithGroupId:(NSString *)groupId
+{
+    if (!XOIsEmptyString(groupId)) {
+        // 为空
+        if (XOIsEmptyArray(_muteArray)) {
+            return YES;
+        }
+        // 不为空
+        else {
+            if (![_muteArray containsObject:groupId]) {
+                return YES;
+            }
+            else {
+                NSMutableArray *muteList = [_muteArray mutableCopy];
+                [muteList removeObject:groupId];
+                if ([muteList writeToURL:[self MuteListURL] atomically:YES]) {
+                    _muteArray = muteList;
+                    NSLog(@"增加免打扰群成功: %@", groupId);
+                    return YES;
+                }
+                else {
+                    NSLog(@"增加免打扰群失败: %@", groupId);
+                    return NO;
+                }
+            }
+        }
+    }
+    return NO;
+}
+
+// 是否置顶了群
+- (BOOL)isToppingGroup:(NSString *)groupId
+{
+    return [_toppingArray containsObject:groupId];
+}
+
+// 增加置顶
+- (BOOL)addToppingListWithGroupId:(NSString *)groupId
+{
+    if (!XOIsEmptyString(groupId)) {
+        // 为空
+        if (XOIsEmptyArray(_toppingArray)) {
+            NSMutableArray *toppingList = [NSMutableArray array];
+            [toppingList addObject:groupId];
+            if ([toppingList writeToURL:[self ToppingListURL] atomically:YES]) {
+                _toppingArray = toppingList;
+                NSLog(@"增加免打扰群成功: %@", groupId);
+                return YES;
+            }
+            else {
+                NSLog(@"增加免打扰群失败: %@", groupId);
+                return NO;
+            }
+        }
+        // 不为空
+        else {
+            NSMutableArray *toppingList = [_toppingArray mutableCopy];
+            [toppingList addObject:groupId];
+            if ([toppingList writeToURL:[self ToppingListURL] atomically:YES]) {
+                _toppingArray = toppingList;
+                NSLog(@"增加免打扰群成功: %@", groupId);
+                return YES;
+            }
+            else {
+                NSLog(@"增加免打扰群失败: %@", groupId);
+                return NO;
+            }
+        }
+    }
+    return NO;
+}
+
+// 删除置顶
+- (BOOL)removeToppingListWithGroupId:(NSString *)groupId
+{
+    if (!XOIsEmptyString(groupId)) {
+        // 为空
+        if (XOIsEmptyArray(_toppingArray)) {
+            return YES;
+        }
+        // 不为空
+        else {
+            if (![_toppingArray containsObject:groupId]) {
+                return YES;
+            }
+            else {
+                NSMutableArray *toppingList = [_toppingArray mutableCopy];
+                [toppingList removeObject:groupId];
+                if ([toppingList writeToURL:[self ToppingListURL] atomically:YES]) {
+                    _toppingArray = toppingList;
+                    NSLog(@"增加免打扰群成功: %@", groupId);
+                    return YES;
+                }
+                else {
+                    NSLog(@"增加免打扰群失败: %@", groupId);
+                    return NO;
+                }
+            }
+        }
+    }
+    return NO;
+}
+
+- (NSURL *)MuteListURL
+{
+    NSString *path = [XOUserSettingDirectory() stringByAppendingPathComponent:@"muteGroupList.plist"];
+    return [NSURL fileURLWithPath:path];
+}
+
+- (NSURL *)ToppingListURL
+{
+    NSString *path = [XOUserSettingDirectory() stringByAppendingPathComponent:@"toppingGroupList.plist"];
+    return [NSURL fileURLWithPath:path];
 }
 
 @end
@@ -370,29 +539,41 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
 /**
  * @brief 查询联系人信息
  */
-- (void)getContactProfile:(NSString *)identifier handler:(void(^ _Nullable)(TIMUserProfile * _Nullable friendList))complection
+- (void)getContactProfile:(NSString *)identifier handler:(void(^ _Nullable)(TIMUserProfile * _Nullable profile))complection
 {
     [self.DBQueue inDatabase:^(FMDatabase *db) {
         
-        NSString * sql = [NSString stringWithFormat:@"SELECT * FROM %@", ContactProfileTableName];
+        NSString * sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE identifier = '%@'", ContactProfileTableName, identifier];
         FMResultSet * rs = [db executeQuery:sql];
         
-        TIMUserProfile *profile = [[TIMUserProfile alloc] init];
         // 遍历结果集
-        while ([rs next]) {
-            profile.identifier  = [rs stringForColumn:@"identifier"];
-            profile.nickname    = [rs stringForColumn:@"nickname"];
-            profile.allowType   = [rs longForColumn:@"allowType"];
-            profile.faceURL     = [rs stringForColumn:@"faceURL"];
-            profile.selfSignature = [[rs stringForColumn:@"selfSignature"] dataUsingEncoding:NSUTF8StringEncoding];
-            profile.gender      = [rs longForColumn:@"gender"];
-            profile.birthday    = [rs intForColumn:@"birthday"];
-            profile.language    = [rs intForColumn:@"language"];
-            profile.level       = [rs intForColumn:@"level"];
-            profile.role        = [rs intForColumn:@"role"];
-            break;
+        if (rs.columnCount > 0) {
+            BOOL contain = NO;
+            while ([rs next]) {
+                TIMUserProfile *profile = [[TIMUserProfile alloc] init];
+                profile.identifier  = [rs stringForColumn:@"identifier"];
+                profile.nickname    = [rs stringForColumn:@"nickname"];
+                profile.allowType   = [rs longForColumn:@"allowType"];
+                profile.faceURL     = [rs stringForColumn:@"faceURL"];
+                profile.selfSignature = [[rs stringForColumn:@"selfSignature"] dataUsingEncoding:NSUTF8StringEncoding];
+                profile.gender      = [rs longForColumn:@"gender"];
+                profile.birthday    = [rs intForColumn:@"birthday"];
+                profile.language    = [rs intForColumn:@"language"];
+                profile.level       = [rs intForColumn:@"level"];
+                profile.role        = [rs intForColumn:@"role"];
+                
+                contain = YES;
+                if (complection) complection (profile);
+                break;
+            }
+            
+            if (!contain) {
+                if (complection) complection (nil);
+            }
         }
-        if (complection) complection (profile);
+        else {
+            if (complection) complection (nil);
+        }
     }];
 }
 
@@ -422,16 +603,16 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
             TIMUserProfile *profile = [[TIMUserProfile alloc] init];
             // 遍历结果集
             while ([profileRS next]) {
-                profile.identifier  = [rs stringForColumn:@"identifier"];
-                profile.nickname    = [rs stringForColumn:@"nickname"];
-                profile.allowType   = [rs longForColumn:@"allowType"];
-                profile.faceURL     = [rs stringForColumn:@"faceURL"];
-                profile.selfSignature = [[rs stringForColumn:@"selfSignature"] dataUsingEncoding:NSUTF8StringEncoding];
-                profile.gender      = [rs longForColumn:@"gender"];
-                profile.birthday    = [rs intForColumn:@"birthday"];
-                profile.language    = [rs intForColumn:@"language"];
-                profile.level       = [rs intForColumn:@"level"];
-                profile.role        = [rs intForColumn:@"role"];
+                profile.identifier  = [profileRS stringForColumn:@"identifier"];
+                profile.nickname    = [profileRS stringForColumn:@"nickname"];
+                profile.allowType   = [profileRS longForColumn:@"allowType"];
+                profile.faceURL     = [profileRS stringForColumn:@"faceURL"];
+                profile.selfSignature = [[profileRS stringForColumn:@"selfSignature"] dataUsingEncoding:NSUTF8StringEncoding];
+                profile.gender      = [profileRS longForColumn:@"gender"];
+                profile.birthday    = [profileRS intForColumn:@"birthday"];
+                profile.language    = [profileRS intForColumn:@"language"];
+                profile.level       = [profileRS intForColumn:@"level"];
+                profile.role        = [profileRS intForColumn:@"role"];
                 break;
             }
             friend.profile = profile;
@@ -441,6 +622,54 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
         
         if (complection) {
             complection (mutArr);
+        }
+    }];
+}
+
+/**
+ * @brief 查询群信息
+ */
+- (void)getGroupInfo:(NSString *)groupId handler:(void(^ _Nullable)(TIMGroupInfo * _Nullable groupInfo))complection
+{
+    [self.DBQueue inDatabase:^(FMDatabase *db) {
+        
+        NSString * sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE groupId = '%@'", GroupTableName, groupId];
+        FMResultSet * rs = [db executeQuery:sql];
+        
+        // 遍历结果集
+        if (rs.columnCount > 0) {
+            BOOL contain = NO;
+            while ([rs next]) {
+                TIMGroupInfo *group = [[TIMGroupInfo alloc] init];
+                group.group             = [rs stringForColumn:@"groupId"];
+                group.groupName         = [rs stringForColumn:@"groupName"];
+                group.owner             = [rs stringForColumn:@"owner"];
+                group.groupType         = [rs stringForColumn:@"groupType"];
+                group.createTime        = [rs intForColumn:@"createTime"];
+                group.lastInfoTime      = [rs intForColumn:@"lastInfoTime"];
+                group.lastMsgTime       = [rs intForColumn:@"lastMsgTime"];
+                group.maxMemberNum      = [rs intForColumn:@"maxMemberNum"];
+                group.memberNum         = [rs intForColumn:@"memberNum"];
+                group.addOpt            = [rs intForColumn:@"addOpt"];
+                group.notification      = [rs stringForColumn:@"notification"];
+                group.introduction      = [rs stringForColumn:@"introduction"];
+                group.faceURL           = [rs stringForColumn:@"faceURL"];
+                group.onlineMemberNum   = [rs intForColumn:@"onlineMemberNum"];
+                group.isSearchable      = [rs intForColumn:@"isSearchable"];
+                group.isMemberVisible   = [rs intForColumn:@"isMemberVisible"];
+                group.allShutup         = [rs intForColumn:@"allShutup"];
+                
+                contain = YES;
+                if (complection) complection (group);
+                break;
+            }
+            
+            if (!contain) {
+                if (complection) complection (nil);
+            }
+        }
+        else {
+            if (complection) complection (nil);
         }
     }];
 }

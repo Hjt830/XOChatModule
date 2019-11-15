@@ -7,8 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "FansBean.h"
-#import "CreateGroupViewController.h"
+#import <ImSDK/ImSDK.h>
 
 @interface  MemberTableViewCell: UITableViewCell
 
@@ -16,12 +15,10 @@
 @property (nonatomic, strong) UIImageView   *iconimagev;
 @property (nonatomic, strong) UILabel       *nameLabel;
 
-@property (nonatomic, strong) GroupMemberInfoModel         *memberInfo;
+@property (nonatomic, strong) TIMFriend     *friendInfo;
+@property (nonatomic, strong) TIMGroupInfo  *groupInfo;
 
 @property (nonatomic, copy) void(^addblock)(void);
-
-
--(void)giveSubviewValueWithData:(FansBean *)bean;
 
 
 @end

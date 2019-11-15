@@ -10,6 +10,7 @@
 #import <GCDMulticastDelegate/GCDMulticastDelegate.h>
 #import <XOBaseLib/XOBaseLib.h>
 #import "NSBundle+ChatModule.h"
+#import "TIMElem+XOExtension.h"
 #import "XOContactManager.h"
 
 @interface XOChatClient () <TIMConnListener, TIMMessageListener, TIMUserStatusListener, TIMUploadProgressListener, TIMGroupEventListener, TIMFriendshipListener>
@@ -19,6 +20,7 @@
 @property (nonatomic, strong) NSThread                      *bgThread;     // 后台常驻线程，用于下载图片、视频、文件等消息中的文件
 @property (nonatomic, strong) NSMutableArray <TIMMessage *> *waitTaskQueue; // 待下载任务
 @property (nonatomic, strong) NSMutableDictionary <NSString *, NSURLSessionTask *> *taskQueue;    // 任务队列 key:消息ID+消息时间(msgId_timestamp) 下载任务:task
+@property (nonatomic, strong) NSDate                *lastPlaySoundDate;
 
 @end
 
@@ -174,6 +176,38 @@ static XOChatClient *__chatClient = nil;
 - (void)onNewMessage:(NSArray *)msgs
 {
     XOLog(@"=================================\n=================================\n收到新消息条数: %lu \n收到新消息: %@\n=================================\n=================================", (unsigned long)msgs.count, msgs);
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // 消息通知
+        [msgs enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
+            TIMConversationType type = [[message getConversation] getType];
+            // 系统消息不提醒
+            if (TIM_SYSTEM != type) {
+                UIApplicationState state = [[UIApplication sharedApplication] applicationState];
+                switch (state) {
+                    case UIApplicationStateActive:
+                        [self playSoundAndVibration];
+                        break;
+                    case UIApplicationStateInactive:
+                        [self playSoundAndVibration];
+                        break;
+                    case UIApplicationStateBackground:
+                    {
+                        NSDictionary *notiSetting = [[[XOSettingManager defaultManager] settingDictionary] valueForKey:@"XONotificationOptionKey"];
+                        BOOL allowNoti = [[notiSetting valueForKey:@"XONewMessageNotificationKey"] boolValue];
+                        if (allowNoti) { // 如果允许新消息到达通知
+                            NSString *content = [[message getElem:0] getTextFromMessage];
+                            [XOLocalPushManager showNotificationWithMessage:content];
+                        }
+                    }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }];
+    });
+    
     // 回调收到新消息
     if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnForceOffline)]) {
         [_multiDelegate xoOnNewMessage:msgs];
@@ -921,6 +955,24 @@ static XOChatClient *__chatClient = nil;
 }
 
 #pragma mark ========================= help =========================
+
+- (void)playSoundAndVibration
+{
+    NSDictionary *notiSetting = [[[XOSettingManager defaultManager] settingDictionary] valueForKey:@"XONotificationOptionKey"];
+    BOOL allowSound = [[notiSetting valueForKey:@"XONotificationSoundKey"] boolValue];      // 声音提醒
+    BOOL allowVibrate = [[notiSetting valueForKey:@"XONotificationVibrateKey"] boolValue];  // 震动提醒
+    
+    if (allowSound || allowVibrate) {
+        NSTimeInterval timeInterval = [[NSDate date] timeIntervalSinceDate:self.lastPlaySoundDate];
+        // 如果距离上次响铃和震动时间太短, 则跳过响铃
+        if (!self.lastPlaySoundDate || timeInterval > 0.6) {
+            //保存最后一次响铃时间
+            self.lastPlaySoundDate = [NSDate date];
+            if (allowSound) [XOLocalPushManager playNewMessageSound];
+            if (allowVibrate) [XOLocalPushManager playVibration];
+        }
+    }
+}
 
 // 获取图片的格式
 - (NSString *)getImageFormat:(TIM_IMAGE_FORMAT)imageFormat
