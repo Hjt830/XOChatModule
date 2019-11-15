@@ -11,6 +11,7 @@
 #endif
 
 #import "NSBundle+ChatModule.h"
+#import "TIMElem+XOExtension.h"
 #import "UIImage+XOChatBundle.h"
 #import "UIImage+XOChatExtension.h"
 #import "ChatFace.h"
@@ -45,6 +46,8 @@
 #import "XOSearchResultListController.h"
 #import "XOConversationListCell.h"
 #import "XOConversationListController.h"
+#import "GroupInfoEditViewController.h"
+#import "GroupSettingInfoController.h"
 #import "MemberTableViewCell.h"
 #import "XOCreateGroupViewController.h"
 #import "BMChineseSort.h"
