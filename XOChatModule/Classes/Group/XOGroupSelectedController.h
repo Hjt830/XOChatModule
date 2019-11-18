@@ -35,9 +35,9 @@ typedef NS_ENUM(NSInteger, GroupMemberType) {
 
 @property (nonatomic, weak) id  <XOGroupSelectedDelegate> delegate;
 
-@property (nonatomic, assign) GroupMemberType       memberType;             // 默认是创建群
+@property (nonatomic, assign) GroupMemberType           memberType;             // 默认是创建群
 
-@property (nonatomic, copy) NSString               *groupId;    // 群ID
+@property (nonatomic, strong) TIMGroupInfo                *groupInfo;             // 群信息
 @property (nonatomic, strong) NSArray     <TIMUserProfile *>* existGroupMembers;   // 添加|剔除 时的群成员列表
 
 @end

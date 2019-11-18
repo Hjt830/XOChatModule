@@ -15,6 +15,9 @@
 #import "UIImage+XOChatExtension.h"
 #import <XOBaseLib/XOBaseLib.h>
 
+NSString * XOGroupToppingDidChangeNotification     = @"XOGroupToppingDidChangeNotification";
+NSString * XOGroupMuteDidChangeNotification        = @"XOGroupMuteDidChangeNotification";
+
 static NSString * const GroupMemberSwitchCellID         = @"GroupMemberSwitchCellID";
 static NSString * const GroupMemberSettingCellID        = @"GroupMemberSettingCellID";
 static NSString * const GroupMemberSettingTailCellID    = @"GroupMemberSettingTailCellID";
@@ -46,7 +49,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.view.backgroundColor = BG_TableColor;
     self.title = [NSString stringWithFormat:@"%@(%u)", XOChatLocalizedString(@"group.setting.title"), self.groupInfo.memberNum];
     
     self.isShowAll = NO; // 不显示加号
@@ -304,7 +307,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         _tableView.sectionHeaderHeight = 15.0f;
         _tableView.sectionFooterHeight = 0.0f;
         _tableView.rowHeight = 60.0f;
-        _tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        _tableView.backgroundColor = BG_TableColor;
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         
         [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:GroupMemberSettingCellID];
@@ -337,7 +340,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 {
     if (!_tableHeaderView) {
         _tableHeaderView = [[UIView alloc] init];
-        _tableHeaderView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        _tableHeaderView.backgroundColor = BG_TableColor;
         
         _tableHeaderBackgroundView = [[UIView alloc] init];
         _tableHeaderBackgroundView.backgroundColor = [UIColor whiteColor];
@@ -350,7 +353,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 {
     if (!_tableFooterView) {
         _tableFooterView = [[UIView alloc] init];
-        _tableFooterView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        _tableFooterView.backgroundColor = BG_TableColor;
         
         NSArray *array = self.isHoster ? @[NSLocalizedString(@"live.deletele", nil), NSLocalizedString(@"live.Disband", nil)] : @[NSLocalizedString(@"live.deletele", nil)];
         for (int i = 0; i < array.count; i++) {
@@ -473,6 +476,8 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
                 // 操作失败, 回退状态
                 if (!result) {
                     [sCell setOn:!on];
+                } else {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:XOGroupToppingDidChangeNotification object:nil userInfo:@{@"groupId": self.groupInfo.group, @"on": @(on)}];
                 }
             }
             // 免打扰 | 取消免打扰
@@ -490,6 +495,8 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
                 // 操作失败, 回退状态
                 if (!result) {
                     [sCell setOn:!on];
+                } else {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:XOGroupMuteDidChangeNotification object:@(on)];
                 }
             }
         };
@@ -658,10 +665,14 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 {
     if (indexPath.item >= self.showMembers.count) {
         XOGroupSelectedController *selectVC = [[XOGroupSelectedController alloc] init];
-        if (indexPath.item == self.showMembers.count) selectVC.memberType = GroupMemberType_Add;    // 添加群成员
-        else if (indexPath.item > self.showMembers.count) selectVC.memberType = GroupMemberType_Remove; // 剔除群成员
+        if (indexPath.item == self.showMembers.count) {// 添加群成员
+            selectVC.memberType = GroupMemberType_Add;
+        }
+        else if (indexPath.item > self.showMembers.count) { // 剔除群成员
+            selectVC.memberType = GroupMemberType_Remove;
+        }
         selectVC.existGroupMembers = self.groupMembers;
-        selectVC.groupId = self.groupInfo.group;
+        selectVC.groupInfo = self.groupInfo;
         selectVC.delegate = self;
         [self.navigationController pushViewController:selectVC animated:YES];
     }

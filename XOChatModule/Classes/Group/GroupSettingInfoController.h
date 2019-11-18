@@ -12,6 +12,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// 群置顶通知
+FOUNDATION_EXTERN NSString *XOGroupToppingDidChangeNotification;
+// 群免打扰通知
+FOUNDATION_EXTERN NSString *XOGroupMuteDidChangeNotification;
+
+
 @interface GroupSettingInfoController : XOBaseViewController
 
 @property (nonatomic, strong) TIMGroupInfo          *groupInfo;

@@ -10,6 +10,7 @@
 #import "XOContactListViewController.h"
 #import "XOChatViewController.h"
 #import "XOGroupSelectedController.h"
+#import "GroupSettingInfoController.h"
 
 #import "XOConversationListCell.h"
 #import "XOLocalPushManager.h"
@@ -46,6 +47,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 @property (nonatomic, strong) UITableView           *tableView;         // 会话列表
 
 @property (nonatomic, strong) NSMutableArray    <TIMConversation *>* dataSource;   // 会话数据源
+@property (nonatomic, strong) NSMutableArray    <TIMConversation *>* toppingArr;   // 会话数据源
 @property (nonatomic, assign) int                   unreadServerCount;
 
 @end
@@ -62,6 +64,8 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
         [[XOChatClient shareClient].conversationManager addDelegate:self delegateQueue:_chatDelegate_queue];
         [[XOChatClient shareClient].messageManager addDelegate:self delegateQueue:_chatDelegate_queue];
         self.unreadServerCount = 0;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(toppingDidChange:) name:XOGroupToppingDidChangeNotification object:nil];
     }
     return self;
 }
@@ -71,6 +75,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
     [[XOChatClient shareClient] removeDelegate:self];
     [[XOChatClient shareClient].conversationManager removeDelegate:self];
     [[XOChatClient shareClient].messageManager removeDelegate:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:XOGroupToppingDidChangeNotification object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -208,6 +213,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 {
     @synchronized (self) {
         [self.dataSource removeAllObjects];
+        [self.toppingArr removeAllObjects];
         NSArray <TIMConversation *>* conversationList = [[TIMManager sharedInstance] getConversationList];
         [conversationList enumerateObjectsUsingBlock:^(TIMConversation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             // 过滤系统消息 和 客服消息
@@ -229,19 +235,25 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
     // 将置顶的会话放在前面
     __block NSArray *toppingArr = [XOContactManager defaultManager].toppingArray;
     if (toppingArr.count > 0) {
-        __block NSMutableArray *mutArray = [NSMutableArray array];
         [self.dataSource enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(TIMConversation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([toppingArr containsObject:[obj getReceiver]]) {
-                [mutArray addObject:obj];
+                [self.toppingArr addObject:obj];
                 [self.dataSource removeObject:obj];
             }
         }];
-        
+        // 按时间排序
+        [self.dataSource sortUsingComparator:^NSComparisonResult(TIMConversation * _Nonnull obj1, TIMConversation * _Nonnull obj2) {
+            return [[[obj2 getLastMsg] timestamp] compare:[[obj1 getLastMsg] timestamp]];
+        }];
+        [self.toppingArr sortUsingComparator:^NSComparisonResult(TIMConversation * _Nonnull obj1, TIMConversation * _Nonnull obj2) {
+            return [[[obj2 getLastMsg] timestamp] compare:[[obj1 getLastMsg] timestamp]];
+        }];
+        // 插入会话集合前面
         NSMutableIndexSet *insexSet = [NSMutableIndexSet indexSet];
-        [mutArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.toppingArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [insexSet addIndex:idx];
         }];
-        [self.dataSource insertObjects:mutArray atIndexes:insexSet];
+        [self.dataSource insertObjects:self.toppingArr atIndexes:insexSet];
     }
     
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -302,6 +314,14 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
     return _dataSource;
 }
 
+- (NSMutableArray <TIMConversation *> *)toppingArr
+{
+    if (!_toppingArr) {
+        _toppingArr = [NSMutableArray array];
+    }
+    return _toppingArr;
+}
+
 - (UITableView *)tableView
 {
     if (!_tableView) {
@@ -311,7 +331,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
         _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _tableView.rowHeight = UITableViewAutomaticDimension;
         _tableView.rowHeight = 70.0f;
-        _tableView.separatorColor = RGBA(230, 230, 230, 1.0);
+        _tableView.separatorColor = RGBA(220, 220, 220, 1.0);
         _tableView.separatorInset = UIEdgeInsetsMake(0, _tableView.rowHeight + 10, 0, 0);
         _tableView.sectionHeaderHeight = 0.0f;
         _tableView.sectionFooterHeight = 0.0f;
@@ -328,7 +348,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 {
     if (!_headerView) {
         _headerView = [[UIView alloc] init];
-        _headerView.backgroundColor = BG_TableSeparatorColor;
+        _headerView.backgroundColor = BG_TableColor;
     }
     return _headerView;
 }
@@ -418,6 +438,57 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
         [_onlineChatView addSubview:self.groupNameLabel];
     }
     return _onlineChatView;
+}
+
+#pragma mark ========================= noti =========================
+
+- (void)toppingDidChange:(NSNotification *)noti
+{
+    if (noti.userInfo) {
+        __block NSString *groupId = noti.userInfo[@"groupId"];
+        BOOL topping = [noti.userInfo[@"on"] boolValue];
+        if (!XOIsEmptyString(groupId)) {
+            if (topping) {  // 置顶
+                __block NSUInteger row = 0;
+                [self.dataSource enumerateObjectsUsingBlock:^(TIMConversation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    if ([[obj getReceiver] isEqualToString:groupId]) {
+                        row = idx;
+                        @synchronized (self) {
+                            [self.toppingArr addObject:obj];
+                        }
+                        *stop = YES;
+                    }
+                }];
+                NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:row inSection:0];
+                NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self.tableView moveRowAtIndexPath:oldIndexPath toIndexPath:newIndexPath];
+                }];
+            }
+            else { // 取消置顶
+                __block NSUInteger row = 0;
+                [self.dataSource enumerateObjectsUsingBlock:^(TIMConversation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    if ([[obj getReceiver] isEqualToString:groupId]) {
+                        row = idx;
+                        @synchronized (self) {
+                            [self.toppingArr removeObject:obj];
+                        }
+                        *stop = YES;
+                    }
+                }];
+                if (self.dataSource.count > self.toppingArr.count) {
+                    NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:row inSection:0];
+                    NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:self.toppingArr.count inSection:0];
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [self.tableView moveRowAtIndexPath:oldIndexPath toIndexPath:newIndexPath];
+                    }];
+                }
+            }
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self.tableView reloadData];
+            });
+        }
+    }
 }
 
 #pragma mark ====================== XOChatClientProtocol =======================

@@ -103,6 +103,18 @@
             default:
                 break;
         }
+        
+        NSMutableParagraphStyle *paragrap = [[NSMutableParagraphStyle alloc] init];
+        paragrap.lineSpacing = 5.0;
+        paragrap.alignment = NSTextAlignmentCenter;
+        NSMutableAttributedString *mutStr = [[NSMutableAttributedString alloc] initWithString:text];
+        [mutStr addAttributes:@{NSFontAttributeName: XOSystemFont(13.0f)} range:NSMakeRange(0, text.length)];
+        [mutStr addAttributes:@{NSForegroundColorAttributeName: RGBA(109, 109, 114, 1.0)} range:NSMakeRange(0, text.length)];
+        [mutStr addAttributes:@{NSParagraphStyleAttributeName: paragrap} range:NSMakeRange(0, text.length)];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wincompatible-pointer-types"
+        text = mutStr;
+#pragma clang diagnostic pop
     }
     else if ([self isKindOfClass:[TIMGroupSystemElem class]])
     {

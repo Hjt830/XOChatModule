@@ -22,7 +22,7 @@ static NSString *SearchContactCellID = @"SearchContactCellID";  // 联系人cell
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.view.backgroundColor = BG_TableColor;
     
     [self.view addSubview:self.tableView];
 }

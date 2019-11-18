@@ -28,7 +28,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.view.backgroundColor = BG_TableColor;
     
     if (GroupEditTypeGroupName == self.editType) {
         self.title = XOChatLocalizedString(@"group.setting.groupname");

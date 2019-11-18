@@ -16,7 +16,7 @@
 
 #define TXTIMAppID      @"1400267062"
 
-#if 1
+#if 0
 
 // 13226262626
 #define Token           @"ac7295f5e92742dea25260e9a780db91"
@@ -123,7 +123,7 @@
     XODetailViewController *detailVC = [[XODetailViewController alloc] init];
     
     UISplitViewController *splitViewController = [[UISplitViewController alloc] init];
-    splitViewController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    splitViewController.view.backgroundColor = BG_TableColor;
     splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
     splitViewController.preferredPrimaryColumnWidthFraction = 0.5;
     splitViewController.maximumPrimaryColumnWidth = 414.0;

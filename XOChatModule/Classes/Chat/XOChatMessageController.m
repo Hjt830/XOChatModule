@@ -88,7 +88,7 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.view.backgroundColor = BG_TableColor;
     
     // 添加消息列表
     [self.view addSubview:self.tableView];
@@ -955,7 +955,7 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
         _tableView.sectionFooterHeight = 0.0f;
         _tableView.rowHeight = UITableViewAutomaticDimension;
         _tableView.backgroundView = [[UIView alloc] initWithFrame:_tableView.bounds];
-        _tableView.backgroundView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        _tableView.backgroundView.backgroundColor = BG_TableColor;
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         
         [_tableView registerClass:[WXTextMessageCell class] forCellReuseIdentifier:TextMessageCellID];
@@ -1507,8 +1507,8 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
              [elem isKindOfClass:[TIMGroupTipsElemMemberInfo class]] ||
              [elem isKindOfClass:[TIMGroupSystemElem class]])
     {
-        NSString *text = [elem getTextFromMessage];
-        CGFloat height = [text boundingRectWithSize:CGSizeMake(self.view.width - 30, MAXFLOAT) options:0|1 attributes:@{NSFontAttributeName: XOSystemFont(13.0)} context:nil].size.height;
+        NSAttributedString *text = (NSAttributedString *)[elem getTextFromMessage];
+        CGFloat height = [text boundingRectWithSize:CGSizeMake(self.view.width - 30, MAXFLOAT) options:0|1 context:nil].size.height;
         size = CGSizeMake(self.view.width - 30, height + 20);
     }
     

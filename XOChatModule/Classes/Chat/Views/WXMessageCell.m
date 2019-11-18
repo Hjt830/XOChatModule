@@ -362,7 +362,7 @@ static float const kDefaultMargin = 8.0f;
     [super layoutSubviews];
     
     self.textLabel.font = [UIFont systemFontOfSize:12.0];
-    self.textLabel.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.textLabel.backgroundColor = BG_TableColor;
     self.textLabel.clipsToBounds = YES;
     self.textLabel.layer.cornerRadius = 5.0f;
     [self.textLabel setCenter:CGPointMake(self.width/2.0, self.height/2.0)];

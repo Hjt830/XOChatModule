@@ -132,6 +132,11 @@
     _conversation = conversation;
     
     self.shouldTopShow = [[XOContactManager defaultManager] isToppingGroup:[conversation getReceiver]];
+    if (self.shouldTopShow) {
+        self.backgroundColor = BG_TableColor;
+    } else {
+        self.backgroundColor = [UIColor whiteColor];
+    }
     
     TIMMessage *lastMsg = [_conversation getLastMsg];
     

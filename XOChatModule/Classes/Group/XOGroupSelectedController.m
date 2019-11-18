@@ -165,7 +165,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
         [self addGroupMember];
     }
     else if (GroupMemberType_Remove == self.memberType) {
-        
+        [self removeGroupMember];
     }
 }
 
@@ -313,7 +313,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
 - (void)addGroupMember
 {
     NSArray *selectedIds = [self.addData valueForKey:@"identifier"];
-    [[TIMGroupManager sharedInstance] inviteGroupMember:self.groupId members:selectedIds succ:^(NSArray *members) {
+    [[TIMGroupManager sharedInstance] inviteGroupMember:self.groupInfo.group members:selectedIds succ:^(NSArray *members) {
         
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.navigationController popViewControllerAnimated:YES];
@@ -327,7 +327,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
 - (void)removeGroupMember
 {
     NSArray *selectedIds = [self.addData valueForKey:@"identifier"];
-    [[TIMGroupManager sharedInstance] deleteGroupMemberWithReason:self.groupId reason:@"" members:selectedIds succ:^(NSArray <TIMGroupMemberResult *>* members) {
+    [[TIMGroupManager sharedInstance] deleteGroupMemberWithReason:self.groupInfo.group reason:@"" members:selectedIds succ:^(NSArray <TIMGroupMemberResult *>* members) {
         
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.navigationController popViewControllerAnimated:YES];
@@ -357,6 +357,14 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
     if (GroupMemberType_Add == self.memberType)
     {
         if ([self.existGroupIds containsObject:friend.identifier]) {
+            cell.isLock = YES;
+        } else {
+            cell.isLock = NO;
+        }
+    }
+    // 删除群成员时，群主默认勾选
+    else if (GroupMemberType_Remove == self.memberType) {
+        if ([friend.identifier isEqualToString:self.groupInfo.owner]) {
             cell.isLock = YES;
         } else {
             cell.isLock = NO;
@@ -401,6 +409,14 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
             return;
         }
     }
+    // 删除群成员时
+    else if (GroupMemberType_Remove == self.memberType) {
+        // 群主不可选择
+        if ([profile.identifier isEqualToString:self.groupInfo.owner]) {
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            return;
+        }
+    }
     
     // 选中
     NSArray * selectedIds = [self.addData valueForKey:@"identifier"];
@@ -425,9 +441,18 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
     // 添加群成员时
     if (GroupMemberType_Add == self.memberType)
     {
-        // 已经在群中的成员不可选择或反选
+        // 已经在群中的成员不可反选
         if ([self.existGroupIds containsObject:profile.identifier]) {
-            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            [tableView selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
+            return;
+        }
+    }
+    // 删除群成员时
+    else if (GroupMemberType_Remove == self.memberType)
+    {
+        // 群主不可反选
+        if ([profile.identifier isEqualToString:self.groupInfo.owner]) {
+            [tableView selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
             return;
         }
     }
@@ -599,7 +624,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
         _tableView.allowsMultipleSelection = YES;
         _tableView.tableFooterView = [[UIView alloc] init];
         _tableView.sectionIndexColor = [UIColor darkTextColor]; //设置默认时索引值颜色
-        _tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        _tableView.backgroundColor = BG_TableColor;
         
         [_tableView registerClass:[MemberTableViewCell class] forCellReuseIdentifier:MemberTableViewCellID];
     }
@@ -636,7 +661,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
     if (!_searchbar) {
         _searchbar = [[UISearchBar alloc] init];
         _searchbar.placeholder = XOChatLocalizedString(@"group.search.placeholder");
-        _searchbar.tintColor = [UIColor groupTableViewBackgroundColor];
+        _searchbar.tintColor = BG_TableColor;
         _searchbar.barTintColor = [UIColor whiteColor];
         for (UIView *subView in _searchbar.subviews) {  //更改UISearchBar的背景为透明
             for (UIView *backView in subView.subviews){
