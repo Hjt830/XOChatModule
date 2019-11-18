@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GroupMemberSettingIconCell : UICollectionViewCell
 
-@property (nonatomic, strong) TIMGroupMemberInfo *memberInfo;
+@property (nonatomic, strong) TIMUserProfile    *profile;
 
 @property (nonatomic, assign) BOOL               showAdd; // 显示+
 @property (nonatomic, assign) BOOL               showDel; // 显示-

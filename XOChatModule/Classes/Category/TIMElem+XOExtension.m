@@ -46,16 +46,16 @@
         switch (tipsElem.type) {
             case TIM_GROUP_TIPS_TYPE_INVITE: {          // 邀请加入群
                 NSString *inviteUserName = [self userListCombineNameWith:tipsElem];
-                text = [NSString stringWithFormat:XOChatLocalizedString(@"group.tip.invite.%@.%@.%@") , opUsername, inviteUserName, tipsElem.groupName];
+                text = [NSString stringWithFormat:XOChatLocalizedString(@"group.tip.invite.%@.%@") , opUsername, inviteUserName];
             }
                 break;
             case TIM_GROUP_TIPS_TYPE_QUIT_GRP: {        // 退出群
-                text = [NSString stringWithFormat:XOChatLocalizedString(@"group.tip.exit.%@.%@") , opUsername, tipsElem.groupName];
+                text = [NSString stringWithFormat:XOChatLocalizedString(@"group.tip.exit.%@") , opUsername];
             }
                 break;
             case TIM_GROUP_TIPS_TYPE_KICKED: {          // 踢出群
                 NSString *lickoutUserName = [self userListCombineNameWith:tipsElem];
-                text = [NSString stringWithFormat:XOChatLocalizedString(@"group.tip.kickout.%@.%@.%@") , opUsername, lickoutUserName, tipsElem.groupName];
+                text = [NSString stringWithFormat:XOChatLocalizedString(@"group.tip.kickout.%@.%@") , opUsername, lickoutUserName];
             }
                 break;
             case TIM_GROUP_TIPS_TYPE_SET_ADMIN: {       // 设置管理员
@@ -69,25 +69,27 @@
             }
                 break;
             case TIM_GROUP_TIPS_TYPE_INFO_CHANGE:  {   // 群资料变更
+                
                 if (tipsElem.groupChangeList.count > 0) {
+                    
                     TIMGroupTipsElemGroupInfo *changeInfo = tipsElem.groupChangeList[0];
+                    NSString *value = changeInfo.value;
                     switch (changeInfo.type) {
                         case TIM_GROUP_INFO_CHANGE_GROUP_NAME:  // 群名修改
-                            
+                            text = [NSString stringWithFormat:XOChatLocalizedString(@"group.tip.changeGroupName.%@.%@") , opUsername, value];
                             break;
                         case TIM_GROUP_INFO_CHANGE_GROUP_INTRODUCTION:  // 群简介修改
-                            
+                            text = [NSString stringWithFormat:XOChatLocalizedString(@"group.tip.changeGroupIntroduce.%@.%@") , opUsername, value];
                             break;
                         case TIM_GROUP_INFO_CHANGE_GROUP_NOTIFICATION:  // 群公告修改
-                            
+                            text = [NSString stringWithFormat:XOChatLocalizedString(@"group.tip.changeGroupNotification.%@.%@") , opUsername, value];
                             break;
                         case TIM_GROUP_INFO_CHANGE_GROUP_FACE:  // 群头像修改
-                            
+                            text = [NSString stringWithFormat:XOChatLocalizedString(@"group.tip.changeGroupIcon.%@") , opUsername];
                             break;
                         case TIM_GROUP_INFO_CHANGE_GROUP_OWNER: // 群主变更
-                            
+                            text = [NSString stringWithFormat:XOChatLocalizedString(@"group.tip.changeGroupSuper.%@") , value];
                             break;
-                            
                         default:
                             break;
                     }
@@ -101,18 +103,10 @@
             default:
                 break;
         }
-
-        /**
-//         *  群资料变更 (opUser & groupName & introduction & notification & faceUrl & owner)
-//         */
-//        TIM_GROUP_TIPS_TYPE_INFO_CHANGE         = 0x06,
-//        /**
-//         *  群成员资料变更 (opUser & groupName & memberInfoList)
-//         */
-//        TIM_GROUP_TIPS_TYPE_MEMBER_INFO_CHANGE         = 0x07,
     }
-    else if ([self isKindOfClass:[TIMGroupSystemElem class]]) {
-        
+    else if ([self isKindOfClass:[TIMGroupSystemElem class]])
+    {
+        text = nil;
     }
     else if ([self isKindOfClass:[TIMCustomElem class]]) {   // 自定义消息
         // 名片
@@ -126,11 +120,13 @@
 - (NSString *)userListCombineNameWith:(TIMGroupTipsElem *)tipsElem
 {
     NSMutableString *inviteUserName = [[NSMutableString alloc] init];
-    for (int i = 0; i < tipsElem.userList.count; i++) {
-        NSString *inviteUser = tipsElem.userList[i];
-        [inviteUserName appendString:inviteUser];
-        if (i < (tipsElem.userList.count - 1)) {
-            [inviteUserName appendString:@"、"];
+    for (int i = 0; i < tipsElem.changedUserInfo.allValues.count; i++) {
+        TIMUserProfile *profile = tipsElem.changedUserInfo.allValues[i];
+        if ([profile isKindOfClass:[TIMUserProfile class]] && !XOIsEmptyString(profile.nickname)) {
+            [inviteUserName appendString:profile.nickname];
+            if (i < (tipsElem.userList.count - 1)) {
+                [inviteUserName appendString:@"、"];
+            }
         }
     }
     return inviteUserName;

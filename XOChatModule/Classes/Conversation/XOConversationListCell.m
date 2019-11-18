@@ -13,6 +13,7 @@
 #import <XOBaseLib/XOBaseLib.h>
 #import "ZXChatHelper.h"
 #import "TIMElem+XOExtension.h"
+#import "XOContactManager.h"
 
 @interface XOConversationListCell ()
 
@@ -21,6 +22,7 @@
 @property (nonatomic, strong) UILabel       *timeLabel;
 @property (nonatomic, strong) UILabel       *messageLabel;
 @property (nonatomic, strong) UILabel       *unreadLabel;
+@property (nonatomic, strong) UILabel       *topLabel;
 
 @property (nonatomic, strong) NSMutableArray *atLists;      //艾特列表
 
@@ -58,6 +60,7 @@
     _timeLabel = [UILabel new];
     _timeLabel.font = [UIFont systemFontOfSize:12];
     _timeLabel.textColor = [UIColor lightGrayColor];
+    _timeLabel.textAlignment = NSTextAlignmentRight;
     
     _messageLabel = [[UILabel alloc] init];
     _messageLabel.font = [UIFont systemFontOfSize:15];
@@ -72,11 +75,18 @@
     _unreadLabel.layer.cornerRadius = 9.0;
     _unreadLabel.clipsToBounds = YES;
     
+    _topLabel = [[UILabel alloc] init];
+    _topLabel.font = [UIFont systemFontOfSize:13];
+    _topLabel.textColor = [UIColor redColor];
+    _topLabel.textAlignment = NSTextAlignmentRight;
+    _topLabel.text = XOChatLocalizedString(@"conversation.top.title");
+    
     [self.contentView addSubview:_iconImageView];
     [self.contentView addSubview:_nameLabel];
     [self.contentView addSubview:_timeLabel];
     [self.contentView addSubview:_messageLabel];
     [self.contentView addSubview:_unreadLabel];
+    [self.contentView addSubview:_topLabel];
 }
 
 - (void)layoutSubviews
@@ -98,25 +108,31 @@
     CGFloat nameWid = timeLeft - nameLeft - margin;
     self.nameLabel.frame = CGRectMake(nameLeft, margin, nameWid, 24.0);
     
-    CGFloat msgLeft = CGRectGetMaxX(self.iconImageView.frame) + margin * 2;
-    CGFloat msgTop = CGRectGetMaxY(self.iconImageView.frame) - 20.0;
-    CGFloat msgWid = maxWid - margin - msgLeft;
-    self.messageLabel.frame = CGRectMake(msgLeft, msgTop, msgWid, 20.0);
-    
     CGFloat unredLeft = CGRectGetMaxX(self.iconImageView.frame) - 8.0;
     CGFloat unredTop  = CGRectGetMinY(self.iconImageView.frame) - 5.0;
     self.unreadLabel.frame = CGRectMake(unredLeft, unredTop, 18.0, 18.0);
     
+    CGFloat msgTop = CGRectGetMaxY(self.iconImageView.frame) - 20.0;
     if (self.shouldTopShow) {
-        self.contentView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        self.topLabel.hidden = NO;
+        self.topLabel.frame = CGRectMake(maxWid - margin - 40, msgTop, 40, 16.0);
     } else {
-        self.contentView.backgroundColor = [UIColor whiteColor];
+        self.topLabel.hidden = YES;
+        self.topLabel.frame = CGRectZero;
     }
+    
+    CGFloat msgLeft = CGRectGetMaxX(self.iconImageView.frame) + margin * 2;
+    CGFloat msgWid = maxWid - margin - msgLeft;
+    if (self.shouldTopShow) msgWid -= (margin + 40);
+    self.messageLabel.frame = CGRectMake(msgLeft, msgTop, msgWid, 20.0);
 }
 
 - (void)setConversation:(TIMConversation *)conversation
 {
     _conversation = conversation;
+    
+    self.shouldTopShow = [[XOContactManager defaultManager] isToppingGroup:[conversation getReceiver]];
+    
     TIMMessage *lastMsg = [_conversation getLastMsg];
     
     if (TIM_C2C == conversation.getType) {
@@ -171,7 +187,8 @@
             } else {
                 _messageLabel.text = text;
             }
-        } else {
+        }
+        else {
             _messageLabel.text = nil;
         }
     }
@@ -194,6 +211,8 @@
         _unreadLabel.text = [NSString stringWithFormat:@"%d", num];
         _unreadLabel.hidden = NO;
     }
+    
+    [self setNeedsLayout];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

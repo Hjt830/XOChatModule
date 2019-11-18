@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)defaultManager;
 
+// 处理群系统消息
+- (void)handlerGroupSystemMessage:(NSArray <TIMMessage *> *)message;
+
 /**
  *  @brief 添加|删除代理
  */

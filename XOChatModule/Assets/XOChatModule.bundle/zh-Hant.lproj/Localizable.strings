@@ -79,7 +79,7 @@
 "contact.remark.placeholder"        = "添加備註名";
 
 "group.create"                      = "創建群聊";
-"group.create"                      = "创建群聊";
+"group.select.member"               = "選擇聯繫人";
 "group.friend.limitMin"             = "請至少選擇2個人";
 "group.friend.empty"                = "添加的群成員不能爲空";
 "group.friend.limitMax"             = "添加的群成員人數不能超過500";
@@ -99,8 +99,13 @@
 "group.setting.exit"                = "退出";
 "group.setting.disband"             = "解散";
 
-"group.tip.invite.%@.%@.%@"         = "'%@' 邀請 '%@' 加入群 '%@'";
-"group.tip.exit.%@.%@"              = "'%@' 退出群 '%@'";
-"group.tip.kickout.%@.%@.%@"        = "'%@' 將 '%@' 踢出群 '%@'";
+"group.tip.invite.%@.%@"         = "'%@' 邀請 '%@' 加入群聊";
+"group.tip.exit.%@"              = "'%@' 退出群聊";
+"group.tip.kickout.%@.%@"        = "'%@' 將 '%@' 踢出群聊";
 "group.tip.adminSet.%@.%@"          = "'%@' 將 '%@' 設置為群管理員";
 "group.tip.adminCancel.%@.%@"       = "'%@' 取消了 '%@' 群管理員身份";
+"group.tip.changeGroupName.%@.%@"           = "'%@' 修改群名稱為 '%@'";
+"group.tip.changeGroupIntroduce.%@.%@"      = "'%@' 修改群簡介為 '%@'";
+"group.tip.changeGroupNotification.%@.%@"   = "'%@' 修改群公告為 '%@'";
+"group.tip.changeGroupIcon.%@.%@"           = "'%@' 修改群頭像";
+"group.tip.changeGroupSuper.%@"             = "'%@' 修改群主";

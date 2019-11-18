@@ -79,6 +79,7 @@
 "contact.remark.placeholder"        = "Add a remark name";
 
 "group.create"                      = "Create Group";
+"group.select.member"               = "Select Members";
 "group.friend.limitMin"             = "please choosen at least 2 people";
 "group.friend.empty"                = "The added group member cannot be empty";
 "group.friend.limitMax"             = "Add group members no more than 500";
@@ -98,8 +99,14 @@
 "group.setting.exit"                = "Exit";
 "group.setting.disband"             = "Disband";
 
-"group.tip.invite.%@.%@.%@"         = "'%@' invite '%@' to join group '%@'";
-"group.tip.exit.%@.%@"              = "'%@' exit group '%@'";
-"group.tip.kickout.%@.%@.%@"        = "'%@' kick '%@' out of group '%@'";
+"group.tip.invite.%@.%@"         = "'%@' invite '%@' to join group";
+"group.tip.exit.%@"              = "'%@' exit group";
+"group.tip.kickout.%@.%@"        = "'%@' kick '%@' out of group";
 "group.tip.adminSet.%@.%@"          = "'%@' set '%@' as a group administrator";
 "group.tip.adminCancel.%@.%@"       = "'%@' canceled '%@' group administrator status";
+
+"group.tip.changeGroupName.%@.%@"           = "'%@' change group name to '%@'";
+"group.tip.changeGroupIntroduce.%@.%@"      = "'%@' change group introduce to '%@'";
+"group.tip.changeGroupNotification.%@.%@"   = "'%@' change group notification to '%@'";
+"group.tip.changeGroupIcon.%@.%@"           = "'%@' change group icon";
+"group.tip.changeGroupSuper.%@"             = "'%@' change group super";

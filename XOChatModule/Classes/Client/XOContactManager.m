@@ -248,11 +248,11 @@ static XOContactManager * __contactManager = nil;
                 [muteList removeObject:groupId];
                 if ([muteList writeToURL:[self MuteListURL] atomically:YES]) {
                     _muteArray = muteList;
-                    NSLog(@"增加免打扰群成功: %@", groupId);
+                    NSLog(@"删除免打扰群成功: %@", groupId);
                     return YES;
                 }
                 else {
-                    NSLog(@"增加免打扰群失败: %@", groupId);
+                    NSLog(@"删除免打扰群失败: %@", groupId);
                     return NO;
                 }
             }
@@ -277,11 +277,11 @@ static XOContactManager * __contactManager = nil;
             [toppingList addObject:groupId];
             if ([toppingList writeToURL:[self ToppingListURL] atomically:YES]) {
                 _toppingArray = toppingList;
-                NSLog(@"增加免打扰群成功: %@", groupId);
+                NSLog(@"增加置顶成功: %@", groupId);
                 return YES;
             }
             else {
-                NSLog(@"增加免打扰群失败: %@", groupId);
+                NSLog(@"增加置顶失败: %@", groupId);
                 return NO;
             }
         }
@@ -291,11 +291,11 @@ static XOContactManager * __contactManager = nil;
             [toppingList addObject:groupId];
             if ([toppingList writeToURL:[self ToppingListURL] atomically:YES]) {
                 _toppingArray = toppingList;
-                NSLog(@"增加免打扰群成功: %@", groupId);
+                NSLog(@"增加置顶成功: %@", groupId);
                 return YES;
             }
             else {
-                NSLog(@"增加免打扰群失败: %@", groupId);
+                NSLog(@"增加置顶失败: %@", groupId);
                 return NO;
             }
         }
@@ -321,11 +321,11 @@ static XOContactManager * __contactManager = nil;
                 [toppingList removeObject:groupId];
                 if ([toppingList writeToURL:[self ToppingListURL] atomically:YES]) {
                     _toppingArray = toppingList;
-                    NSLog(@"增加免打扰群成功: %@", groupId);
+                    NSLog(@"删除置顶成功: %@", groupId);
                     return YES;
                 }
                 else {
-                    NSLog(@"增加免打扰群失败: %@", groupId);
+                    NSLog(@"删除置顶失败: %@", groupId);
                     return NO;
                 }
             }
@@ -934,12 +934,12 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
 }
 
 // 删除联系人
-- (void)deleteContact:(TIMFriend * _Nonnull)friend handler:(void(^ _Nullable)(BOOL result))complection
+- (void)deleteContact:(NSString * _Nonnull)userId handler:(void(^ _Nullable)(BOOL result))complection
 {
     [self.DBQueue inDatabase:^(FMDatabase *db) {
         
-        NSString *sql1 = [NSString stringWithFormat:@"DELETE FROM %@ WHERE identifier = '%@'", ContactTableName, friend.identifier];
-        NSString *sql2 = [NSString stringWithFormat:@"DELETE FROM %@ WHERE identifier = '%@'", ContactProfileTableName, friend.identifier];
+        NSString *sql1 = [NSString stringWithFormat:@"DELETE FROM %@ WHERE identifier = '%@'", ContactTableName, userId];
+        NSString *sql2 = [NSString stringWithFormat:@"DELETE FROM %@ WHERE identifier = '%@'", ContactProfileTableName, userId];
         BOOL result1 = [db executeUpdate:sql1];
         BOOL result2 = [db executeUpdate:sql2];
         
@@ -952,11 +952,11 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
 }
 
 // 删除群
-- (void)deleteGroup:(TIMGroupInfo * _Nonnull)group handler:(void(^ _Nullable)(BOOL result))complection
+- (void)deleteGroup:(NSString * _Nonnull)groupId handler:(void(^ _Nullable)(BOOL result))complection
 {
     [self.DBQueue inDatabase:^(FMDatabase *db) {
         
-        NSString *sql = [NSString stringWithFormat:@"DELETE FROM %@ WHERE groupId = '%@'", GroupTableName, group.group];
+        NSString *sql = [NSString stringWithFormat:@"DELETE FROM %@ WHERE groupId = '%@'", GroupTableName, groupId];
         BOOL result = [db executeUpdate:sql];
         
         if (result) {

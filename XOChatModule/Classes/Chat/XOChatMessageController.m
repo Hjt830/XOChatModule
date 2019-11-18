@@ -20,6 +20,7 @@
 #import "WXLocationMessageCell.h"
 #import "WXPromptMessageCell.h"
 
+#import "TIMElem+XOExtension.h"
 #import "LGAudioKit.h"
 #import <SVProgressHUD/SVProgressHUD.h>
 #import <YBImageBrowser/YBIBVideoData.h>
@@ -660,11 +661,11 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
                 return cell;
             }
             
-            if ([cell isKindOfClass:[WXMessageCell class]]) {
-                WXMessageCell *msgCell = (WXMessageCell *)cell;
+            WXMessageCell *msgCell = (WXMessageCell *)cell;
+            if ([msgCell isKindOfClass:[WXMessageCell class]]) {
                 msgCell.delegate = self;
-                msgCell.message = message;
             }
+            msgCell.message = message;
             
             return cell;
         }
@@ -1506,7 +1507,9 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
              [elem isKindOfClass:[TIMGroupTipsElemMemberInfo class]] ||
              [elem isKindOfClass:[TIMGroupSystemElem class]])
     {
-        size = CGSizeMake(FileWidth + 16, FileHeight + 20);
+        NSString *text = [elem getTextFromMessage];
+        CGFloat height = [text boundingRectWithSize:CGSizeMake(self.view.width - 30, MAXFLOAT) options:0|1 attributes:@{NSFontAttributeName: XOSystemFont(13.0)} context:nil].size.height;
+        size = CGSizeMake(self.view.width - 30, height + 20);
     }
     
     // 3、保存到缓存中

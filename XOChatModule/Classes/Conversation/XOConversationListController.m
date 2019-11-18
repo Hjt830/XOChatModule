@@ -9,13 +9,14 @@
 #import "XOConversationListController.h"
 #import "XOContactListViewController.h"
 #import "XOChatViewController.h"
-#import "XOCreateGroupViewController.h"
+#import "XOGroupSelectedController.h"
 
 #import "XOConversationListCell.h"
 #import "XOLocalPushManager.h"
 #import <XOBaseLib/XOBaseLib.h>
 #import "XOChatModule.h"
 #import "XOChatClient.h"
+#import "XOContactManager.h"
 
 #define Margin 10.0f
 #define TableHeaderStateHeight   44.0f
@@ -168,7 +169,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 
 - (void)groupChat
 {
-    XOCreateGroupViewController *groupVC = [[XOCreateGroupViewController alloc] init];
+    XOGroupSelectedController *groupVC = [[XOGroupSelectedController alloc] init];
     groupVC.memberType = GroupMemberType_Create;
     [self.navigationController pushViewController:groupVC animated:YES];
 }
@@ -224,6 +225,24 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
             }
         }];
     };
+    
+    // 将置顶的会话放在前面
+    __block NSArray *toppingArr = [XOContactManager defaultManager].toppingArray;
+    if (toppingArr.count > 0) {
+        __block NSMutableArray *mutArray = [NSMutableArray array];
+        [self.dataSource enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(TIMConversation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([toppingArr containsObject:[obj getReceiver]]) {
+                [mutArray addObject:obj];
+                [self.dataSource removeObject:obj];
+            }
+        }];
+        
+        NSMutableIndexSet *insexSet = [NSMutableIndexSet indexSet];
+        [mutArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [insexSet addIndex:idx];
+        }];
+        [self.dataSource insertObjects:mutArray atIndexes:insexSet];
+    }
     
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.tableView reloadData];

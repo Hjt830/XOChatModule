@@ -212,6 +212,10 @@ static XOChatClient *__chatClient = nil;
     if (_multiDelegate.count > 0 && [_multiDelegate hasDelegateThatRespondsToSelector:@selector(xoOnForceOffline)]) {
         [_multiDelegate xoOnNewMessage:msgs];
     }
+    
+    // 处理群消息
+    [self.messageManager handlerGroupSystemMessage:msgs];
+    
     // 开启子线程下载任务
     [msgs enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([message isKindOfClass:[TIMMessage class]]) {

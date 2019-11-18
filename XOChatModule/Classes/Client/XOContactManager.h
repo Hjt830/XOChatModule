@@ -165,10 +165,10 @@ extern XOTableName const GroupTableName;
 - (void)clearGroupList:(void(^ _Nullable)(BOOL result))complection;
 
 // 删除联系人
-- (void)deleteContact:(TIMFriend * _Nonnull)friend handler:(void(^ _Nullable)(BOOL result))complection;
+- (void)deleteContact:(NSString * _Nonnull)userId handler:(void(^ _Nullable)(BOOL result))complection;
 
 // 删除群
-- (void)deleteGroup:(TIMGroupInfo * _Nonnull)group handler:(void(^ _Nullable)(BOOL result))complection;
+- (void)deleteGroup:(NSString * _Nonnull)groupId handler:(void(^ _Nullable)(BOOL result))complection;
 
 #pragma mark 更新
 
