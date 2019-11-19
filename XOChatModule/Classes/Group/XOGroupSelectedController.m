@@ -9,6 +9,7 @@
 #import "XOGroupSelectedController.h"
 #import "BMChineseSort.h"
 #import "UIImage+XOChatBundle.h"
+#import "UIImage+XOChatExtension.h"
 //#import "NewPersonInfoViewController.h"
 //#import "GroupSelectMemberViewController.h"
 
@@ -121,10 +122,6 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
                         [self.tableView reloadData];
                     }];
                 }
-            }];
-            
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.tableView reloadData];
             }];
         }];
     }
@@ -640,7 +637,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
         _collectionView = [[UICollectionView alloc]initWithFrame:CGRectZero collectionViewLayout:flowLayout];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
-        _collectionView.backgroundColor = [UIColor whiteColor];
+        _collectionView.backgroundColor = [UIColor XOWhiteColor];
         _collectionView.showsHorizontalScrollIndicator = NO;
         [_collectionView registerClass:[GroupMemberIconCell class] forCellWithReuseIdentifier:GroupMemberIconCellID];
     }
@@ -650,8 +647,8 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
 - (UIView *)headView
 {
     if (!_headView) {
-        _headView = [[UIView alloc] init]; //CGRectMake(0, NavHFit, SCREENW, 54);
-        _headView.backgroundColor = [UIColor whiteColor];
+        _headView = [[UIView alloc] init];
+        _headView.backgroundColor = [UIColor XOWhiteColor];
     }
     return _headView;
 }
@@ -660,18 +657,15 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
 {
     if (!_searchbar) {
         _searchbar = [[UISearchBar alloc] init];
-        _searchbar.placeholder = XOChatLocalizedString(@"group.search.placeholder");
-        _searchbar.tintColor = BG_TableColor;
-        _searchbar.barTintColor = [UIColor whiteColor];
-        for (UIView *subView in _searchbar.subviews) {  //更改UISearchBar的背景为透明
-            for (UIView *backView in subView.subviews){
-                if ([backView isKindOfClass:NSClassFromString(@"UISearchBarBackground")]) {
-                    backView.alpha = 0.0f;
-                }
-            }
-        }
-        [_searchbar setSearchFieldBackgroundImage:[UIImage xo_imageNamedFromChatBundle:@"search_background"] forState:UIControlStateNormal];
+        _searchbar.barStyle = UIBarStyleDefault;
+        _searchbar.translucent = YES;
         _searchbar.delegate = self;
+        _searchbar.barTintColor = [UIColor groupTableViewColor];
+        _searchbar.backgroundImage = nil;
+        _searchbar.tintColor = AppTinColor;
+        _searchbar.placeholder = XOChatLocalizedString(@"group.search.placeholder");
+        UIImage *image = [UIImage xo_imageNamedFromChatBundle:@"search_background"];
+        [_searchbar setBackgroundImage:[image XO_imageWithTintColor:BG_TableColor]];
     }
     return _searchbar;
 }
@@ -826,7 +820,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
     if (_nameLabel == nil) {
         _nameLabel = [[UILabel alloc]init];
         _nameLabel.font = [UIFont systemFontOfSize:14];
-        _nameLabel.textColor = [UIColor blackColor];
+        _nameLabel.textColor = [UIColor XOTextColor];
         _nameLabel.textAlignment = NSTextAlignmentLeft;
     }
     return _nameLabel;

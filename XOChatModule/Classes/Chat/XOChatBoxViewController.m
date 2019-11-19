@@ -65,8 +65,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.view.backgroundColor = DEFAULT_CHATBOX_COLOR;
+    self.view.backgroundColor = [UIColor groupTableViewColor];
     [self.view addSubview:self.chatBox];
     
     [LGSoundRecorder shareInstance].delegate = self;
@@ -144,51 +143,6 @@ static NSTimeInterval audioRecordTime = 0.0f;
         }
     }
     return _chatBoxMoreView;
-}
-
-- (TZImagePickerController *)TZImagePicker
-{
-    if (_TZImagePicker == nil) {
-        _TZImagePicker = [[TZImagePickerController alloc] initWithMaxImagesCount:9 columnNumber:3 delegate:self];
-        _TZImagePicker.isSelectOriginalPhoto = NO;
-        _TZImagePicker.statusBarStyle = UIStatusBarStyleLightContent;
-        _TZImagePicker.maxImagesCount = 9;
-        _TZImagePicker.videoMaximumDuration = 15;
-        // 2. 在这里设置imagePickerVc的外观
-        _TZImagePicker.iconThemeColor = AppTinColor;
-        _TZImagePicker.navigationBar.barTintColor = AppTinColor;
-        _TZImagePicker.navigationBar.tintColor = [UIColor whiteColor];
-        _TZImagePicker.oKButtonTitleColorDisabled = MainPurpleLightColor;
-        _TZImagePicker.oKButtonTitleColorNormal = AppTinColor;
-        // 3. 设置是否可以选择视频/图片/原图
-        _TZImagePicker.allowPickingOriginalPhoto = YES;
-        // 4. 照片排列按修改时间升序
-        _TZImagePicker.sortAscendingByModificationDate = YES;
-        // 5. 设置语言
-        NSString *language = [XOSettingManager defaultManager].language;
-        if (!XOIsEmptyString(language) && ![language isEqualToString:@"default"]) {
-            if ([language isEqualToString:@"zh"]) {
-                _TZImagePicker.preferredLanguage = @"zh-Hans";
-            } else if ([language isEqualToString:@"en"]) {
-                _TZImagePicker.preferredLanguage = @"en";
-            }
-        } else {
-            // 否则就是默认为系统语言
-        }
-    }
-    return _TZImagePicker;
-}
-
-- (UIImagePickerController *)imagePicker
-{
-    if (!_imagePicker) {
-        _imagePicker = [[UIImagePickerController alloc] init];
-        _imagePicker.modalPresentationStyle = UIModalPresentationOverFullScreen;
-        _imagePicker.delegate = self;
-        _imagePicker.navigationBar.barTintColor = AppTinColor;
-        _imagePicker.navigationBar.tintColor = [UIColor whiteColor];
-    }
-    return _imagePicker;
 }
 
 - (dispatch_source_t)timer
@@ -652,54 +606,97 @@ static NSTimeInterval audioRecordTime = 0.0f;
 // 选照片
 - (void)pickPhotos
 {
-    self.TZImagePicker.allowPickingVideo = YES;
-    self.TZImagePicker.allowPickingImage = YES;
-    self.TZImagePicker.allowPickingMultipleVideo = YES;
-    self.TZImagePicker.allowTakePicture = NO;
-    self.TZImagePicker.allowTakeVideo = NO;
-    self.TZImagePicker.modalPresentationStyle = UIModalPresentationFullScreen;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (self.TZImagePicker == nil) {
+            self.TZImagePicker = [[TZImagePickerController alloc] initWithMaxImagesCount:9 columnNumber:3 delegate:self];
+            self.TZImagePicker.isSelectOriginalPhoto = NO;
+            self.TZImagePicker.statusBarStyle = UIStatusBarStyleLightContent;
+            self.TZImagePicker.maxImagesCount = 9;
+            self.TZImagePicker.videoMaximumDuration = 15;
+            // 2. 在这里设置imagePickerVc的外观
+            self.TZImagePicker.iconThemeColor = AppTinColor;
+            self.TZImagePicker.navigationBar.barTintColor = AppTinColor;
+            self.TZImagePicker.navigationBar.tintColor = [UIColor whiteColor];
+            self.TZImagePicker.oKButtonTitleColorDisabled = MainPurpleLightColor;
+            self.TZImagePicker.oKButtonTitleColorNormal = AppTinColor;
+            // 3. 设置是否可以选择视频/图片/原图
+            self.TZImagePicker.allowPickingOriginalPhoto = YES;
+            // 4. 照片排列按修改时间升序
+            self.TZImagePicker.sortAscendingByModificationDate = YES;
+            // 5. 设置语言
+            NSString *language = [XOSettingManager defaultManager].language;
+            if (!XOIsEmptyString(language) && ![language isEqualToString:@"default"]) {
+                if ([language isEqualToString:@"zh"]) {
+                    self.TZImagePicker.preferredLanguage = @"zh-Hans";
+                } else if ([language isEqualToString:@"en"]) {
+                    self.TZImagePicker.preferredLanguage = @"en";
+                }
+            } else {
+                // 否则就是默认为系统语言
+            }
+        }
+        self.TZImagePicker.allowPickingVideo = YES;
+        self.TZImagePicker.allowPickingImage = YES;
+        self.TZImagePicker.allowPickingMultipleVideo = YES;
+        self.TZImagePicker.allowTakePicture = NO;
+        self.TZImagePicker.allowTakeVideo = NO;
+        self.TZImagePicker.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.parentViewController presentViewController:self.TZImagePicker animated:YES completion:NULL];
     }];
 }
 // 拍照片
 - (void)takePhoto
 {
-    self.imagePicker.mediaTypes = @[(__bridge NSString *)kUTTypeImage];
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        self.imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-        if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]) {
-            self.imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
-        } else if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
-            self.imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
-        }
-    }
-    self.imagePicker.showsCameraControls = YES;
-    self.imagePicker.modalPresentationStyle = UIModalPresentationFullScreen;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.parentViewController.navigationController presentViewController:self.imagePicker animated:YES completion:NULL];
+        if (!_imagePicker) {
+            _imagePicker = [[UIImagePickerController alloc] init];
+            _imagePicker.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            _imagePicker.delegate = self;
+            _imagePicker.navigationBar.barTintColor = AppTinColor;
+            _imagePicker.navigationBar.tintColor = [UIColor whiteColor];
+        }
+        
+        _imagePicker.mediaTypes = @[(__bridge NSString *)kUTTypeImage];
+        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+            _imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+            if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]) {
+                _imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+            } else if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
+                _imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+            }
+        }
+        _imagePicker.showsCameraControls = YES;
+        _imagePicker.modalPresentationStyle = UIModalPresentationFullScreen;
+        [self.parentViewController.navigationController presentViewController:_imagePicker animated:YES completion:NULL];
     }];
 }
 // 拍视频
 - (void)takeVideo
 {
-    self.imagePicker.mediaTypes = @[(__bridge NSString *)kUTTypeMovie];
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        self.imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-        if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]) {
-            self.imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
-        } else if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
-            self.imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
-        }
-        self.imagePicker.videoMaximumDuration = 10;
-        if (@available(iOS 11.0, *)) {
-            self.imagePicker.videoQuality = UIImagePickerControllerQualityTypeHigh;
-        } else {
-            self.imagePicker.videoQuality = UIImagePickerControllerQualityTypeMedium;
-        }
-    }
-    self.imagePicker.modalPresentationStyle = UIModalPresentationFullScreen;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (!_imagePicker) {
+            _imagePicker = [[UIImagePickerController alloc] init];
+            _imagePicker.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            _imagePicker.delegate = self;
+            _imagePicker.navigationBar.barTintColor = AppTinColor;
+            _imagePicker.navigationBar.tintColor = [UIColor whiteColor];
+        }
+        self.imagePicker.mediaTypes = @[(__bridge NSString *)kUTTypeMovie];
+        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+            self.imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+            if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]) {
+                self.imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+            } else if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
+                self.imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+            }
+            self.imagePicker.videoMaximumDuration = 10;
+            if (@available(iOS 11.0, *)) {
+                self.imagePicker.videoQuality = UIImagePickerControllerQualityTypeHigh;
+            } else {
+                self.imagePicker.videoQuality = UIImagePickerControllerQualityTypeMedium;
+            }
+        }
+        self.imagePicker.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.parentViewController.navigationController presentViewController:self.imagePicker animated:YES completion:NULL];
     }];
 }

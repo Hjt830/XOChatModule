@@ -61,7 +61,7 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
 @property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *sendingMsgQueue;       // 发送中消息保存列表
 @property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *downloadingMsgQueue;   // 下载中消息保存列表
 // 浏览图片视频相关
-@property (nonatomic, strong) NSMutableDictionary   <NSString *, TIMMessage *>  *imageVideoList;            // 图片或者视频消息
+@property (nonatomic, strong) NSMutableArray        <TIMMessage *>  *imageVideoList;            // 图片或者视频消息
 @property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *imageVideoIndexpathList;   // 图片或者视频消息序号
 
 @end
@@ -388,10 +388,10 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
                         if ([elem isKindOfClass:[TIMImageElem class]] || [elem isKindOfClass:[TIMVideoElem class]])
                         {
                             NSString *msgKey = getMessageKey(message);
-                            if (nil == [self.imageVideoList objectForKey:msgKey]) {
+                            if (nil == [self.imageVideoIndexpathList objectForKey:msgKey]) {
                                 
                                 // 保存消息
-                                [self.imageVideoList setObject:message forKey:msgKey];
+                                [self.imageVideoList addObject:message];
                                 NSIndexPath *indexpath = [NSIndexPath indexPathForRow:row inSection:section];
                                 // 保存消息的序列
                                 [self.imageVideoIndexpathList setObject:indexpath forKey:msgKey];
@@ -771,7 +771,9 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
 {
     [msgs enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
         
-        if ([message.sender isEqualToString:[self.conversation getReceiver]]) {
+        BOOL isChattingMsg = [message.sender isEqualToString:[self.conversation getReceiver]];
+        BOOL isSystemMsg = [[message getElem:0] isKindOfClass:[TIMGroupTipsElem class]];
+        if (isChattingMsg || isSystemMsg) {
             BOOL filter = [self filterMessage:message];
             if (filter) {
                 NSLog(@"消息被剔除, 因为该条消息已经被撤回或删除");
@@ -1015,10 +1017,10 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
     return _downloadingMsgQueue;
 }
 
-- (NSMutableDictionary<NSString *,TIMMessage *> *)imageVideoList
+- (NSMutableArray <TIMMessage *> *)imageVideoList
 {
     if (!_imageVideoList) {
-        _imageVideoList = [NSMutableDictionary dictionaryWithCapacity:5];
+        _imageVideoList = [NSMutableArray dictionaryWithCapacity:5];
     }
     return _imageVideoList;
 }

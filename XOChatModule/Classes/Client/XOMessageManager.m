@@ -55,68 +55,107 @@ static XOMessageManager *__msgManager = nil;
             TIMElem *elem = [message getElem:0];
             NSString *groupId = [[message getConversation] getReceiver];
             
-            if (!XOIsEmptyString(groupId) && [elem isKindOfClass:[TIMGroupSystemElem class]]) // 群系统消息
-            {
-                TIMGroupSystemElem *systemElem = (TIMGroupSystemElem *)self;
-                switch (systemElem.type) {
-                    case TIM_GROUP_SYSTEM_KICK_OFF_FROM_GROUP_TYPE:  // 被管理员踢出群（只有被踢的人能够收到）
-                    case TIM_GROUP_SYSTEM_DELETE_GROUP_TYPE:         // 群被解散（全员能够收到）
-                    case TIM_GROUP_SYSTEM_QUIT_GROUP_TYPE:           // 主动退群（主动退群者能够收到）
-                    case TIM_GROUP_SYSTEM_REVOKE_GROUP_TYPE:         // 群已被回收(全员接收)
-                    {
-                        // 删除通讯录中该群
-                        [[XOContactManager defaultManager] deleteGroup:groupId handler:^(BOOL result) {
-                            if (result) NSLog(@"======= 删除本地通讯录中群成功");
-                            else NSLog(@"======= 删除本地通讯录中群失败");
-                        }];
-                        // 删除回话列表中该会话
-                        [[TIMManager sharedInstance] deleteConversation:TIM_GROUP receiver:groupId];
-                    }
-                        break;
-                    case TIM_GROUP_SYSTEM_CREATE_GROUP_TYPE:  // 创建群消息（创建者能够收到）
-                    {
-                        // 创建群时已经添加过群到通讯录, 无需重复添加
-                    }
-                        break;
-                    case TIM_GROUP_SYSTEM_INVITED_TO_GROUP_TYPE:  // 邀请入群通知(被邀请者能够收到)
-                    {
-                        [[TIMGroupManager sharedInstance] getGroupInfo:@[groupId] succ:^(NSArray<TIMGroupInfo *> *arr) {
-                            if (arr && arr.count > 0) {
-                                // 删除通讯录中该群
-                                [[XOContactManager defaultManager] insertGroup:arr[0] handler:^(BOOL result) {
-                                    if (result) NSLog(@"======= 添加群到本地通讯录中成功");
-                                    else NSLog(@"======= 添加群到本地通讯录中失败");
-                                }];
-                            }
-                            else {
-                                NSLog(@"=======  邀请入群通知 -- 查询群资料失败");
-                            }
-                        } fail:^(int code, NSString *msg) {
-                            NSLog(@"=======  邀请入群通知 -- 查询群资料失败 code: %d  msg: %@", code, msg);
-                        }];
-                    }
-                        break;
-                    case TIM_GROUP_SYSTEM_GRANT_ADMIN_TYPE:  // 设置管理员(被设置者接收)
-                    
-                        break;
-                    case TIM_GROUP_SYSTEM_CANCEL_ADMIN_TYPE:  // 取消管理员(被取消者接收)
-                    
-                        break;
-                    case TIM_GROUP_SYSTEM_INVITE_TO_GROUP_REQUEST_TYPE:  // 邀请入群请求(被邀请者接收)
-                    
-                        break;
-                    case TIM_GROUP_SYSTEM_INVITE_TO_GROUP_ACCEPT_TYPE:  // 邀请加群被同意(只有发出邀请者会接收到)
-                    
-                        break;
-                    case TIM_GROUP_SYSTEM_INVITE_TO_GROUP_REFUSE_TYPE:  // 邀请加群被拒绝(只有发出邀请者会接收到)
-                    
-                        break;
-                    case TIM_GROUP_SYSTEM_CUSTOM_INFO:  // 邀请加群被拒绝(只有发出邀请者会接收到)
-                    
-                        break;
+            if (!XOIsEmptyString(groupId)) {
+                if ([elem isKindOfClass:[TIMGroupSystemElem class]]) // 群系统消息
+                {
+                    TIMGroupSystemElem *systemElem = (TIMGroupSystemElem *)self;
+                    switch (systemElem.type) {
+                        case TIM_GROUP_SYSTEM_KICK_OFF_FROM_GROUP_TYPE:  // 被管理员踢出群（只有被踢的人能够收到）
+                        case TIM_GROUP_SYSTEM_DELETE_GROUP_TYPE:         // 群被解散（全员能够收到）
+                        case TIM_GROUP_SYSTEM_QUIT_GROUP_TYPE:           // 主动退群（主动退群者能够收到）
+                        case TIM_GROUP_SYSTEM_REVOKE_GROUP_TYPE:         // 群已被回收(全员接收)
+                        {
+                            // 删除通讯录中该群
+                            [[XOContactManager defaultManager] deleteGroup:groupId handler:^(BOOL result) {
+                                if (result) NSLog(@"======= 删除本地通讯录中群成功");
+                                else NSLog(@"======= 删除本地通讯录中群失败");
+                            }];
+                            // 删除回话列表中该会话
+                            [[TIMManager sharedInstance] deleteConversation:TIM_GROUP receiver:groupId];
+                        }
+                            break;
+                        case TIM_GROUP_SYSTEM_CREATE_GROUP_TYPE:  // 创建群消息（创建者能够收到）
+                        {
+                            // 创建群时已经添加过群到通讯录, 无需重复添加
+                        }
+                            break;
+                        case TIM_GROUP_SYSTEM_INVITED_TO_GROUP_TYPE:  // 邀请入群通知(被邀请者能够收到)
+                        {
+                            [[TIMGroupManager sharedInstance] getGroupInfo:@[groupId] succ:^(NSArray<TIMGroupInfo *> *arr) {
+                                if (arr && arr.count > 0) {
+                                    // 删除通讯录中该群
+                                    [[XOContactManager defaultManager] insertGroup:arr[0] handler:^(BOOL result) {
+                                        if (result) NSLog(@"======= 添加群到本地通讯录中成功");
+                                        else NSLog(@"======= 添加群到本地通讯录中失败");
+                                    }];
+                                }
+                                else {
+                                    NSLog(@"=======  邀请入群通知 -- 查询群资料失败");
+                                }
+                            } fail:^(int code, NSString *msg) {
+                                NSLog(@"=======  邀请入群通知 -- 查询群资料失败 code: %d  msg: %@", code, msg);
+                            }];
+                        }
+                            break;
+                        case TIM_GROUP_SYSTEM_GRANT_ADMIN_TYPE:  // 设置管理员(被设置者接收)
                         
-                    default:
-                        break;
+                            break;
+                        case TIM_GROUP_SYSTEM_CANCEL_ADMIN_TYPE:  // 取消管理员(被取消者接收)
+                        
+                            break;
+                        case TIM_GROUP_SYSTEM_INVITE_TO_GROUP_REQUEST_TYPE:  // 邀请入群请求(被邀请者接收)
+                        
+                            break;
+                        case TIM_GROUP_SYSTEM_INVITE_TO_GROUP_ACCEPT_TYPE:  // 邀请加群被同意(只有发出邀请者会接收到)
+                        
+                            break;
+                        case TIM_GROUP_SYSTEM_INVITE_TO_GROUP_REFUSE_TYPE:  // 邀请加群被拒绝(只有发出邀请者会接收到)
+                        
+                            break;
+                        case TIM_GROUP_SYSTEM_CUSTOM_INFO:  // 邀请加群被拒绝(只有发出邀请者会接收到)
+                        
+                            break;
+                            
+                        default:
+                            break;
+                    }
+                }
+                else if ([self isKindOfClass:[TIMGroupTipsElem class]]) // 群Tips
+                {
+                    __block TIMGroupTipsElem *tipsElem = (TIMGroupTipsElem *)elem;
+                    [[XOContactManager defaultManager] getGroupInfo:groupId handler:^(TIMGroupInfo * _Nullable groupInfo) {
+                        // 群资料变更
+                        if (groupInfo && TIM_GROUP_TIPS_TYPE_INFO_CHANGE == tipsElem.type) {
+                            if (tipsElem.groupChangeList.count > 0) {
+                                TIMGroupTipsElemGroupInfo *changeInfo = tipsElem.groupChangeList[0];
+                                NSString *value = changeInfo.value;
+                                if (!XOIsEmptyString(value)) {
+                                    switch (changeInfo.type) {
+                                        case TIM_GROUP_INFO_CHANGE_GROUP_NAME:  // 群名修改
+                                            groupInfo.groupName = value;
+                                            break;
+                                        case TIM_GROUP_INFO_CHANGE_GROUP_INTRODUCTION:  // 群简介修改
+                                            groupInfo.introduction = value;
+                                            break;
+                                        case TIM_GROUP_INFO_CHANGE_GROUP_NOTIFICATION:  // 群公告修改
+                                            groupInfo.notification = value;
+                                            break;
+                                        case TIM_GROUP_INFO_CHANGE_GROUP_FACE:  // 群头像修改
+                                            groupInfo.faceURL = value;
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    
+                                    // 更新通讯录中群资料
+                                    [[XOContactManager defaultManager] updateGroup:groupInfo handler:^(BOOL result) {
+                                        if (result) NSLog(@"更新群资料成功: %@", value);
+                                        else NSLog(@"更新群资料失败: %@", value);
+                                    }];
+                                }
+                            }
+                        }
+                    }];
                 }
             }
         }

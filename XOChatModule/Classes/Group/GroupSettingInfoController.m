@@ -307,7 +307,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         _tableView.sectionHeaderHeight = 15.0f;
         _tableView.sectionFooterHeight = 0.0f;
         _tableView.rowHeight = 60.0f;
-        _tableView.backgroundColor = BG_TableColor;
+        _tableView.backgroundColor = [UIColor groupTableViewColor];
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         
         [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:GroupMemberSettingCellID];
@@ -325,7 +325,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         layout.minimumInteritemSpacing = 10;
         
         _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-        _collectionView.backgroundColor = [UIColor whiteColor];
+        _collectionView.backgroundColor = [UIColor XOWhiteColor];
         _collectionView.dataSource = self;
         _collectionView.delegate = self;
         _collectionView.showsHorizontalScrollIndicator = NO;
@@ -340,10 +340,10 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 {
     if (!_tableHeaderView) {
         _tableHeaderView = [[UIView alloc] init];
-        _tableHeaderView.backgroundColor = BG_TableColor;
+        _tableHeaderView.backgroundColor = [UIColor groupTableViewColor];
         
         _tableHeaderBackgroundView = [[UIView alloc] init];
-        _tableHeaderBackgroundView.backgroundColor = [UIColor whiteColor];
+        _tableHeaderBackgroundView.backgroundColor = [UIColor XOWhiteColor];
         [_tableHeaderView addSubview:_tableHeaderBackgroundView];
     }
     return _tableHeaderView;
@@ -701,7 +701,9 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 // 选中成员的回调
 - (void)groupSelectController:(XOGroupSelectedController *)selectController selectMemberType:(GroupMemberType)memberType didSelectMember:(NSArray <TIMUserProfile *> *)selectMember
 {
-    [self loadGroupMember];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self loadGroupMember];
+    });
     
     // 删除缓存中的群头像, 在需要的地方会自动生成
     [[SDImageCache sharedImageCache] removeImageFromDiskForKey:self.groupInfo.group];

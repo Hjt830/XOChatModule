@@ -181,8 +181,14 @@ static XOChatClient *__chatClient = nil;
         // 消息通知
         [msgs enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
             TIMConversationType type = [[message getConversation] getType];
-            // 系统消息不提醒
-            if (TIM_SYSTEM != type) {
+            BOOL isMute = NO; // 群免打扰
+            if ([[message getConversation] getType] == TIM_GROUP) {
+                NSString *groupId = [[message getConversation] getReceiver];
+                isMute = [[XOContactManager defaultManager] isMuteGroup:groupId];
+            }
+             
+            // 系统消息 或者 开启免打扰的群消息 不提醒
+            if (TIM_SYSTEM != type && !isMute) {
                 UIApplicationState state = [[UIApplication sharedApplication] applicationState];
                 switch (state) {
                     case UIApplicationStateActive:

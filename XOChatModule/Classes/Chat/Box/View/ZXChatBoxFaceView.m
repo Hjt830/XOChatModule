@@ -10,6 +10,7 @@
 #import "ZXChatFaceMenuView.h"
 #import "ZXChatFaceItemView.h"
 #import "ChatFaceHelper.h"
+#import "UIColor+XOExtension.h"
 #import <XOBaseLib/XOBaseLib.h>
 
 #define     HEIGHT_BOTTOM_VIEW          36.0f
@@ -32,7 +33,7 @@
 {
     if (self = [super initWithFrame:frame]) {
         
-        [self setBackgroundColor:DEFAULT_CHATBOX_COLOR];
+        [self setBackgroundColor:[UIColor groupTableViewColor]];
         [self addSubview:self.topLine];
         [self addSubview:self.faceMenuView];
         [self addSubview:self.scrollView];
@@ -231,7 +232,11 @@
 {
     if (_topLine == nil) {
         _topLine = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.width, 0.5)];
-        [_topLine setBackgroundColor:RGBA(230, 230, 230, 0.8)];
+        if (@available(iOS 13.0, *)) {
+            [_topLine setBackgroundColor:[UIColor systemGray4Color]];
+        } else {
+            [_topLine setBackgroundColor:RGBA(178, 178, 178, 1.0)];
+        }
     }
     return _topLine;
 }

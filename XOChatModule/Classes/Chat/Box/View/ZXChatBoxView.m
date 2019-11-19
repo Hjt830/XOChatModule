@@ -34,7 +34,7 @@
     if (self = [super initWithFrame:frame]) {
         _safeInset = UIEdgeInsetsZero;
         _curHeight = frame.size.height;// 当前高度初始化为 49
-        [self setBackgroundColor:DEFAULT_CHATBOX_COLOR];
+        [self setBackgroundColor:[UIColor groupTableViewColor]];
         [self addSubview:self.topLine];
         [self addSubview:self.voiceButton];
         [self addSubview:self.textView];
@@ -446,7 +446,11 @@
 {
     if (_topLine == nil) {
         _topLine = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0.35)];
-        [_topLine setBackgroundColor:RGBA(178, 178, 178, 1.0)];
+        if (@available(iOS 13.0, *)) {
+            [_topLine setBackgroundColor:[UIColor systemGray4Color]];
+        } else {
+            [_topLine setBackgroundColor:RGBA(178, 178, 178, 1.0)];
+        }
     }
     return _topLine;
 }

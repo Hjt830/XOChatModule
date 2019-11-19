@@ -77,6 +77,7 @@
 "contact.delete.alertMsg"           = "確定刪除該聯繫人嗎?";
 "contact.remark.title"              = "備註名";
 "contact.remark.placeholder"        = "添加備註名";
+"contact.remark.warning"            = "備註名長度不能超過15";
 
 "group.create"                      = "創建群聊";
 "group.select.member"               = "選擇聯繫人";

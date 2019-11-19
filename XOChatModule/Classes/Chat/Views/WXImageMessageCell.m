@@ -52,9 +52,14 @@ static BOOL progressFinish = NO;
         __block NSString *thumbImageName = nil;
         // 自己发送的消息
         if (message.isSelf) {
-            NSString *imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageElem.path.lastPathComponent];
-            if (!XOIsEmptyString(imagePath) && [[NSFileManager defaultManager] fileExistsAtPath:imagePath]) {
-                thumbImageName = [[imageElem.path lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
+            if (!XOIsEmptyString(imageElem.path)) {
+                NSString *imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageElem.path.lastPathComponent];
+                if (!XOIsEmptyString(imagePath) && [[NSFileManager defaultManager] fileExistsAtPath:imagePath]) {
+                    thumbImageName = [[imageElem.path lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
+                }
+            }
+            else {
+                [self loadImageWith:message formCache:NO];
             }
         }
         // 收到的消息
@@ -76,7 +81,7 @@ static BOOL progressFinish = NO;
             // 缓存中没有图片
             else {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self.messageImageView setImage:[UIImage xo_imageNamedFromChatBundle:@"placeholderImage"]];
+                    [self.messageImageView setImage:[UIImage XO_imageWithColor:[UIColor lightGrayColor] size:CGSizeMake(100, 150)]];
                 }];
             }
         }];
@@ -193,7 +198,7 @@ static BOOL progressFinish = NO;
         _messageImageView = [[UIImageView alloc] init];
         [_messageImageView setUserInteractionEnabled:YES];
         [_messageImageView setContentMode:UIViewContentModeScaleAspectFill];
-        [_messageImageView setImage:[UIImage xo_imageNamedFromChatBundle:@"placeholderImage"]];
+        [_messageImageView setImage:[UIImage XO_imageWithColor:[UIColor lightGrayColor] size:CGSizeMake(100, 150)]];
         [_messageImageView setClipsToBounds:YES];
         [_messageImageView.layer setMask:_layer];
     }

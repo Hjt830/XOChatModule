@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIImage *)groupDefaultImageAvatar;
 
+// 生成纯色图片
++ (UIImage *)XO_imageWithColor:(UIColor *)color size:(CGSize)size;
+
 
 @end
 

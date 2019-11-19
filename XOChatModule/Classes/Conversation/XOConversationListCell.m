@@ -13,6 +13,7 @@
 #import <XOBaseLib/XOBaseLib.h>
 #import "ZXChatHelper.h"
 #import "TIMElem+XOExtension.h"
+#import "UIColor+XOExtension.h"
 #import "XOContactManager.h"
 
 @interface XOConversationListCell ()
@@ -46,8 +47,8 @@
 
 - (void)setupView
 {
-    self.backgroundColor = [UIColor whiteColor];
-    
+    self.backgroundColor = [UIColor XOWhiteColor];
+   
     _iconImageView = [[UIImageView alloc] init];
     _iconImageView.clipsToBounds = YES;
     _iconImageView.backgroundColor = RGBA(221, 222, 224, 1);
@@ -55,7 +56,8 @@
     _nameLabel = [UILabel new];
     CGFloat fontSize = [XOSettingManager defaultManager].fontSize;
     _nameLabel.font = [UIFont boldSystemFontOfSize:fontSize];
-    _nameLabel.textColor = [UIColor blackColor];
+    _nameLabel.textColor = [UIColor XOTextColor];
+    
     
     _timeLabel = [UILabel new];
     _timeLabel.font = [UIFont systemFontOfSize:12];
@@ -135,7 +137,11 @@
     if (self.shouldTopShow) {
         self.backgroundColor = BG_TableColor;
     } else {
-        self.backgroundColor = [UIColor whiteColor];
+        if (@available(iOS 13.0, *)) {
+            self.backgroundColor = [UIColor systemBackgroundColor];
+        } else {
+            self.backgroundColor = [UIColor whiteColor];
+        }
     }
     
     TIMMessage *lastMsg = [_conversation getLastMsg];
@@ -152,7 +158,11 @@
             TIMElem *elem = [lastMsg getElem:0];
             NSString *text = [elem getTextFromMessage];
             if ([text isKindOfClass:[NSAttributedString class]]) {
-                _messageLabel.attributedText = (NSAttributedString *)text;
+                NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithAttributedString:(NSAttributedString *)text];
+                NSMutableParagraphStyle *par = [[NSMutableParagraphStyle alloc] init];
+                par.alignment = NSTextAlignmentLeft;
+                [string addAttributes:@{NSParagraphStyleAttributeName: par} range:NSMakeRange(0, text.length)];
+                _messageLabel.attributedText = (NSAttributedString *)string;
             } else {
                 _messageLabel.text = text;
             }
@@ -164,7 +174,7 @@
         NSString *receiverID = [conversation getReceiver];
         TIMGroupInfo *groupInfo = [[TIMGroupManager sharedInstance] queryGroupInfo:receiverID];
         
-        _nameLabel.text = [NSString stringWithFormat:@"%@(%d)", [conversation getGroupName], groupInfo.memberNum];
+        _nameLabel.text = [NSString stringWithFormat:@"%@(%d)", groupInfo.groupName, groupInfo.memberNum];
         
         if (!XOIsEmptyString(groupInfo.faceURL)) {
             [_iconImageView sd_setImageWithURL:[NSURL URLWithString:groupInfo.faceURL] placeholderImage:[UIImage xo_imageNamedFromChatBundle:@"default_avatar"]];
@@ -188,7 +198,11 @@
             TIMElem *elem = [lastMsg getElem:0];
             NSString *text = [elem getTextFromMessage];
             if ([text isKindOfClass:[NSAttributedString class]]) {
-                _messageLabel.attributedText = (NSAttributedString *)text;
+                NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithAttributedString:(NSAttributedString *)text];
+                NSMutableParagraphStyle *par = [[NSMutableParagraphStyle alloc] init];
+                par.alignment = NSTextAlignmentLeft;
+                [string addAttributes:@{NSParagraphStyleAttributeName: par} range:NSMakeRange(0, text.length)];
+                _messageLabel.attributedText = string;
             } else {
                 _messageLabel.text = text;
             }

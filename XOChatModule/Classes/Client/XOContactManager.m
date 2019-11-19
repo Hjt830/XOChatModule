@@ -382,34 +382,34 @@ FOUNDATION_EXTERN_INLINE NSString * CreateGroupTableSql() {
 
 // 插入联系人SQL
 FOUNDATION_EXTERN_INLINE NSString * InsertContactSql(TIMFriend *friend) {
-    return [NSString stringWithFormat:@"INSERT INTO %@ (identifier, remark, addWording, addSource, addTime) VALUES ('%@', '%@', '%@', '%@', %llu)", ContactTableName, friend.identifier, friend.remark, friend.addWording, friend.addSource, (unsigned long long)friend.addTime];
+    return [NSString stringWithFormat:@"INSERT INTO %@ (identifier, remark, addWording, addSource, addTime) VALUES ('%@', '%@', '%@', '%@', %llu)", ContactTableName, friend.identifier, [friend.remark URLEncodedString], friend.addWording, friend.addSource, (unsigned long long)friend.addTime];
 }
 
 // 插入联系人信息SQL
 FOUNDATION_EXTERN_INLINE NSString * InsertContactProfileSql(TIMUserProfile *profile) {
     NSString *signature = profile.selfSignature.length < 4 ? nil : [[NSString alloc] initWithData:profile.selfSignature encoding:NSUTF8StringEncoding];
-    return [NSString stringWithFormat:@"INSERT INTO %@ (identifier, nickname, allowType, faceURL, selfSignature, gender, birthday, language, level, role) VALUES ('%@', '%@', %ld, '%@', '%@', %ld, %u, %u, %u, %u)", ContactProfileTableName, profile.identifier, profile.nickname, profile.allowType, profile.faceURL, signature, profile.gender, profile.birthday, (unsigned int)profile.language, (unsigned int)profile.level, (unsigned int)profile.role];
+    return [NSString stringWithFormat:@"INSERT INTO %@ (identifier, nickname, allowType, faceURL, selfSignature, gender, birthday, language, level, role) VALUES ('%@', '%@', %ld, '%@', '%@', %ld, %u, %u, %u, %u)", ContactProfileTableName, profile.identifier, [profile.nickname URLEncodedString], profile.allowType, [profile.faceURL URLEncodedString], signature, profile.gender, profile.birthday, (unsigned int)profile.language, (unsigned int)profile.level, (unsigned int)profile.role];
 }
 
 // 插入群SQL
 FOUNDATION_EXTERN_INLINE NSString * InsertGroupSql(TIMGroupInfo *group) {
-    return [NSString stringWithFormat:@"INSERT INTO %@ (groupId, groupName, owner, groupType, createTime, lastInfoTime, lastMsgTime, maxMemberNum, memberNum, addOpt, notification, introduction, faceURL, onlineMemberNum, isSearchable, isMemberVisible, allShutup) VALUES ('%@', '%@', '%@', '%@', %u, %u, %u, %u, %u, %ld, '%@', '%@', '%@', %u, %ld, %ld, %d)", GroupTableName, group.group, group.groupName, group.owner, group.groupType, (unsigned int)group.createTime, (unsigned int)group.lastInfoTime, (unsigned int)group.lastMsgTime, (unsigned int)group.maxMemberNum, (unsigned int)group.memberNum, group.addOpt, group.notification, group.introduction, group.faceURL, (unsigned int)group.onlineMemberNum, group.isSearchable, group.isMemberVisible, group.allShutup];
+    return [NSString stringWithFormat:@"INSERT INTO %@ (groupId, groupName, owner, groupType, createTime, lastInfoTime, lastMsgTime, maxMemberNum, memberNum, addOpt, notification, introduction, faceURL, onlineMemberNum, isSearchable, isMemberVisible, allShutup) VALUES ('%@', '%@', '%@', '%@', %u, %u, %u, %u, %u, %ld, '%@', '%@', '%@', %u, %ld, %ld, %d)", GroupTableName, group.group, group.groupName, group.owner, group.groupType, (unsigned int)group.createTime, (unsigned int)group.lastInfoTime, (unsigned int)group.lastMsgTime, (unsigned int)group.maxMemberNum, (unsigned int)group.memberNum, group.addOpt, [group.notification URLEncodedString], [group.introduction URLEncodedString], [group.faceURL URLEncodedString], (unsigned int)group.onlineMemberNum, group.isSearchable, group.isMemberVisible, group.allShutup];
 }
 
 // 更新联系人SQL
 FOUNDATION_EXTERN_INLINE NSString * UpdateContactSql(TIMFriend *friend) {
-    return [NSString stringWithFormat:@"UPDATE %@ SET identifier = %@, remark = '%@', addWording = '%@', addSource = '%@', addTime = %llu", ContactTableName, friend.identifier, friend.remark, friend.addWording, friend.addSource, (unsigned long long)friend.addTime];
+    return [NSString stringWithFormat:@"UPDATE %@ SET remark = '%@', addWording = '%@', addSource = '%@', addTime = %llu WHERE identifier = '%@'", ContactTableName, [friend.remark URLEncodedString], friend.addWording, friend.addSource, (unsigned long long)friend.addTime, friend.identifier];
 }
 
 // 更新联系人信息SQL
 FOUNDATION_EXTERN_INLINE NSString * UpdateContactProfileSql(TIMUserProfile *profile) {
     NSString *signature = profile.selfSignature.length < 4 ? nil : [[NSString alloc] initWithData:profile.selfSignature encoding:NSUTF8StringEncoding];
-    return [NSString stringWithFormat:@"UPDATE %@ SET identifier = '%@', nickname = '%@', allowType = %ld, faceURL = '%@', selfSignature = '%@', gender = %ld, birthday = %u, language = %u, level = %u, role = %u", ContactProfileTableName, profile.identifier, profile.nickname, profile.allowType, profile.faceURL, signature, (long)profile.gender, (unsigned int)profile.birthday, (unsigned int)profile.language, (unsigned int)profile.level, (unsigned int)profile.role];
+    return [NSString stringWithFormat:@"UPDATE %@ SET nickname = '%@', allowType = %ld, faceURL = '%@', selfSignature = '%@', gender = %ld, birthday = %u, language = %u, level = %u, role = %u WHERE identifier = '%@'", ContactProfileTableName, [profile.nickname URLEncodedString], profile.allowType, [profile.faceURL URLEncodedString], signature, (long)profile.gender, (unsigned int)profile.birthday, (unsigned int)profile.language, (unsigned int)profile.level, (unsigned int)profile.role, profile.identifier];
 }
 
 // 更新群SQL
 FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
-    return [NSString stringWithFormat:@"UPDATE %@ SET groupId = '%@', groupName = '%@', owner = '%@', groupType = '%@', createTime = %u, lastInfoTime = %u, lastMsgTime = %u, maxMemberNum = %u, memberNum = %u, addOpt = %ld, notification = '%@', introduction = '%@', faceURL = '%@', onlineMemberNum = %u, isSearchable = %ld, isMemberVisible = %ld, allShutup = %d", GroupTableName, group.group, group.groupName, group.owner, group.groupType, (unsigned int)group.createTime, (unsigned int)group.lastInfoTime, (unsigned int)group.lastMsgTime, (unsigned int)group.maxMemberNum, (unsigned int)group.memberNum, group.addOpt, group.notification, group.introduction, group.faceURL, (unsigned int)group.onlineMemberNum, group.isSearchable, group.isMemberVisible, group.allShutup];
+    return [NSString stringWithFormat:@"UPDATE %@ SET groupName = '%@', owner = '%@', groupType = '%@', createTime = %u, lastInfoTime = %u, lastMsgTime = %u, maxMemberNum = %u, memberNum = %u, addOpt = %ld, notification = '%@', introduction = '%@', faceURL = '%@', onlineMemberNum = %u, isSearchable = %ld, isMemberVisible = %ld, allShutup = %d WHERE groupId = '%@'", GroupTableName, [group.groupName URLEncodedString], group.owner, group.groupType, (unsigned int)group.createTime, (unsigned int)group.lastInfoTime, (unsigned int)group.lastMsgTime, (unsigned int)group.maxMemberNum, (unsigned int)group.memberNum, group.addOpt, [group.notification URLEncodedString], [group.introduction URLEncodedString], [group.faceURL URLEncodedString], (unsigned int)group.onlineMemberNum, group.isSearchable, group.isMemberVisible, group.allShutup, group.group];
 }
 
 
@@ -552,9 +552,9 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
             while ([rs next]) {
                 TIMUserProfile *profile = [[TIMUserProfile alloc] init];
                 profile.identifier  = [rs stringForColumn:@"identifier"];
-                profile.nickname    = [rs stringForColumn:@"nickname"];
+                profile.nickname    = [[rs stringForColumn:@"nickname"] URLDecodedString];
                 profile.allowType   = [rs longForColumn:@"allowType"];
-                profile.faceURL     = [rs stringForColumn:@"faceURL"];
+                profile.faceURL     = [[rs stringForColumn:@"faceURL"] URLDecodedString];
                 profile.selfSignature = [[rs stringForColumn:@"selfSignature"] dataUsingEncoding:NSUTF8StringEncoding];
                 profile.gender      = [rs longForColumn:@"gender"];
                 profile.birthday    = [rs intForColumn:@"birthday"];
@@ -592,7 +592,7 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
         while ([rs next]) {
             TIMFriend *friend = [[TIMFriend alloc] init];
             friend.identifier   = [rs stringForColumn:@"identifier"];
-            friend.remark       = [rs stringForColumn:@"remark"];
+            friend.remark       = [[rs stringForColumn:@"remark"] URLDecodedString];
             friend.addWording   = [rs stringForColumn:@"addWording"];
             friend.addSource    = [rs stringForColumn:@"addSource"];
             friend.addTime      = [rs unsignedLongLongIntForColumn:@"addTime"];
@@ -604,9 +604,9 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
             // 遍历结果集
             while ([profileRS next]) {
                 profile.identifier  = [profileRS stringForColumn:@"identifier"];
-                profile.nickname    = [profileRS stringForColumn:@"nickname"];
+                profile.nickname    = [[profileRS stringForColumn:@"nickname"] URLDecodedString];
                 profile.allowType   = [profileRS longForColumn:@"allowType"];
-                profile.faceURL     = [profileRS stringForColumn:@"faceURL"];
+                profile.faceURL     = [[profileRS stringForColumn:@"faceURL"] URLDecodedString];
                 profile.selfSignature = [[profileRS stringForColumn:@"selfSignature"] dataUsingEncoding:NSUTF8StringEncoding];
                 profile.gender      = [profileRS longForColumn:@"gender"];
                 profile.birthday    = [profileRS intForColumn:@"birthday"];
@@ -642,7 +642,7 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
             while ([rs next]) {
                 TIMGroupInfo *group = [[TIMGroupInfo alloc] init];
                 group.group             = [rs stringForColumn:@"groupId"];
-                group.groupName         = [rs stringForColumn:@"groupName"];
+                group.groupName         = [[rs stringForColumn:@"groupName"] URLDecodedString];
                 group.owner             = [rs stringForColumn:@"owner"];
                 group.groupType         = [rs stringForColumn:@"groupType"];
                 group.createTime        = [rs intForColumn:@"createTime"];
@@ -651,9 +651,9 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
                 group.maxMemberNum      = [rs intForColumn:@"maxMemberNum"];
                 group.memberNum         = [rs intForColumn:@"memberNum"];
                 group.addOpt            = [rs intForColumn:@"addOpt"];
-                group.notification      = [rs stringForColumn:@"notification"];
-                group.introduction      = [rs stringForColumn:@"introduction"];
-                group.faceURL           = [rs stringForColumn:@"faceURL"];
+                group.notification      = [[rs stringForColumn:@"notification"] URLDecodedString];
+                group.introduction      = [[rs stringForColumn:@"introduction"] URLDecodedString];
+                group.faceURL           = [[rs stringForColumn:@"faceURL"] URLDecodedString];
                 group.onlineMemberNum   = [rs intForColumn:@"onlineMemberNum"];
                 group.isSearchable      = [rs intForColumn:@"isSearchable"];
                 group.isMemberVisible   = [rs intForColumn:@"isMemberVisible"];
@@ -689,7 +689,7 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
         while ([rs next]) {
             TIMGroupInfo *group = [[TIMGroupInfo alloc] init];
             group.group             = [rs stringForColumn:@"groupId"];
-            group.groupName         = [rs stringForColumn:@"groupName"];
+            group.groupName         = [[rs stringForColumn:@"groupName"] URLDecodedString];
             group.owner             = [rs stringForColumn:@"owner"];
             group.groupType         = [rs stringForColumn:@"groupType"];
             group.createTime        = [rs intForColumn:@"createTime"];
@@ -698,9 +698,9 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
             group.maxMemberNum      = [rs intForColumn:@"maxMemberNum"];
             group.memberNum         = [rs intForColumn:@"memberNum"];
             group.addOpt            = [rs intForColumn:@"addOpt"];
-            group.notification      = [rs stringForColumn:@"notification"];
-            group.introduction      = [rs stringForColumn:@"introduction"];
-            group.faceURL           = [rs stringForColumn:@"faceURL"];
+            group.notification      = [[rs stringForColumn:@"notification"] URLDecodedString];
+            group.introduction      = [[rs stringForColumn:@"introduction"] URLDecodedString];
+            group.faceURL           = [[rs stringForColumn:@"faceURL"] URLDecodedString];
             group.onlineMemberNum   = [rs intForColumn:@"onlineMemberNum"];
             group.isSearchable      = [rs intForColumn:@"isSearchable"];
             group.isMemberVisible   = [rs intForColumn:@"isMemberVisible"];

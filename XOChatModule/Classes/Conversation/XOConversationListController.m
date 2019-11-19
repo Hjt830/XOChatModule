@@ -113,7 +113,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
     for (int i = 0; i < 2; i++) {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.frame = CGRectMake(0, 0, 56, 44);
-        [button setTitleColor:[UIColor darkTextColor] forState:UIControlStateNormal];
+        [button setTitleColor:[UIColor XOTextColor] forState:UIControlStateNormal];
         if (0 == i) {
             [button setTitle:XOChatLocalizedString(@"contact.addressbook") forState:UIControlStateNormal];
             [button addTarget:self action:@selector(contactList) forControlEvents:UIControlEventTouchUpInside];
@@ -401,7 +401,8 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
         _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _tableView.rowHeight = UITableViewAutomaticDimension;
         _tableView.rowHeight = 70.0f;
-        _tableView.separatorColor = RGBA(220, 220, 220, 1.0);
+        if (@available(iOS 13.0, *)) _tableView.separatorColor = [UIColor systemGray6Color];
+        else _tableView.separatorColor = [UIColor lightGrayColor];
         _tableView.separatorInset = UIEdgeInsetsMake(0, _tableView.rowHeight + 10, 0, 0);
         _tableView.sectionHeaderHeight = 0.0f;
         _tableView.sectionFooterHeight = 0.0f;
@@ -452,7 +453,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 {
     if (!_systemView) {
         _systemView = [[UIView alloc] init];
-        _systemView.backgroundColor = [UIColor whiteColor];
+        _systemView.backgroundColor = [UIColor XOWhiteColor];
         CALayer *imageLayer = [CALayer layer];
         imageLayer.contents = (__bridge id)[UIImage xo_imageNamedFromChatBundle:@"message_systemmessage"].CGImage;
         imageLayer.frame = CGRectMake(Margin, 7, 50.0, 50.0);
@@ -460,7 +461,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
         imageLayer.cornerRadius = 25.0f;
         [_systemView.layer addSublayer:imageLayer];
         self.sysNameLabel = [[UILabel alloc] init];
-        self.sysNameLabel.textColor = [UIColor blackColor];
+        self.sysNameLabel.textColor = [UIColor XOTextColor];
         self.sysNameLabel.frame = CGRectMake(CGRectGetMaxX(imageLayer.frame) + Margin, 25, 240, 20);
         self.sysNameLabel.text = XOChatLocalizedString(@"conversation.systemMessage");
         self.sysNameLabel.font = [UIFont boldSystemFontOfSize:18.0f];
@@ -473,7 +474,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 {
     if (!_onlineChatView) {
         _onlineChatView = [[UIView alloc] init];
-        _onlineChatView.backgroundColor = [UIColor whiteColor];
+        _onlineChatView.backgroundColor = [UIColor XOWhiteColor];
         
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chatWithOnlineService:)];
         [_onlineChatView addGestureRecognizer:tap];
@@ -500,7 +501,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
         [_onlineChatView addSubview:_unreadLabel];
         
         self.groupNameLabel = [[UILabel alloc] init];
-        self.groupNameLabel.textColor = [UIColor blackColor];
+        self.groupNameLabel.textColor = [UIColor XOTextColor];
         self.groupNameLabel.frame = CGRectMake(CGRectGetMaxX(imageLayer.frame) + Margin, 25, 240, 20);
         self.groupNameLabel.text = XOChatLocalizedString(@"conversation.onlineService");
         self.groupNameLabel.font = [UIFont boldSystemFontOfSize:18.0f];

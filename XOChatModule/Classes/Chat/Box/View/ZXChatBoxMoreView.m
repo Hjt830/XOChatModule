@@ -7,6 +7,7 @@
 //
 
 #import "ZXChatBoxMoreView.h"
+#import "UIColor+XOExtension.h"
 #import <XOBaseLib/XOBaseLib.h>
 
 @interface ZXChatBoxMoreView() <UIScrollViewDelegate>
@@ -22,7 +23,7 @@
 - (id) initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
-        [self setBackgroundColor:DEFAULT_CHATBOX_COLOR];
+        [self setBackgroundColor:[UIColor groupTableViewColor]];
         [self addSubview:self.topLine];
         [self addSubview:self.scrollView];
         [self addSubview:self.pageControl];

@@ -23,6 +23,7 @@
 #import "NSBundle+ChatModule.h"
 #import "UIImage+XOChatBundle.h"
 #import "UIImage+XOChatExtension.h"
+#import "UIColor+XOExtension.h"
 
 #import "XOConversationListController.h"
 #import "XOChatViewController.h"

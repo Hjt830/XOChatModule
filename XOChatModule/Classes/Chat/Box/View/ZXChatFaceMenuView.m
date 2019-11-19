@@ -9,6 +9,7 @@
 #import "ZXChatFaceMenuView.h"
 #import <XOBaseLib/XOBaseLib.h>
 #import "NSBundle+ChatModule.h"
+#import "UIColor+XOExtension.h"
 #import "UIImage+XOChatBundle.h"
 
 @interface ZXChatFaceMenuView ()
@@ -25,7 +26,7 @@
 - (id) initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
-        [self setBackgroundColor:[UIColor whiteColor]];
+        [self setBackgroundColor:[UIColor groupTableViewColor]];
         [self addSubview:self.addButton];
         [self addSubview:self.scrollView];
     }
@@ -47,7 +48,7 @@
     float w = self.height * 1.25;
     [self.addButton setFrame:CGRectMake(0, 0, w, self.height)];
     UIView *line = [[UIView alloc] initWithFrame:CGRectMake(w, 6, 0.5, self.height - 12)];
-    [line setBackgroundColor:DEFAULT_LINE_GRAY_COLOR];
+    [line setBackgroundColor:[UIColor groupTableViewColor]];
     [self addSubview:line];
     
     [self.sendButton setFrame:CGRectMake(self.width - w * 1.2, 0, w * 1.2, self.height)];
@@ -67,7 +68,7 @@
         [self.faceMenuViewArray addObject:button];
         [self.scrollView addSubview:button];
         UIView *line = [[UIView alloc] initWithFrame:CGRectMake(button.x + button.width, 6, 0.5, self.height - 12)];
-        [line setBackgroundColor:DEFAULT_LINE_GRAY_COLOR];
+        [line setBackgroundColor:[UIColor groupTableViewColor]];
         [self.scrollView addSubview:line];
         x += button.width + 0.5;
     }
@@ -94,10 +95,13 @@
         
         for (UIButton *button in self.faceMenuViewArray)
         {
-            [button setBackgroundColor:[UIColor whiteColor]];
+            [button setBackgroundColor:[UIColor groupTableViewColor]];
         }
-        
-        [sender setBackgroundColor:DEFAULT_CHATBOX_COLOR];
+        if (@available(iOS 13.0, *)) {
+            [sender setBackgroundColor:[UIColor systemGray3Color]];
+        } else {
+            [sender setBackgroundColor:[UIColor whiteColor]];
+        }
         if ([[_faceGroupArray objectAtIndex:sender.tag] faceType] == TLFaceTypeEmoji)
         {
             [self addSubview:self.sendButton];
@@ -135,6 +139,7 @@
     if (_sendButton == nil) {
         _sendButton = [[UIButton alloc] init];
         [_sendButton setTitle:XOChatLocalizedString(@"chat.keyboard.send") forState:UIControlStateNormal];
+        [_sendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_sendButton.titleLabel setFont:[UIFont systemFontOfSize:15.0f]];
         [_sendButton setBackgroundColor:AppTinColor];
         _sendButton.tag = -2;
