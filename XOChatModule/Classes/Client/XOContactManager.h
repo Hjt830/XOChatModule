@@ -34,12 +34,12 @@ NS_ASSUME_NONNULL_BEGIN
 // 删除免打扰群
 - (BOOL)removeMuteListWithGroupId:(NSString *)groupId;
 
-// 是否置顶了群
-- (BOOL)isToppingGroup:(NSString *)groupId;
+// 是否置顶了会话
+- (BOOL)isToppingReceiver:(NSString *)receiverId;
 // 增加置顶群
-- (BOOL)addToppingListWithGroupId:(NSString *)groupId;
+- (BOOL)addToppingListWithReceiverId:(NSString *)receiverId;
 // 删除置顶群
-- (BOOL)removeToppingListWithGroupId:(NSString *)groupId;
+- (BOOL)removeToppingListWithReceiverId:(NSString *)receiverId;
 
 /**
  *  @brief 添加|删除代理

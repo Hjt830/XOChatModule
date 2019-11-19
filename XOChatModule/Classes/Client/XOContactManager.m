@@ -261,41 +261,41 @@ static XOContactManager * __contactManager = nil;
     return NO;
 }
 
-// 是否置顶了群
-- (BOOL)isToppingGroup:(NSString *)groupId
+// 是否置顶了联系人
+- (BOOL)isToppingReceiver:(NSString *)groupId
 {
     return [_toppingArray containsObject:groupId];
 }
 
 // 增加置顶
-- (BOOL)addToppingListWithGroupId:(NSString *)groupId
+- (BOOL)addToppingListWithReceiverId:(NSString *)receiverId
 {
-    if (!XOIsEmptyString(groupId)) {
+    if (!XOIsEmptyString(receiverId)) {
         // 为空
         if (XOIsEmptyArray(_toppingArray)) {
             NSMutableArray *toppingList = [NSMutableArray array];
-            [toppingList addObject:groupId];
+            [toppingList addObject:receiverId];
             if ([toppingList writeToURL:[self ToppingListURL] atomically:YES]) {
                 _toppingArray = toppingList;
-                NSLog(@"增加置顶成功: %@", groupId);
+                NSLog(@"增加置顶成功: %@", receiverId);
                 return YES;
             }
             else {
-                NSLog(@"增加置顶失败: %@", groupId);
+                NSLog(@"增加置顶失败: %@", receiverId);
                 return NO;
             }
         }
         // 不为空
         else {
             NSMutableArray *toppingList = [_toppingArray mutableCopy];
-            [toppingList addObject:groupId];
+            [toppingList addObject:receiverId];
             if ([toppingList writeToURL:[self ToppingListURL] atomically:YES]) {
                 _toppingArray = toppingList;
-                NSLog(@"增加置顶成功: %@", groupId);
+                NSLog(@"增加置顶成功: %@", receiverId);
                 return YES;
             }
             else {
-                NSLog(@"增加置顶失败: %@", groupId);
+                NSLog(@"增加置顶失败: %@", receiverId);
                 return NO;
             }
         }
@@ -304,28 +304,28 @@ static XOContactManager * __contactManager = nil;
 }
 
 // 删除置顶
-- (BOOL)removeToppingListWithGroupId:(NSString *)groupId
+- (BOOL)removeToppingListWithReceiverId:(NSString *)receiverId
 {
-    if (!XOIsEmptyString(groupId)) {
+    if (!XOIsEmptyString(receiverId)) {
         // 为空
         if (XOIsEmptyArray(_toppingArray)) {
             return YES;
         }
         // 不为空
         else {
-            if (![_toppingArray containsObject:groupId]) {
+            if (![_toppingArray containsObject:receiverId]) {
                 return YES;
             }
             else {
                 NSMutableArray *toppingList = [_toppingArray mutableCopy];
-                [toppingList removeObject:groupId];
+                [toppingList removeObject:receiverId];
                 if ([toppingList writeToURL:[self ToppingListURL] atomically:YES]) {
                     _toppingArray = toppingList;
-                    NSLog(@"删除置顶成功: %@", groupId);
+                    NSLog(@"删除置顶成功: %@", receiverId);
                     return YES;
                 }
                 else {
-                    NSLog(@"删除置顶失败: %@", groupId);
+                    NSLog(@"删除置顶失败: %@", receiverId);
                     return NO;
                 }
             }

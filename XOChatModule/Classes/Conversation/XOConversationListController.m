@@ -304,6 +304,76 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
     }
 }
 
+// 置顶或者取消置顶
+- (void)operaTopping:(BOOL)topping WithReceiverId:(NSString *)receiverId
+{
+    if (!XOIsEmptyString(receiverId)) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (topping) {  // 置顶
+                __block NSUInteger row = 0;
+                __block TIMConversation *toppingConv = nil;
+                [self.dataSource enumerateObjectsUsingBlock:^(TIMConversation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    if ([[obj getReceiver] isEqualToString:receiverId]) {
+                        row = idx;
+                        toppingConv = obj;
+                        @synchronized (self) {
+                            [self.toppingArr addObject:obj];
+                        }
+                        *stop = YES;
+                    }
+                }];
+                // 按照时间排序
+                [self.toppingArr sortUsingComparator:^NSComparisonResult(TIMConversation * _Nonnull obj1, TIMConversation * _Nonnull obj2) {
+                    return [[[obj2 getLastMsg] timestamp] compare:[[obj1 getLastMsg] timestamp]];
+                }];
+                NSUInteger newRow = [self.toppingArr indexOfObject:toppingConv];
+                @synchronized (self) {
+                    [self.dataSource removeObject:toppingConv];
+                    [self.dataSource insertObject:toppingConv atIndex:newRow];
+                }
+                NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:row inSection:0];
+                NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:newRow inSection:0];
+                [self.tableView moveRowAtIndexPath:oldIndexPath toIndexPath:newIndexPath];
+            }
+            else { // 取消置顶
+                __block NSUInteger row = 0;
+                __block TIMConversation *toppingConv = nil;
+                [self.dataSource enumerateObjectsUsingBlock:^(TIMConversation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    if ([[obj getReceiver] isEqualToString:receiverId]) {
+                        row = idx;
+                        toppingConv = obj;
+                        @synchronized (self) {
+                            [self.toppingArr removeObject:obj];
+                        }
+                        *stop = YES;
+                    }
+                }];
+                if (self.dataSource.count > self.toppingArr.count) {
+                    NSUInteger newRow = self.toppingArr.count;
+                    @synchronized (self) {
+                        [self.dataSource removeObject:toppingConv];
+                        [self.dataSource insertObject:toppingConv atIndex:newRow];
+                    }
+                    NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:row inSection:0];
+                    NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:newRow inSection:0];
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [self.tableView moveRowAtIndexPath:oldIndexPath toIndexPath:newIndexPath];
+                    }];
+                } else {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
+                        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+                    }];
+                }
+            }
+        }];
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self.tableView reloadData];
+        });
+    }
+}
+
 #pragma mark ====================== lazy load =======================
 
 - (NSMutableArray<TIMConversation *> *)dataSource
@@ -445,49 +515,9 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 - (void)toppingDidChange:(NSNotification *)noti
 {
     if (noti.userInfo) {
-        __block NSString *groupId = noti.userInfo[@"groupId"];
+        NSString *groupId = noti.userInfo[@"groupId"];
         BOOL topping = [noti.userInfo[@"on"] boolValue];
-        if (!XOIsEmptyString(groupId)) {
-            if (topping) {  // 置顶
-                __block NSUInteger row = 0;
-                [self.dataSource enumerateObjectsUsingBlock:^(TIMConversation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    if ([[obj getReceiver] isEqualToString:groupId]) {
-                        row = idx;
-                        @synchronized (self) {
-                            [self.toppingArr addObject:obj];
-                        }
-                        *stop = YES;
-                    }
-                }];
-                NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:row inSection:0];
-                NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self.tableView moveRowAtIndexPath:oldIndexPath toIndexPath:newIndexPath];
-                }];
-            }
-            else { // 取消置顶
-                __block NSUInteger row = 0;
-                [self.dataSource enumerateObjectsUsingBlock:^(TIMConversation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    if ([[obj getReceiver] isEqualToString:groupId]) {
-                        row = idx;
-                        @synchronized (self) {
-                            [self.toppingArr removeObject:obj];
-                        }
-                        *stop = YES;
-                    }
-                }];
-                if (self.dataSource.count > self.toppingArr.count) {
-                    NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:row inSection:0];
-                    NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:self.toppingArr.count inSection:0];
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        [self.tableView moveRowAtIndexPath:oldIndexPath toIndexPath:newIndexPath];
-                    }];
-                }
-            }
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self.tableView reloadData];
-            });
-        }
+        [self operaTopping:topping WithReceiverId:groupId];
     }
 }
 
@@ -680,21 +710,26 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
     return YES;
 }
 
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(nonnull NSIndexPath *)indexPath
-{
-    
-}
-
 //自定义左滑效果
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
     __block TIMConversation *conversation = [self.dataSource objectAtIndex:indexPath.row];
     
     @XOWeakify(self);
-    BOOL isTop = NO;
-    NSString *topTitle = !isTop ? XOChatLocalizedString(@"conversation.unTop.title") : XOChatLocalizedString(@"conversation.top.title");
+    BOOL isTop = [[XOContactManager defaultManager] isToppingReceiver:[conversation getReceiver]];
+    NSString *topTitle = isTop ? XOChatLocalizedString(@"conversation.unTop.title") : XOChatLocalizedString(@"conversation.top.title");
     UITableViewRowAction *topRowAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:topTitle handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull indexPath) {
         
+        if (isTop) { // 置顶 -> 取消置顶
+            if ([[XOContactManager defaultManager] removeToppingListWithReceiverId:[conversation getReceiver]]) {
+                [self operaTopping:NO WithReceiverId:[conversation getReceiver]];
+            }
+        }
+        else {  // 未置顶 -> 置顶
+            if ([[XOContactManager defaultManager] addToppingListWithReceiverId:[conversation getReceiver]]) {
+                [self operaTopping:YES WithReceiverId:[conversation getReceiver]];
+            }
+        }
     }];
     UITableViewRowAction *deleteRowAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:XOChatLocalizedString(@"conversation.delete.title") handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
         NSString *message = XOChatLocalizedString(@"conversation.delete.alertMsg");
@@ -703,7 +738,13 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
             if ([[TIMManager sharedInstance] deleteConversation:[conversation getType] receiver:[conversation getReceiver]]) {
                 [SVProgressHUD showErrorWithStatus:XOChatLocalizedString(@"tip.delete.success")];
                 [SVProgressHUD dismissWithDelay:1.0f];
-                [self loadConversation];
+                @synchronized (self) {
+                    [self.dataSource removeObject:conversation];
+                }
+                [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self.tableView reloadData];
+                });
             }
             else {
                 [SVProgressHUD showErrorWithStatus:XOChatLocalizedString(@"tip.delete.fail")];
@@ -711,10 +752,10 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
             }
             
         } cancelComplection:^{
-            NSLog(@"取消删除好友");
+            NSLog(@"取消删除会话");
         }];
     }];
-    return @[topRowAction, deleteRowAction];
+    return @[deleteRowAction, topRowAction];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section

@@ -131,7 +131,7 @@
 {
     _conversation = conversation;
     
-    self.shouldTopShow = [[XOContactManager defaultManager] isToppingGroup:[conversation getReceiver]];
+    self.shouldTopShow = [[XOContactManager defaultManager] isToppingReceiver:[conversation getReceiver]];
     if (self.shouldTopShow) {
         self.backgroundColor = BG_TableColor;
     } else {

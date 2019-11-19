@@ -442,7 +442,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         cell.textLabel.font = [UIFont boldSystemFontOfSize:15];
         
         if (2 == indexPath.section) {
-            if ([[XOContactManager defaultManager] isToppingGroup:self.groupInfo.group]) {
+            if ([[XOContactManager defaultManager] isToppingReceiver:self.groupInfo.group]) {
                 [cell setOn:YES];
             } else {
                 [cell setOn:NO];
@@ -467,9 +467,9 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
                 BOOL result = NO;
                 [sCell setIsLocked:YES];
                 if (on) { // 置顶
-                    result = [[XOContactManager defaultManager] addToppingListWithGroupId:sself.groupInfo.group];
+                    result = [[XOContactManager defaultManager] addToppingListWithReceiverId:sself.groupInfo.group];
                 } else { // 取消置顶
-                    result = [[XOContactManager defaultManager] removeToppingListWithGroupId:sself.groupInfo.group];
+                    result = [[XOContactManager defaultManager] removeToppingListWithReceiverId:sself.groupInfo.group];
                 }
                 [sCell setIsLocked:NO];
 
