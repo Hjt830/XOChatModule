@@ -49,7 +49,6 @@ Pod::Spec.new do |s|
   s.dependency 'TXIMSDK_iOS', '~> 4.4.627'
   s.dependency 'XOBaseLib', '~> 0.3.1'
   s.dependency 'TZImagePickerController', '~> 3.2.1'
-#  s.dependency 'CTMediator', '~> 25'
   s.dependency 'GCDMulticastDelegate', '~> 1.0.0'
   s.dependency 'SVProgressHUD', '~> 2.2.5'
   s.dependency 'AFNetworking', '~> 3.2.1'
