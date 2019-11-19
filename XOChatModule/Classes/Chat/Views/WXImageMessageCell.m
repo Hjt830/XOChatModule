@@ -47,28 +47,14 @@ static BOOL progressFinish = NO;
     
     // 加载图片
     TIMElem *elem = [message getElem:0];
-    if ([elem isKindOfClass:[TIMImageElem class]]) {
-        TIMImageElem *imageElem = (TIMImageElem *)elem;
-        __block NSString *thumbImageName = nil;
-        // 自己发送的消息
-        if (message.isSelf) {
-            if (!XOIsEmptyString(imageElem.path)) {
-                NSString *imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageElem.path.lastPathComponent];
-                if (!XOIsEmptyString(imagePath) && [[NSFileManager defaultManager] fileExistsAtPath:imagePath]) {
-                    thumbImageName = [[imageElem.path lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
-                }
-            }
-            else {
+    if ([elem isKindOfClass:[TIMImageElem class]])
+    {
+        __block NSString *thumbImagePath = [message getThumbImagePath];
+        if (![XOFM fileExistsAtPath:thumbImagePath]) {
+            if (![[XOChatClient shareClient] isOnDownloading:message]) {
                 [self loadImageWith:message formCache:NO];
             }
         }
-        // 收到的消息
-        else if (imageElem.imageList.count > 0) {
-            TIMImage *image = [imageElem.imageList objectAtIndex:0];
-            thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", image.uuid, [self getImageFormat:imageElem.format]];
-        }
-        __block NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
-        
         [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
             NSData *thumbImageData = [[NSData alloc] initWithContentsOfFile:thumbImagePath];
             __block UIImage *thumbImage = [UIImage imageWithData:thumbImageData];
@@ -85,27 +71,16 @@ static BOOL progressFinish = NO;
                 }];
             }
         }];
-
     }
-    else if ([elem isKindOfClass:[TIMVideoElem class]]) {
-        TIMVideoElem *videoElem = (TIMVideoElem *)elem;
-        TIMSnapshot *snapshot = videoElem.snapshot;
+    else if ([elem isKindOfClass:[TIMVideoElem class]])
+    {
+        __block NSString *snapshotPath = [message getThumbImagePath];
         
-        NSString *snapshotName = nil;
-        // 自己发送的消息
-        if (message.isSelf) {
-            NSString *videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoElem.snapshotPath.lastPathComponent];
-            if (!XOIsEmptyString(videoPath) && [[NSFileManager defaultManager] fileExistsAtPath:videoPath]) {
-                snapshotName = [videoPath lastPathComponent];
+        if (![XOFM fileExistsAtPath:snapshotPath]) {
+            if (![[XOChatClient shareClient] isOnDownloading:message]) {
+                [self loadImageWith:message formCache:NO];
             }
         }
-        // 收到的消息
-        else {
-            NSString *snapshotFormat = XOIsEmptyString(snapshot.type) ? @"jpg" : snapshot.type;
-            snapshotName = [NSString stringWithFormat:@"%@.%@", snapshot.uuid, snapshotFormat];
-        }
-        __block NSString *snapshotPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:snapshotName];
-        
         [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
             NSData *snapshotImageData = [[NSData alloc] initWithContentsOfFile:snapshotPath];
             __block UIImage *snapshotImage = [UIImage imageWithData:snapshotImageData];
@@ -212,114 +187,112 @@ static BOOL progressFinish = NO;
 {
     TIMElem *elem = [message getElem:0];
     if ([elem isKindOfClass:[TIMImageElem class]]) {
-        TIMImageElem *imageElem = (TIMImageElem *)elem;
-        if (imageElem.imageList.count > 0) {
-            TIMImage *image = [imageElem.imageList objectAtIndex:0];
-            
-            __block NSString *thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", image.uuid, [self getImageFormat:imageElem.format]];
-            __block NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
-            
-            // 从缓存获取缩略图片
-            if (useCache && [[NSFileManager defaultManager] fileExistsAtPath:thumbImagePath]) {
-                [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-                    NSData *thumbImageData = [[NSData alloc] initWithContentsOfFile:thumbImagePath];
-                    __block UIImage *thumbImage = [UIImage imageWithData:thumbImageData];
-                    // 缓存中有图片
-                    if (thumbImage != nil) {
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            self.messageImageView.image = thumbImage;
-                        }];
-                    }
-                    // 缓存中没有图片
-                    else {
-                        [self loadImageWith:message formCache:NO];
-                    }
-                }];
-            }
-            // 从网络获取图片
-            else {
-                __block NSString *imageName = [NSString stringWithFormat:@"%@.%@", image.uuid, [self getImageFormat:imageElem.format]];
-                __block NSString *imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
-                [image getImage:imagePath progress:^(NSInteger curSize, NSInteger totalSize) {
+        
+        __block NSString *thumbImagePath = [message getThumbImagePath];
+        // 从缓存获取缩略图片
+        if (useCache && [[NSFileManager defaultManager] fileExistsAtPath:thumbImagePath]) {
+            [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                NSData *thumbImageData = [[NSData alloc] initWithContentsOfFile:thumbImagePath];
+                __block UIImage *thumbImage = [UIImage imageWithData:thumbImageData];
+                // 缓存中有图片
+                if (thumbImage != nil) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        self.messageImageView.image = thumbImage;
+                    }];
+                }
+                // 缓存中没有图片
+                else {
+                    [self loadImageWith:message formCache:NO];
+                }
+            }];
+        }
+        // 从网络获取图片
+        else {
+            TIMImageElem *imageElem = (TIMImageElem *)elem;
+            if (imageElem.imageList.count > 0)
+            {
+                __block NSString *imagePath = [message getImagePath];
+                __block BOOL isOrigin = [XOFM fileExistsAtPath:imagePath]; // 原图是否存在
+                
+                TIMImage *timImage = nil;
+                if (isOrigin) {
+                    timImage = imageElem.imageList[0];
+                } else {
+                    if (imageElem.imageList.count >= 3) timImage = imageElem.imageList[2];
+                    else if (imageElem.imageList.count >= 2) timImage = imageElem.imageList[1];
+                }
+                
+                [timImage getImage:imagePath progress:^(NSInteger curSize, NSInteger totalSize) {
                     float progress = curSize * 0.1/totalSize;
                     [self updateProgress:progress effect:YES];
                 } succ:^{
                     [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-                        // 获取原图
-                        NSData *imageData = [[NSData alloc] initWithContentsOfFile:imagePath];
-                        __block UIImage *image = [UIImage imageWithData:imageData];
-                        // 根据原图获取缩略图
-                        CGSize thumbSize = [[XOFileManager shareInstance] getScaleImageSize:image];
-                        UIImage *thumbImage = [[XOFileManager shareInstance] scaleOriginImage:image toSize:thumbSize];
-                        // 显示图片
-                        if (thumbImage) {
-                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                self.messageImageView.image = thumbImage;
-                            }];
-                            
-                            // 将缩略图写入沙盒
-                            NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 1.0);
-                            if ([thumbImageData writeToFile:thumbImagePath atomically:YES]) {
-                                NSLog(@"缓存缩略图成功");
+                        // 没有原图, 则下载的是原图 --- 根据原图获取缩略图
+                        if (!isOrigin) {
+                            NSData *imageData = [[NSData alloc] initWithContentsOfFile:imagePath];
+                            __block UIImage *image = [UIImage imageWithData:imageData];
+                            // 根据原图获取缩略图
+                            CGSize thumbSize = [[XOFileManager shareInstance] getScaleImageSize:image];
+                            UIImage *thumbImage = [[XOFileManager shareInstance] scaleOriginImage:image toSize:thumbSize];
+                            // 显示图片
+                            if (thumbImage) {
+                                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                    self.messageImageView.image = thumbImage;
+                                }];
+                                
+                                // 将缩略图写入沙盒
+                                NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 1.0);
+                                if ([thumbImageData writeToFile:thumbImagePath atomically:YES]) {
+                                    NSLog(@"缓存缩略图成功");
+                                }
                             }
                         }
                     }];
+                    
                 } fail:^(int code, NSString *msg) {
                     NSLog(@"下载网络图片失败 ---- code: %d  msg: %@", code, msg);
                 }];
             }
         }
     }
-    else if ([elem isKindOfClass:[TIMVideoElem class]]) {
+    else if ([elem isKindOfClass:[TIMVideoElem class]])
+    {
         TIMVideoElem *videoElem = (TIMVideoElem *)elem;
-        if (videoElem.snapshot) {
-            TIMSnapshot *snapshot = videoElem.snapshot;
-            NSString *format = !XOIsEmptyString(snapshot.type) ? snapshot.type : @"jpg";
-            __block NSString *thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", snapshot.uuid, format];
-            __block NSString *thumbSnapshotImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
-            
-            // 从缓存获取缩略图片
-            if (useCache && [[NSFileManager defaultManager] fileExistsAtPath:thumbSnapshotImagePath]) {
-                [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-                    NSData *thumbImageData = [[NSData alloc] initWithContentsOfFile:thumbSnapshotImagePath];
-                    __block UIImage *thumbImage = [UIImage imageWithData:thumbImageData];
-                    // 缓存中有图片
-                    if (thumbImage != nil) {
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            self.messageImageView.image = thumbImage;
-                        }];
-                    }
-                    // 缓存中没有图片
-                    else {
-                        [self loadImageWith:message formCache:NO];
-                    }
-                }];
-            }
-            // 从网络获取图片
-            else {
-                NSString *snapshotName = [NSString stringWithFormat:@"%@.%@", snapshot.uuid, format];
-                __block NSString *snapshotPath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:snapshotName];
-                [snapshot getImage:snapshotPath  succ:^{
+        __block NSString *snapshotPath = [message getThumbImagePath];
+        
+        // 从缓存获取缩略图片
+        if (useCache && [[NSFileManager defaultManager] fileExistsAtPath:snapshotPath]) {
+            [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                NSData *thumbImageData = [[NSData alloc] initWithContentsOfFile:snapshotPath];
+                __block UIImage *thumbImage = [UIImage imageWithData:thumbImageData];
+                // 缓存中有图片
+                if (thumbImage != nil) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        self.messageImageView.image = thumbImage;
+                    }];
+                }
+                // 缓存中没有图片
+                else {
+                    [self loadImageWith:message formCache:NO];
+                }
+            }];
+        }
+        else {
+            if (videoElem.snapshot) {
+                TIMSnapshot *snapshot = videoElem.snapshot;
+                [snapshot getImage:snapshotPath succ:^{
                     [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-                        // 获取原图
-                        NSData *snapshotImageData = [[NSData alloc] initWithContentsOfFile:snapshotPath];
-                        __block UIImage *snapshotImage = [UIImage imageWithData:snapshotImageData];
-                        // 根据原图获取缩略图
-                        CGSize thumbSnapshotSize = [[XOFileManager shareInstance] getScaleImageSize:snapshotImage];
-                        UIImage *thumbSnapshotImage = [[XOFileManager shareInstance] scaleOriginImage:snapshotImage toSize:thumbSnapshotSize];
+                        
+                        NSData *snapshotData = [[NSData alloc] initWithContentsOfFile:snapshotPath];
+                        __block UIImage *snapshotImage = [UIImage imageWithData:snapshotData];
                         // 显示图片
-                        if (thumbSnapshotImage) {
+                        if (snapshotImage) {
                             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                self.messageImageView.image = thumbSnapshotImage;
+                                self.messageImageView.image = snapshotImage;
                             }];
-                            
-                            // 将缩略图写入沙盒
-                            NSData *thumbSnapshotImageData = UIImageJPEGRepresentation(thumbSnapshotImage, 1.0);
-                            if ([thumbSnapshotImageData writeToFile:thumbSnapshotImagePath atomically:YES]) {
-                                NSLog(@"缓存缩略图成功");
-                            }
                         }
                     }];
+                    
                 } fail:^(int code, NSString *msg) {
                     NSLog(@"下载网络图片失败 ---- code: %d  msg: %@", code, msg);
                 }];

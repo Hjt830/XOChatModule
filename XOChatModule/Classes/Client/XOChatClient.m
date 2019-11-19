@@ -11,6 +11,7 @@
 #import <XOBaseLib/XOBaseLib.h>
 #import "NSBundle+ChatModule.h"
 #import "TIMElem+XOExtension.h"
+#import "TIMMessage+XOChatExtenstion.h"
 #import "XOContactManager.h"
 
 @interface XOChatClient () <TIMConnListener, TIMMessageListener, TIMUserStatusListener, TIMUploadProgressListener, TIMGroupEventListener, TIMFriendshipListener>
@@ -444,58 +445,22 @@ static XOChatClient *__chatClient = nil;
         TIMElem *elem = (TIMElem *)[message getElem:0];
         // 图片消息
         if ([elem isKindOfClass:[TIMImageElem class]]) {
-            TIMImageElem *imageElem = (TIMImageElem *)elem;
-            NSString *imagePath = nil;
-            if (message.isSelf) {
-                imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageElem.path.lastPathComponent];
-            }
-            else {
-                if (imageElem.imageList.count > 0) {
-                    TIMImage *timImage = [imageElem.imageList objectAtIndex:0];
-                    NSString *imageFomat = [self getImageFormat:imageElem.format];
-                    NSString *imageName = [NSString stringWithFormat:@"%@.%@", timImage.uuid, imageFomat];
-                    imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
-                }
-            }
+            NSString *imagePath = [message getImagePath];
             if (![XOFM fileExistsAtPath:imagePath]) need = YES;
         }
         // 视频消息
         else if ([elem isKindOfClass:[TIMVideoElem class]]) {
-            TIMVideoElem *videoElem = (TIMVideoElem *)elem;
-            NSString *videoPath = nil;
-            if (message.isSelf) {
-                videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoElem.videoPath.lastPathComponent];
-            }
-            else {
-                TIMVideo *timVideo = videoElem.video;
-                NSString *videoFomat = !XOIsEmptyString(timVideo.type) ? timVideo.type : @"mp4";
-                NSString *videoName = [NSString stringWithFormat:@"%@.%@", timVideo.uuid, videoFomat];
-                videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoName];
-            }
+            NSString *videoPath = [message getVideoPath];;
             if (![XOFM fileExistsAtPath:videoPath]) need = YES;
         }
         // 语音消息
         else if ([elem isKindOfClass:[TIMSoundElem class]]) {
-            TIMSoundElem *soundElem = (TIMSoundElem *)elem;
-            NSString *soundPath = nil;
-            if (message.isSelf) {
-                soundPath = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:soundElem.path.lastPathComponent];
-            } else {
-                NSString *soundName = [NSString stringWithFormat:@"%@.mp3", soundElem.uuid];
-                soundPath = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:soundName];
-            }
+            NSString *soundPath = [message getSoundPath];
             if (![XOFM fileExistsAtPath:soundPath]) need = YES;
         }
         // 文件消息
         else if ([elem isKindOfClass:[TIMFileElem class]]) {
-            TIMFileElem *fileElem = (TIMFileElem *)elem;
-            NSString *filePath = nil;
-            if (message.isSelf) {
-                filePath = [XOMsgFileDirectory(XOMsgFileTypeFile) stringByAppendingPathComponent:fileElem.filename];
-            } else {
-                NSString *filename = !XOIsEmptyString(fileElem.filename) ? fileElem.filename : [NSString stringWithFormat:@"%@.unknow", fileElem.uuid];
-                filePath = [XOMsgFileDirectory(XOMsgFileTypeFile) stringByAppendingPathComponent:filename];
-            }
+            NSString *filePath = [message getFilePath];
             if (![XOFM fileExistsAtPath:filePath]) need = YES;
         }
         
@@ -551,9 +516,7 @@ static XOChatClient *__chatClient = nil;
             } else if (imageElem.imageList.count >= 2) {
                 timImage = [imageElem.imageList objectAtIndex:1];
             }
-            NSString *imageFomat = [self getImageFormat:imageElem.format];
-            NSString *thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", timImage.uuid, imageFomat];
-            __block NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
+            __block NSString *thumbImagePath = [message getThumbImagePath];
             [timImage getImage:thumbImagePath succ:^{
                 if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(messageThumbImageDownloadSuccess:thumbImagePath:)]) {
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -576,9 +539,7 @@ static XOChatClient *__chatClient = nil;
             }
             else {
                 NSURL *imageURL = [NSURL URLWithString:timImage.url];
-                __block NSString *imageFomat = [self getImageFormat:imageElem.format];
-                __block NSString *imageName = [NSString stringWithFormat:@"%@.%@", timImage.uuid, imageFomat];
-                __block NSString *imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
+                __block NSString *imagePath = [message getImagePath];
                 
                 NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:imageURL];
                 NSURLSessionDownloadTask *task = [[AFHTTPSessionManager manager] downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull downloadProgress) {
@@ -624,23 +585,26 @@ static XOChatClient *__chatClient = nil;
                         }
                     }
                     else {
-                        // 1、根据原图获取缩略图, 写入沙盒
-                        UIImage *originImage = [UIImage imageWithData:[NSData dataWithContentsOfURL:filePath]];
-                        NSString *thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", timImage.uuid, imageFomat];
-                        NSURL *thumbImageURL = [NSURL fileURLWithPath:[XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName]];
-                        CGSize thumbSize = [[XOFileManager shareInstance] getScaleImageSize:originImage];
-                        UIImage *thumbImage = [[XOFileManager shareInstance] scaleOriginImage:originImage toSize:thumbSize];
-                        NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 1.0);
-                        BOOL thumbFinish = [thumbImageData writeToURL:thumbImageURL atomically:YES];
-                        // 2、回调代理下载成功
-                        if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(messageFileDownloadSuccess:fileURL:thumbImageURL:)]) {
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                if (thumbFinish) {
-                                    [self->_multiDelegate messageFileDownloadSuccess:message fileURL:filePath thumbImageURL:thumbImageURL];
-                                } else {
-                                    [self->_multiDelegate messageFileDownloadSuccess:message fileURL:filePath thumbImageURL:nil];
-                                }
-                            });
+                        // 1、根据原图获取缩略图, 写入沙盒 (如果前面没有缩略图下载或下载缩略图失败的情况下)
+                        NSString *thumbPath = [message getThumbImagePath];
+                        if (![[NSFileManager defaultManager] fileExistsAtPath:thumbPath]) {
+                            UIImage *originImage = [UIImage imageWithData:[NSData dataWithContentsOfURL:filePath]];
+                            NSURL *thumbImageURL = [NSURL fileURLWithPath:[message getThumbImagePath]];
+                            CGSize thumbSize = [[XOFileManager shareInstance] getScaleImageSize:originImage];
+                            UIImage *thumbImage = [[XOFileManager shareInstance] scaleOriginImage:originImage toSize:thumbSize];
+                            NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 1.0);
+                            BOOL thumbFinish = [thumbImageData writeToURL:thumbImageURL atomically:YES];
+                            
+                            // 2、回调代理下载成功
+                            if (self->_multiDelegate && [self->_multiDelegate hasDelegateThatRespondsToSelector:@selector(messageFileDownloadSuccess:fileURL:thumbImageURL:)]) {
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    if (thumbFinish) {
+                                        [self->_multiDelegate messageFileDownloadSuccess:message fileURL:filePath thumbImageURL:thumbImageURL];
+                                    } else {
+                                        [self->_multiDelegate messageFileDownloadSuccess:message fileURL:filePath thumbImageURL:nil];
+                                    }
+                                });
+                            }
                         }
                         
                         // 3、取一个等待下载的消息出来, 开始下载任务
@@ -680,9 +644,7 @@ static XOChatClient *__chatClient = nil;
             // 下载视频截图
             TIMSnapshot *snapshot = videoElem.snapshot;
             if (snapshot) {
-                NSString *snapshotformat = XOIsEmptyString(snapshot.type) ? @"jpg" : snapshot.type;
-                NSString *snapshotName = [NSString stringWithFormat:@"%@.%@", snapshot.uuid, snapshotformat];
-                __block NSString *snapshotPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:snapshotName];
+                __block NSString *snapshotPath = [message getThumbImagePath];
                 if (![[NSFileManager defaultManager] fileExistsAtPath:snapshotPath]) {
                     [snapshot getImage:snapshotPath succ:^{
                         NSLog(@"下载视频截图成功: %@", snapshotPath);
@@ -788,9 +750,7 @@ static XOChatClient *__chatClient = nil;
         }
     }
     else {
-        __block NSString *soundName = [NSString stringWithFormat:@"%@.mp3", soundElem.uuid];
-        __block NSString *soundPath = [XOMsgFileDirectory(XOMsgFileTypeAudio) stringByAppendingPathComponent:soundName];
-        
+        __block NSString *soundPath = [message getSoundPath];
         [soundElem getSound:soundPath progress:^(NSInteger curSize, NSInteger totalSize) {
             
             // 回调代理下载进度
@@ -868,9 +828,7 @@ static XOChatClient *__chatClient = nil;
         }
     }
     else {
-        NSString *filename = !XOIsEmptyString(fileElem.filename) ? fileElem.filename : [NSString stringWithFormat:@"%@.unknow", fileElem.uuid];
-        __block NSString *filePath = [XOMsgFileDirectory(XOMsgFileTypeFile) stringByAppendingPathComponent:filename];
-        
+        __block NSString *filePath = [message getFilePath];
         [fileElem getFile:filePath progress:^(NSInteger curSize, NSInteger totalSize) {
             
             // 回调代理下载进度

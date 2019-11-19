@@ -801,6 +801,10 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
 // 消息文件下载成功回调
 - (void)messageFileDownloadSuccess:(TIMMessage *)message fileURL:(NSURL *)fileURL thumbImageURL:(NSURL *)thumbImageURL
 {
+    NSIndexPath *indexpath = [self findIndexPathWithDownloadingMessage:message];
+    if (indexpath) {
+        [self.tableView reloadRowsAtIndexPaths:@[indexpath] withRowAnimation:UITableViewRowAnimationNone];
+    }
     // 从下载消息队列中移除该条消息
     NSString *msgKey = getMessageKey(message);
     if ([self.downloadingMsgQueue objectForKey:msgKey]) {
@@ -1066,24 +1070,8 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
                 if ([elem isKindOfClass:[TIMImageElem class]]) {
                     TIMImageElem *imageElem = (TIMImageElem *)elem;
                     if (imageElem.imageList.count > 0) {
-                        TIMImage *timImage = [imageElem.imageList objectAtIndex:0];
-                        NSString *imagePath = nil;
-                        NSURL *thumbImageURL = nil;
-                        if (obj.isSelf) {
-                            imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageElem.path.lastPathComponent];
-                            NSString *thumbImageName = [[imagePath lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
-                            NSString *thumbImagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName];
-                            thumbImageURL = [NSURL fileURLWithPath:thumbImagePath];
-                        }
-                        NSLog(@"imagePath: %d", XOIsEmptyString(imagePath));
-                        NSLog(@"fileExistsAtPath: %d", [[NSFileManager defaultManager] fileExistsAtPath:imagePath]);
-                        if (XOIsEmptyString(imagePath) || ![[NSFileManager defaultManager] fileExistsAtPath:imagePath]) {
-                            NSString *imageFomat = [[XOChatClient shareClient] getImageFormat:imageElem.format];
-                            NSString *imageName = [NSString stringWithFormat:@"%@.%@", timImage.uuid, imageFomat];
-                            imagePath = [XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:imageName];
-                            NSString *thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", timImage.uuid, imageFomat];
-                            thumbImageURL = [NSURL fileURLWithPath:[XOMsgFileDirectory(XOMsgFileTypeImage) stringByAppendingPathComponent:thumbImageName]];
-                        }
+                        NSString *imagePath = [obj getImagePath];
+                        NSURL *thumbImageURL = [NSURL fileURLWithPath:[obj getThumbImagePath]];
                         
                         UIImageView * translateView = nil;
                         if (idx == currentPage) {
@@ -1103,29 +1091,9 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
                 }
                 // 视频
                 else if ([elem isKindOfClass:[TIMVideoElem class]]) {
-                    TIMVideoElem *videoElem = (TIMVideoElem *)elem;
-                    UIImage *thumbImage = nil;
-                    NSURL *videoURL = nil;
-                    if (!obj.isSelf) {
-                        videoURL = [NSURL fileURLWithPath:videoElem.videoPath];
-                        thumbImage = [UIImage imageWithData:[NSData dataWithContentsOfFile:videoElem.snapshotPath]];
-                    }
-                    
-                    if (!videoURL || ![[NSFileManager defaultManager] fileExistsAtPath:videoElem.videoPath]) {
-                        TIMVideo *timVideo = videoElem.video;
-                        NSString *videoFomat = !XOIsEmptyString(timVideo.type) ? timVideo.type : @"mp4";
-                        NSString *videoName = [NSString stringWithFormat:@"%@.%@", timVideo.uuid, videoFomat];
-                        NSString *videoPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:videoName];
-                        videoURL = [NSURL fileURLWithPath:videoPath];
-                    }
-                    if (XOIsEmptyString(videoElem.snapshotPath) || ![[NSFileManager defaultManager] fileExistsAtPath:videoElem.snapshotPath]) {
-                        TIMSnapshot *snapshot = videoElem.snapshot;
-                        NSString *snapshotformat = XOIsEmptyString(snapshot.type) ? @"jpg" : snapshot.type;
-                        NSString *snapshotName = [NSString stringWithFormat:@"%@.%@", snapshot.uuid, snapshotformat];
-                        NSString *snapshotPath = [XOMsgFileDirectory(XOMsgFileTypeVideo) stringByAppendingPathComponent:snapshotName];
-                        thumbImage = [UIImage imageWithData:[NSData dataWithContentsOfFile:snapshotPath]];
-                    }
-                    
+                    NSData *data = [NSData dataWithContentsOfFile:[obj getThumbImagePath]];
+                    UIImage *thumbImage = [UIImage imageWithData:data];
+                    NSURL *videoURL = [NSURL fileURLWithPath:[obj getVideoPath]];
                     UIImageView * translateView = nil;
                     if (idx == currentPage) {
                         WXMessageCell *msgCell = [self.tableView cellForRowAtIndexPath:indexPath];
