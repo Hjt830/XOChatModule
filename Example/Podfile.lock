@@ -35,7 +35,7 @@ PODS:
     - SDWebImage
     - SVProgressHUD (~> 2.2.5)
     - TZImagePickerController (~> 3.2.1)
-  - XOChatModule (0.0.3):
+  - XOChatModule (0.0.4):
     - AFNetworking (~> 3.2.1)
     - FLAnimatedImage (~> 1.0.12)
     - FMDB (~> 2.7.5)
@@ -97,7 +97,7 @@ SPEC CHECKSUMS:
   TXIMSDK_iOS: 637af83382870a7da50cd05eebf9a7e280440885
   TZImagePickerController: bf4c57b98d8707fce41ea6be872414a71c7a8c9d
   XOBaseLib: 05cb87aa17bbbb5aaf4d8ccb6497ecc6f630b0c0
-  XOChatModule: cb0946973b32d723de5187c1b7a2ed548d76edd5
+  XOChatModule: bea1e77a15241e4ae1a5ce65784cb3f66a8bae78
   YBImageBrowser: 59d3e8e035351a9f2f89760742628329378a634b
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30

@@ -172,9 +172,19 @@
     }
     else if (TIM_GROUP == conversation.getType) {
         NSString *receiverID = [conversation getReceiver];
-        TIMGroupInfo *groupInfo = [[TIMGroupManager sharedInstance] queryGroupInfo:receiverID];
-        
+        __block TIMGroupInfo *groupInfo = [[TIMGroupManager sharedInstance] queryGroupInfo:receiverID];
         _nameLabel.text = [NSString stringWithFormat:@"%@(%d)", groupInfo.groupName, groupInfo.memberNum];
+        
+        [[TIMGroupManager sharedInstance] getGroupInfo:@[receiverID] succ:^(NSArray<TIMGroupInfo *> *arr) {
+            if (arr > 0) {
+                groupInfo = arr[0];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self->_nameLabel.text = [NSString stringWithFormat:@"%@(%d)", groupInfo.groupName, groupInfo.memberNum];
+                });
+            }
+        } fail:^(int code, NSString *msg) {
+            
+        }];
         
         if (!XOIsEmptyString(groupInfo.faceURL)) {
             [_iconImageView sd_setImageWithURL:[NSURL URLWithString:groupInfo.faceURL] placeholderImage:[UIImage xo_imageNamedFromChatBundle:@"default_avatar"]];

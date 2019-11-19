@@ -62,7 +62,7 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
 @property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *downloadingMsgQueue;   // 下载中消息保存列表
 // 浏览图片视频相关
 @property (nonatomic, strong) NSMutableArray        <TIMMessage *>  *imageVideoList;            // 图片或者视频消息
-@property (nonatomic, strong) NSMutableDictionary   <NSString *, NSIndexPath *> *imageVideoIndexpathList;   // 图片或者视频消息序号
+@property (nonatomic, strong) NSMutableArray        <NSString *> *imageVideoKeyList;   // 图片或者视频消息序号
 
 @end
 
@@ -356,10 +356,10 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
             [elem isKindOfClass:[TIMVideoElem class]])
         {
             NSString *msgKey = getMessageKey(message);
-            if (nil == [self.imageVideoList objectForKey:msgKey]) {
+            if (![self.imageVideoKeyList containsObject:msgKey]) {
                 if ([self.lock tryLock]) {
-                    [self.imageVideoList setObject:message forKey:msgKey];
-                    [self.imageVideoIndexpathList setObject:indexpath forKey:msgKey];
+                    [self.imageVideoList addObject:message];
+                    [self.imageVideoKeyList addObject:msgKey];
                     [self.lock unlock];
                 }
             }
@@ -374,7 +374,7 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
         
         if (refresh) {
             [self.imageVideoList removeAllObjects];
-            [self.imageVideoIndexpathList removeAllObjects];
+            [self.imageVideoKeyList removeAllObjects];
         }
         
         [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
@@ -388,20 +388,12 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
                         if ([elem isKindOfClass:[TIMImageElem class]] || [elem isKindOfClass:[TIMVideoElem class]])
                         {
                             NSString *msgKey = getMessageKey(message);
-                            if (nil == [self.imageVideoIndexpathList objectForKey:msgKey]) {
+                            if (![self.imageVideoKeyList containsObject:msgKey]) {
                                 
                                 // 保存消息
                                 [self.imageVideoList addObject:message];
-                                NSIndexPath *indexpath = [NSIndexPath indexPathForRow:row inSection:section];
-                                // 保存消息的序列
-                                [self.imageVideoIndexpathList setObject:indexpath forKey:msgKey];
-                                // 拉取的数据 --- 之前插入的indexpath的数据全部都要增加
-                                if (!refresh) {
-                                    NSUInteger sec = dataArray.count;
-                                    [self.imageVideoIndexpathList enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSIndexPath * _Nonnull oldIndexPath, BOOL * _Nonnull stop) {
-                                        oldIndexPath = [NSIndexPath indexPathForRow:oldIndexPath.row inSection:oldIndexPath.section + sec];
-                                    }];
-                                }
+                                // 保存消息Key
+                                [self.imageVideoKeyList addObject:msgKey];
                             }
                         }
                     }
@@ -886,7 +878,8 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
         if ([elem isKindOfClass:[TIMImageElem class]] ||
             [elem isKindOfClass:[TIMVideoElem class]])
         {
-            [self readImageMessageWith:message withCell:cell];
+            NSIndexPath *indexpath = [self.tableView indexPathForCell:cell];
+            [self readImageMessageWith:message withCell:cell indexPath:indexpath];
         }
         else if ([elem isKindOfClass:[TIMSoundElem class]])
         {
@@ -1020,17 +1013,17 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
 - (NSMutableArray <TIMMessage *> *)imageVideoList
 {
     if (!_imageVideoList) {
-        _imageVideoList = [NSMutableArray dictionaryWithCapacity:5];
+        _imageVideoList = [NSMutableArray arrayWithCapacity:5];
     }
     return _imageVideoList;
 }
 
-- (NSMutableDictionary<NSString *, NSIndexPath *> *)imageVideoIndexpathList
+- (NSMutableArray <NSString *> *)imageVideoKeyList
 {
-    if (!_imageVideoIndexpathList) {
-        _imageVideoIndexpathList = [NSMutableDictionary dictionaryWithCapacity:5];
+    if (!_imageVideoKeyList) {
+        _imageVideoKeyList = [NSMutableArray arrayWithCapacity:5];
     }
-    return _imageVideoIndexpathList;
+    return _imageVideoKeyList;
 }
 
 - (NSMutableDictionary<NSString *,NSValue *> *)cellSizeDict
@@ -1057,24 +1050,17 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
 #pragma mark ========================= private method =========================
 
 // 读取图片消息
-- (void)readImageMessageWith:(TIMMessage *)message withCell:(WXMessageCell *)cell
+- (void)readImageMessageWith:(TIMMessage *)message withCell:(WXMessageCell *)cell indexPath:(NSIndexPath *)indexPath
 {
     @autoreleasepool {
         // 排序
-        NSArray <TIMMessage *>* msgList = [self.imageVideoList allValues];
-        NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
-        msgList = [msgList sortedArrayUsingDescriptors:@[descriptor]];
-        __block NSMutableArray <NSString *>* msgKeyList = [NSMutableArray arrayWithCapacity:5];
-        [msgList enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [msgKeyList addObject:getMessageKey(obj)];
-        }];
-        NSInteger currentPage = [msgKeyList indexOfObject:getMessageKey(message)];
+        NSInteger currentPage = [self.imageVideoKeyList indexOfObject:getMessageKey(message)];
         
         __block NSMutableArray <id <YBIBDataProtocol>>* sourceList = [NSMutableArray arrayWithCapacity:10];
-        [msgKeyList enumerateObjectsUsingBlock:^(NSString * _Nonnull key, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.imageVideoList enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             
-            TIMMessage *obj = [self.imageVideoList objectForKey:key];
             if ([obj elemCount] > 0) {
+                NSString *key = getMessageKey(obj);
                 TIMElem *elem = [obj getElem:0];
                 // 图片
                 if ([elem isKindOfClass:[TIMImageElem class]]) {
@@ -1100,14 +1086,10 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
                         }
                         
                         UIImageView * translateView = nil;
-                        NSIndexPath *indexPath = [self.imageVideoIndexpathList objectForKey:key];
-                        if (indexPath && indexPath.section < self.dataSource.count) {
-                            NSArray *arr = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey];
-                            if (indexPath.row < arr.count) {
-                                WXMessageCell *msgCell = [self.tableView cellForRowAtIndexPath:indexPath];
-                                if ([msgCell isKindOfClass:[WXImageMessageCell class]]) {
-                                    translateView = ((WXImageMessageCell *)msgCell).messageImageView;
-                                }
+                        if (idx == currentPage) {
+                            WXMessageCell *msgCell = [self.tableView cellForRowAtIndexPath:indexPath];
+                            if ([msgCell isKindOfClass:[WXImageMessageCell class]]) {
+                                translateView = ((WXImageMessageCell *)msgCell).messageImageView;
                             }
                         }
                         
@@ -1145,14 +1127,10 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
                     }
                     
                     UIImageView * translateView = nil;
-                    NSIndexPath *indexPath = [self.imageVideoIndexpathList objectForKey:key];
-                    if (indexPath && indexPath.section < self.dataSource.count) {
-                        NSArray *arr = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey];
-                        if (indexPath.row < arr.count) {
-                            WXMessageCell *msgCell = [self.tableView cellForRowAtIndexPath:indexPath];
-                            if ([msgCell isKindOfClass:[WXVideoMessageCell class]]) {
-                                translateView = ((WXVideoMessageCell *)msgCell).messageImageView;
-                            }
+                    if (idx == currentPage) {
+                        WXMessageCell *msgCell = [self.tableView cellForRowAtIndexPath:indexPath];
+                        if ([msgCell isKindOfClass:[WXImageMessageCell class]]) {
+                            translateView = ((WXImageMessageCell *)msgCell).messageImageView;
                         }
                     }
                     
@@ -1287,15 +1265,15 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
  */
 - (void)yb_imageBrowser:(YBImageBrowser *)imageBrowser pageChanged:(NSInteger)page data:(id<YBIBDataProtocol>)data
 {
-    NSIndexPath *indexPath = [self.imageVideoIndexpathList objectForKey:(NSString *)data];
-    if (indexPath && indexPath.section < self.dataSource.count) {
-        NSArray *arr = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey];
-        if (indexPath.row < arr.count) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
-            });
-        }
-    }
+//    NSIndexPath *indexPath = [self.imageVideoKeyList objectForKey:(NSString *)data];
+//    if (indexPath && indexPath.section < self.dataSource.count) {
+//        NSArray *arr = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey];
+//        if (indexPath.row < arr.count) {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+//            });
+//        }
+//    }
 }
 
 #pragma mark ========================= help =========================

@@ -16,7 +16,7 @@
 
 #define TXTIMAppID      @"1400267062"
 
-#if 1
+#if 0
 
 // 13226262626
 #define Token           @"ac7295f5e92742dea25260e9a780db91"
@@ -24,6 +24,13 @@
 #define TIM_UserSig     @"eJw1kMtugzAQRf*FddX4kWDcHSoskhCpoVERK8vYho5IwAU3kFb99xJEpFmdc0fz*PVOyfuztBa0kE7QTnsvHvKeZmxGC50RsnSmmzDZcILQQ4I2jYMSZoURx5gGVHJC11IHRUFKbcpAc0M0K9TS00M1hQ9x-ro9Rm*hghy6EdVtNiAeY8qyZDAUsl1dpfE*tb48hr0hH*H2M0wk0b31k1V147HeNe3huor607U8pzUglbdfKcvH8xAlP49huhbzYff91ggRnyGfLNLBxdz5hlGGyVQLl0q1340T7mbN-Im-f0nmV-U_"
 #define NickName        @"13226262626"
 #define Avatar          @"http://192.168.1.180:9000/xxoogo/97e8118225a549529972a08c18f6f718.jpg"
+
+//// 13912345678
+//#define Token           @"ac7295f5e92742dea25260e9a780db91"
+//#define TIM_UserId      @"0767df27a67b4a00b9aec738d1ebe40d"
+//#define TIM_UserSig     @"eJw1kF1PgzAUhv8LtzPutJQWTLxwzigTDMuGiVdN6Zd1OhtWHNP430XCbp-nvHnznp9oW2wuhfdOcRF43KroKoLoYsS6967VXJig2wHjJMMAZ*mU3gdn3KiAUaYMZoKyhgiAJhNasjhVSDeagJoyB2eH4-Kuvs3XSwPdbt4uIYm-WVlTY2Ztn4nDus*leZV5akF*lS8rw4TN7apG2QZVxeN8CB1l0S3KY3d62xaL6v7pYebjpoLq*f3GBnJ9LlM7Pg4bKhEBwJQBxZMM7kP-84QRlOAkpRMXUn52*8DDyevxE79-z*pWrA__"
+//#define NickName        @"13912345678"
+//#define Avatar          @"http://192.168.1.180:9000/xxoogo/af79c1e8aa95406d83c402de6bc85b69.jpg"
 
 #else
 
