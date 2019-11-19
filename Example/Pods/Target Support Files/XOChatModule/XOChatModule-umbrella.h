@@ -12,6 +12,7 @@
 
 #import "NSBundle+ChatModule.h"
 #import "TIMElem+XOExtension.h"
+#import "UIColor+XOExtension.h"
 #import "UIImage+XOChatBundle.h"
 #import "UIImage+XOChatExtension.h"
 #import "ChatFace.h"
@@ -43,6 +44,7 @@
 #import "XOConversationManager.h"
 #import "XOMessageManager.h"
 #import "XOContactListViewController.h"
+#import "XOGroupListViewController.h"
 #import "XOSearchResultListController.h"
 #import "XOConversationListCell.h"
 #import "XOConversationListController.h"

@@ -12,5 +12,6 @@
 #import <SVProgressHUD/SVProgressHUD.h>
 #import <XOBaseLib/XOBaseLib.h>
 #import <YYModel/YYModel.h>
+#import <XOChatModule/XOChatModule.h>
 
 #endif /* PrefixHeader_pch */
