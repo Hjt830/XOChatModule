@@ -211,7 +211,7 @@
 		547B455D0F03ECDBFE1D4EAAC439A86A /* UIViewController+XOExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = ACFA336E25D6A39426D08821D336C483 /* UIViewController+XOExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		548039CB736321926E5F94E31F1EF5E3 /* NSBundle+ChatModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 7927445F6FE4BDB154D34A56B35F593F /* NSBundle+ChatModule.m */; };
 		54EAE6D13EA5875001841B7FEDCF6D5A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C875703B65163492FC0C0A1BF30FFEA4 /* Foundation.framework */; };
-		55D067B52383FF0A00C02C2E /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A56B605326D87968CC99371C13819F6 /* libmp3lame.a */; };
+		55E41B2D238500930014EB75 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A56B605326D87968CC99371C13819F6 /* libmp3lame.a */; };
 		55F00E6E9187A6FE610DAB51AC12258F /* NSDateFormatter+XOExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = A6A203ACB04E606F1018E4734F6B5A24 /* NSDateFormatter+XOExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		56D172C5AB1FD73311D0ED473BD6810D /* SDImageCacheConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD84AEDD2792B2A4827F9B7D9DCEAF2 /* SDImageCacheConfig.m */; };
 		56E083AFD9462B47206419E84065915B /* UIImage+ForceDecode.m in Sources */ = {isa = PBXBuildFile; fileRef = C23D636CE8BCF74A4F78E1649F038337 /* UIImage+ForceDecode.m */; };
@@ -1708,7 +1708,7 @@
 				AEA5E85EB14E05ED61FF42AB4F744624 /* XOBaseLib.framework in Frameworks */,
 				7D997264B2B8DBE883371559529D5A4F /* YBImageBrowser.framework in Frameworks */,
 				DFA4A08136BCE8662DF543A56A363848 /* YYModel.framework in Frameworks */,
-				55D067B52383FF0A00C02C2E /* libmp3lame.a in Frameworks */,
+				55E41B2D238500930014EB75 /* libmp3lame.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

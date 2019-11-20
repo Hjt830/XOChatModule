@@ -648,25 +648,25 @@ static NSTimeInterval audioRecordTime = 0.0f;
 - (void)takePhoto
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if (!_imagePicker) {
-            _imagePicker = [[UIImagePickerController alloc] init];
-            _imagePicker.modalPresentationStyle = UIModalPresentationOverFullScreen;
-            _imagePicker.delegate = self;
-            _imagePicker.navigationBar.barTintColor = AppTinColor;
-            _imagePicker.navigationBar.tintColor = [UIColor whiteColor];
+        if (!self.imagePicker) {
+            self.imagePicker = [[UIImagePickerController alloc] init];
+            self.imagePicker.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            self.imagePicker.delegate = self;
+            self.imagePicker.navigationBar.barTintColor = AppTinColor;
+            self.imagePicker.navigationBar.tintColor = [UIColor whiteColor];
         }
         
-        _imagePicker.mediaTypes = @[(__bridge NSString *)kUTTypeImage];
+        self.imagePicker.mediaTypes = @[(__bridge NSString *)kUTTypeImage];
         if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-            _imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+            self.imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
             if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]) {
-                _imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+                self.imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
             } else if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
-                _imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+                self.imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
             }
         }
-        _imagePicker.showsCameraControls = YES;
-        _imagePicker.modalPresentationStyle = UIModalPresentationFullScreen;
+        self.imagePicker.showsCameraControls = YES;
+        self.imagePicker.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.parentViewController.navigationController presentViewController:_imagePicker animated:YES completion:NULL];
     }];
 }
@@ -674,12 +674,12 @@ static NSTimeInterval audioRecordTime = 0.0f;
 - (void)takeVideo
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if (!_imagePicker) {
-            _imagePicker = [[UIImagePickerController alloc] init];
-            _imagePicker.modalPresentationStyle = UIModalPresentationOverFullScreen;
-            _imagePicker.delegate = self;
-            _imagePicker.navigationBar.barTintColor = AppTinColor;
-            _imagePicker.navigationBar.tintColor = [UIColor whiteColor];
+        if (!self.imagePicker) {
+            self.imagePicker = [[UIImagePickerController alloc] init];
+            self.imagePicker.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            self.imagePicker.delegate = self;
+            self.imagePicker.navigationBar.barTintColor = AppTinColor;
+            self.imagePicker.navigationBar.tintColor = [UIColor whiteColor];
         }
         self.imagePicker.mediaTypes = @[(__bridge NSString *)kUTTypeMovie];
         if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
