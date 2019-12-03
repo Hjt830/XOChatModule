@@ -149,8 +149,16 @@
     if (TIM_C2C == conversation.getType) {
         NSString *receiverID = [conversation getReceiver];
         TIMFriend *friend = [[TIMFriendshipManager sharedInstance] queryFriend:receiverID];
-        
-        _nameLabel.text = friend.profile.nickname;
+        if (XOIsEmptyString(friend.remark)) {
+            if (XOIsEmptyString(friend.profile.nickname)) {
+                _nameLabel.text = [conversation getReceiver];
+            } else {
+                _nameLabel.text = friend.profile.nickname;
+            }
+        } else {
+            _nameLabel.text = friend.remark;
+        }
+
         [_iconImageView sd_setImageWithURL:[NSURL URLWithString:friend.profile.faceURL] placeholderImage:[UIImage xo_imageNamedFromChatBundle:@"default_avatar"]];
         
         // 内容

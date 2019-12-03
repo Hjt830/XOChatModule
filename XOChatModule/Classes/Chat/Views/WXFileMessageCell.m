@@ -44,7 +44,9 @@ static BOOL fileProgressFinish = NO;
     float y = self.message.isSelf ? (CGRectGetMaxY(self.avatarImageView.frame) - FileHeight) : self.avatarImageView.y;
     float x = self.avatarImageView.x + (self.message.isSelf ? - FileWidth - 5 : self.avatarImageView.width + 5);
     self.messageBackgroundImageView.frame = CGRectMake(x, y, FileWidth, FileHeight);
-    self.messageSendStatusImageView.center = CGPointMake(x - 20, y + fileSize.height/2.0);
+    if (self.message.isSelf) {
+        self.messageSendStatusImageView.center = CGPointMake(x - 30, y + fileSize.height/2.0);
+    }
     
     self.fileIconView.frame = CGRectMake(self.messageBackgroundImageView.width - 15 - 60, (FileHeight - 60)/2.0, 60, 60);
     self.fileNameLabel.frame = CGRectMake(15, self.fileIconView.y - 5, self.fileIconView.x - 20, 44);

@@ -415,6 +415,7 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
     if (SelectMemberType_Create == self.memberType)
     {
         if (self.addData.count >= MaxGroupMemberCount) {
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
             [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"group.friend.limitMax")];
             [SVProgressHUD dismissWithDelay:2.0f];
             return;
@@ -430,6 +431,7 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
         }
         // 选择人数不可超过最大限制
         if ((self.addData.count + self.existGroupMembers.count) > MaxGroupMemberCount) {
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
             [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"group.friend.limitMax")];
             [SVProgressHUD dismissWithDelay:2.0f];
             return;
@@ -445,7 +447,8 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
     }
     // 转发消息时
     else if (SelectMemberType_Forward == self.memberType) {
-        if (self.addData.count > MaxMsgForwardCount) {
+        if (self.addData.count >= MaxMsgForwardCount) {
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
             [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"chat.message.forward.limit")];
             [SVProgressHUD dismissWithDelay:2.0f];
             return;
@@ -707,7 +710,7 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
         _searchbar.tintColor = AppTinColor;
         _searchbar.placeholder = XOChatLocalizedString(@"group.search.placeholder");
         UIImage *image = [UIImage xo_imageNamedFromChatBundle:@"search_background"];
-        [_searchbar setBackgroundImage:[image XO_imageWithTintColor:BG_TableColor]];
+        [_searchbar setSearchFieldBackgroundImage:[image XO_imageWithTintColor:BG_TableColor] forState:UIControlStateNormal];
     }
     return _searchbar;
 }

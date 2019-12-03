@@ -20,37 +20,41 @@
         TIMElem *elem = [self getElem:0];
         if ([elem isKindOfClass:[TIMImageElem class]]) {
             TIMImageElem *imageElem = (TIMImageElem *)elem;
-            if (imageElem.imageList.count > 0) {
-                TIMImage *timImage = imageElem.imageList[0];
-                // 自己发送的消息
-                if (self.isSelf) {
-                    if (!XOIsEmptyString(imageElem.path)) {
-                        thumbImageName = [[imageElem.path lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
-                    } else {
+            // 自己发送的消息
+            if (self.isSelf) {
+                if (!XOIsEmptyString(imageElem.path)) {
+                    thumbImageName = [[imageElem.path lastPathComponent] stringByReplacingOccurrencesOfString:@"." withString:@"_thumb."];
+                } else {
+                    if (imageElem.imageList.count > 0) {
+                        TIMImage *timImage = imageElem.imageList[0];
                         thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", timImage.uuid, [self getImageFormat]];
                     }
                 }
-                // 别人发送的消息
-                else {
+            }
+            // 别人发送的消息
+            else {
+                if (imageElem.imageList.count > 0) {
+                    TIMImage *timImage = imageElem.imageList[0];
                     thumbImageName = [NSString stringWithFormat:@"%@_thumb.%@", timImage.uuid, [self getImageFormat]];
                 }
             }
         }
         else if ([elem isKindOfClass:[TIMVideoElem class]]) {
             TIMVideoElem *videoElem = (TIMVideoElem *)elem;
-            if (videoElem.snapshot) {
-                TIMSnapshot *snapshot = videoElem.snapshot;
-                // 自己发送的消息
-                if (self.isSelf) {
-                    if (!XOIsEmptyString(videoElem.snapshotPath)) {
-                        thumbImageName = [videoElem.snapshotPath lastPathComponent];
-                    } else {
-                        NSString *snapshotFormat = XOIsEmptyString(snapshot.type) ? @"jpg" : snapshot.type;
-                        thumbImageName = [NSString stringWithFormat:@"%@.%@", snapshot.uuid, snapshotFormat];
-                    }
+            TIMSnapshot *snapshot = videoElem.snapshot;
+            // 自己发送的消息
+            if (self.isSelf) {
+                if (!XOIsEmptyString(videoElem.snapshotPath)) {
+                    thumbImageName = [videoElem.snapshotPath lastPathComponent];
                 }
-                // 别人发送的消息
-                else {
+                else if (snapshot) {
+                    NSString *snapshotFormat = XOIsEmptyString(snapshot.type) ? @"jpg" : snapshot.type;
+                    thumbImageName = [NSString stringWithFormat:@"%@.%@", snapshot.uuid, snapshotFormat];
+                }
+            }
+            // 别人发送的消息
+            else {
+                if (snapshot) {
                     NSString *snapshotFormat = XOIsEmptyString(snapshot.type) ? @"jpg" : snapshot.type;
                     thumbImageName = [NSString stringWithFormat:@"%@.%@", snapshot.uuid, snapshotFormat];
                 }
@@ -85,18 +89,22 @@
         TIMElem *elem = [self getElem:0];
         if ([elem isKindOfClass:[TIMImageElem class]]) {
             TIMImageElem *imageElem = (TIMImageElem *)elem;
-            if (imageElem.imageList.count > 0) {
-                TIMImage *timImage = imageElem.imageList[0];
-                // 自己发送的消息
-                if (self.isSelf) {
-                    if (!XOIsEmptyString(imageElem.path)) {
-                        imageName = [imageElem.path lastPathComponent];
-                    } else {
+            
+            // 自己发送的消息
+            if (self.isSelf) {
+                if (!XOIsEmptyString(imageElem.path)) {
+                    imageName = [imageElem.path lastPathComponent];
+                } else {
+                    if (imageElem.imageList.count > 0) {
+                        TIMImage *timImage = imageElem.imageList[0];
                         imageName = [NSString stringWithFormat:@"%@.%@", timImage.uuid, [self getImageFormat]];
                     }
                 }
-                // 别人发送的消息
-                else {
+            }
+            // 别人发送的消息
+            else {
+                if (imageElem.imageList.count > 0) {
+                    TIMImage *timImage = imageElem.imageList[0];
                     imageName = [NSString stringWithFormat:@"%@.%@", timImage.uuid, [self getImageFormat]];
                 }
             }

@@ -10,6 +10,7 @@
 #import "UIImage+XOChatBundle.h"
 #import "UIImage+XOChatExtension.h"
 #import "NSBundle+ChatModule.h"
+#import "TIMMessage+XOChatExtenstion.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 
 @interface ForwardView ()
@@ -23,6 +24,7 @@
 @property (nonatomic, strong) UILabel       *sendNameLabel;
 @property (nonatomic, strong) UILabel       *contentLabel;
 @property (nonatomic, strong) UIImageView   *contentImageView;
+@property (nonatomic, strong) UIImageView   *playBtn;
 @property (nonatomic, strong) UIButton      *cancelBtn;
 @property (nonatomic, strong) UIButton      *sureBtn;
 
@@ -98,18 +100,26 @@
     else if ([elem isKindOfClass:[TIMImageElem class]] ||
              [elem isKindOfClass:[TIMVideoElem class]])
     {
-        if ([elem isKindOfClass:[TIMImageElem class]]) {
-            TIMImage *timImage = [((TIMImageElem *)elem).imageList firstObject];
-            CGFloat imageW = 120 * (timImage.width * 1.0/timImage.height * 1.0);
-            self.contentImageView.frame = CGRectMake((contentW - imageW)/2.0, receiverHeight + 10, imageW, 120);
-        } else {
-            UIImage *image = self.contentImageView.image;
-            if (image) {
-                CGFloat imageW = 120 * (image.size.width/image.size.height);
-                self.contentImageView.frame = CGRectMake((contentW - imageW)/2.0, receiverHeight + 10, imageW, 120);
+        UIImage *image = self.contentImageView.image;
+        CGFloat imageW = 0.0f;
+        if (image) {
+            imageW = 120 * (image.size.height/image.size.width);
+        }
+        else {
+            if ([elem isKindOfClass:[TIMImageElem class]]) {
+                TIMImage *timImage = [((TIMImageElem *)elem).imageList firstObject];
+                imageW = 120 * (timImage.height * 1.0/timImage.width * 1.0);
+            } else {
+                TIMSnapshot *snapshot = ((TIMVideoElem *)elem).snapshot;
+                imageW = 120 * (snapshot.height/snapshot.width);
             }
         }
+        self.contentImageView.frame = CGRectMake((contentW - imageW)/2.0, receiverHeight + 10, imageW, 120);
         self.contentImageView.layer.cornerRadius = 3.0f;
+        if ([elem isKindOfClass:[TIMVideoElem class]]) {
+            self.playBtn.center = CGPointMake(imageW/2.0, 60.0);
+            self.playBtn.size = CGSizeMake(30, 30);
+        }
     }
 
     self.cancelBtn.frame = CGRectMake(0, contentH - 50, contentW/2.0 - 0.25, 50);
@@ -216,57 +226,64 @@
             self.contentLabel.text = textElem.text;
         }
     }
-    else if ([elem isKindOfClass:[TIMImageElem class]]) {
+    else if ([elem isKindOfClass:[TIMImageElem class]] ||
+             [elem isKindOfClass:[TIMVideoElem class]]) {
         self.contentView.isImage = YES;
         self.contentImageView.hidden = NO;
         self.contentLabel.hidden = YES;
         [self.contentView addSubview:self.contentImageView];
-        
-        if ([message elemCount] > 0) {
-            TIMImageElem *imageElem = (TIMImageElem *)[message getElem:0];
-            if (imageElem.imageList.count > 0) {
-                TIMImage *timImage = imageElem.imageList[0];
-                [[SDWebImageManager sharedManager] loadImageWithURL:[NSURL URLWithString:timImage.url] options:0 progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
-                    if (!error && image) {
-                        self.contentImageView.image = image;
-                    }
-                }];
-            }
+        if ([elem isKindOfClass:[TIMVideoElem class]]) {
+            [self.contentImageView addSubview:self.playBtn];
         }
-    }
-    else if ([elem isKindOfClass:[TIMVideoElem class]]) {
-        self.contentView.isImage = YES;
-        self.contentImageView.hidden = NO;
-        self.contentLabel.hidden = YES;
-        [self.contentView addSubview:self.contentImageView];
         
         if ([message elemCount] > 0) {
-            TIMVideoElem *videoElem = (TIMVideoElem *)[message getElem:0];
-            __block NSString *path = nil;
-            if (!XOIsEmptyString(videoElem.snapshotPath)) {
-                path = [NSTemporaryDirectory() stringByAppendingPathComponent:videoElem.snapshotPath.lastPathComponent];
-            } else {
-                path = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", videoElem.snapshot.uuid]];
-            }
-            UIImage *image = [UIImage imageNamed:path];
-            if (image) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    self.contentImageView.image = image;
-                    [self setNeedsDisplay];
-                }];
-            } else {
-                [videoElem.snapshot getImage:path succ:^{
-                    [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
-                        UIImage *image = [UIImage imageNamed:path];
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            self.contentImageView.image = image;
-                            [self setNeedsDisplay];
-                        }];
+            __block NSString *thumbImagePath = [message getThumbImagePath];
+            [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+                NSData *thumbImageData = [[NSData alloc] initWithContentsOfFile:thumbImagePath];
+                __block UIImage *thumbImage = [UIImage imageWithData:thumbImageData];
+                // 缓存中有图片
+                if (thumbImage != nil) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        self.contentImageView.image = thumbImage;
+                        [self setNeedsLayout];
                     }];
-                } fail:nil];
-            }
+                }
+            }];
         }
     }
+//    else if ([elem isKindOfClass:[TIMVideoElem class]]) {
+//        self.contentView.isImage = YES;
+//        self.contentImageView.hidden = NO;
+//        self.contentLabel.hidden = YES;
+//        [self.contentView addSubview:self.contentImageView];
+//
+//        if ([message elemCount] > 0) {
+//            TIMVideoElem *videoElem = (TIMVideoElem *)[message getElem:0];
+//            __block NSString *path = nil;
+//            if (!XOIsEmptyString(videoElem.snapshotPath)) {
+//                path = [NSTemporaryDirectory() stringByAppendingPathComponent:videoElem.snapshotPath.lastPathComponent];
+//            } else {
+//                path = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", videoElem.snapshot.uuid]];
+//            }
+//            UIImage *image = [UIImage imageNamed:path];
+//            if (image) {
+//                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//                    self.contentImageView.image = image;
+//                    [self setNeedsDisplay];
+//                }];
+//            } else {
+//                [videoElem.snapshot getImage:path succ:^{
+//                    [[[NSOperationQueue alloc] init] addOperationWithBlock:^{
+//                        UIImage *image = [UIImage imageNamed:path];
+//                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//                            self.contentImageView.image = image;
+//                            [self setNeedsDisplay];
+//                        }];
+//                    }];
+//                } fail:nil];
+//            }
+//        }
+//    }
 }
 
 #pragma mark ========================= event =========================
@@ -391,6 +408,15 @@
         [_sureBtn addTarget:self action:@selector(sure:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _sureBtn;
+}
+
+- (UIImageView *)playBtn
+{
+    if (!_playBtn) {
+        _playBtn = [[UIImageView alloc] initWithImage:[UIImage xo_imageNamedFromChatBundle:@"message_playVideo"]];
+        _playBtn.userInteractionEnabled = YES;
+    }
+    return _playBtn;
 }
 
 @end

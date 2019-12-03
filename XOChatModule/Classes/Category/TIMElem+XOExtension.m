@@ -8,6 +8,7 @@
 #import "TIMElem+XOExtension.h"
 #import "NSBundle+ChatModule.h"
 #import "ZXChatHelper.h"
+#import "XOChatMarco.h"
 #import <XOBaseLib/XOBaseLib.h>
 
 @implementation TIMElem (XOExtension)
@@ -120,8 +121,32 @@
     {
         text = nil;
     }
-    else if ([self isKindOfClass:[TIMCustomElem class]]) {   // 自定义消息
-        // 名片
+    else if ([self isKindOfClass:[TIMCustomElem class]])    // 自定义消息
+    {
+        TIMCustomElem *customElem = (TIMCustomElem *)self;
+        if (customElem.data.length > 0) {
+            NSError *jsonError = nil;
+            NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:customElem.data options:NSJSONReadingMutableContainers error:&jsonError];
+            if (!jsonError) {
+                int code = [jsonDict[XOCustomMessage_Key_Code] intValue];
+                if (XOCustomMessage_Code_Revoke == code) {          // 撤回消息
+                    NSString *operateNickname = jsonDict[XOCustomMessage_Key_OperaNick];
+                    text = [NSString stringWithFormat:XOChatLocalizedString(@"chat.message.revoke.%@"), operateNickname];
+                }
+                else if (XOCustomMessage_Code_VoiceCall == code) {  // 音频通话消息
+                    
+                }
+                else if (XOCustomMessage_Code_VideoCall == code) {  // 视频通话消息
+                    
+                }
+                else if (XOCustomMessage_Code_Redpacket == code) {  // 红包消息
+                    
+                }
+                else if (XOCustomMessage_Code_Transfer == code) {   // 转账消息
+                    
+                }
+            }
+        }
         // 音视频
         // 红包
         // 转账

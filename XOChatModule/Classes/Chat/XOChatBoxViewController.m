@@ -667,7 +667,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
         }
         self.imagePicker.showsCameraControls = YES;
         self.imagePicker.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self.parentViewController.navigationController presentViewController:_imagePicker animated:YES completion:NULL];
+        [self.parentViewController.navigationController presentViewController:self.imagePicker animated:YES completion:NULL];
     }];
 }
 // 拍视频
@@ -732,6 +732,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
         @XOStrongify(self);
         [self.TZImagePicker removeSelectedModel:obj];
     }];
+    [self.TZImagePicker popViewControllerAnimated:YES];
 }
 
 - (void)pickLocation

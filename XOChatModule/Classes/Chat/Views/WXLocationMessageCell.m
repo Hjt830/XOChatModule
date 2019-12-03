@@ -63,7 +63,7 @@
         x -= 18;
         
         [self.messageBackgroundImageView setFrame:CGRectMake(x, CGRectGetMaxY(self.avatarImageView.frame) - h, self.addressLabel.width + 40 + 23, h)];
-        [self.messageSendStatusImageView setCenter:CGPointMake(x - 20, sendY)];
+        [self.messageSendStatusImageView setCenter:CGPointMake(x - 30, sendY)];
         [self.messageSendStatusImageView setHidden:NO];
     }
     else {

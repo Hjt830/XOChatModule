@@ -230,31 +230,31 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
                 [self.dataSource addObject:obj];
             }
         }];
+        
+        // 将置顶的会话放在前面
+        __block NSArray *toppingArr = [XOContactManager defaultManager].toppingArray;
+        if (toppingArr.count > 0) {
+            [self.dataSource enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(TIMConversation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if ([toppingArr containsObject:[obj getReceiver]]) {
+                    [self.toppingArr addObject:obj];
+                    [self.dataSource removeObject:obj];
+                }
+            }];
+            // 按时间排序
+            [self.dataSource sortUsingComparator:^NSComparisonResult(TIMConversation * _Nonnull obj1, TIMConversation * _Nonnull obj2) {
+                return [[[obj2 getLastMsg] timestamp] compare:[[obj1 getLastMsg] timestamp]];
+            }];
+            [self.toppingArr sortUsingComparator:^NSComparisonResult(TIMConversation * _Nonnull obj1, TIMConversation * _Nonnull obj2) {
+                return [[[obj2 getLastMsg] timestamp] compare:[[obj1 getLastMsg] timestamp]];
+            }];
+            // 插入会话集合前面
+            NSMutableIndexSet *insexSet = [NSMutableIndexSet indexSet];
+            [self.toppingArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [insexSet addIndex:idx];
+            }];
+            [self.dataSource insertObjects:self.toppingArr atIndexes:insexSet];
+        }
     };
-    
-    // 将置顶的会话放在前面
-    __block NSArray *toppingArr = [XOContactManager defaultManager].toppingArray;
-    if (toppingArr.count > 0) {
-        [self.dataSource enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(TIMConversation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if ([toppingArr containsObject:[obj getReceiver]]) {
-                [self.toppingArr addObject:obj];
-                [self.dataSource removeObject:obj];
-            }
-        }];
-        // 按时间排序
-        [self.dataSource sortUsingComparator:^NSComparisonResult(TIMConversation * _Nonnull obj1, TIMConversation * _Nonnull obj2) {
-            return [[[obj2 getLastMsg] timestamp] compare:[[obj1 getLastMsg] timestamp]];
-        }];
-        [self.toppingArr sortUsingComparator:^NSComparisonResult(TIMConversation * _Nonnull obj1, TIMConversation * _Nonnull obj2) {
-            return [[[obj2 getLastMsg] timestamp] compare:[[obj1 getLastMsg] timestamp]];
-        }];
-        // 插入会话集合前面
-        NSMutableIndexSet *insexSet = [NSMutableIndexSet indexSet];
-        [self.toppingArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [insexSet addIndex:idx];
-        }];
-        [self.dataSource insertObjects:self.toppingArr atIndexes:insexSet];
-    }
     
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.tableView reloadData];

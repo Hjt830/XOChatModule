@@ -213,7 +213,7 @@ static float const kDefaultMargin = 8.0f;
 {
     if (_messageSendStatusImageView == nil) {
         _messageSendStatusImageView = [[UIView alloc] init];
-        _messageSendStatusImageView.bounds = CGRectMake(0, 0, self.sendingView.width, self.sendingView.height);
+        _messageSendStatusImageView.bounds = CGRectMake(0, 0, 30, 30);
         [_messageSendStatusImageView addSubview:self.sendfailView];
         [_messageSendStatusImageView addSubview:self.sendingView];
     }
@@ -224,6 +224,7 @@ static float const kDefaultMargin = 8.0f;
 {
     if (_sendingView == nil) {
         _sendingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        _sendingView.center = CGPointMake(15, 15);
     }
     return _sendingView;
 }
@@ -232,7 +233,8 @@ static float const kDefaultMargin = 8.0f;
 {
     if (_sendfailView == nil) {
         _sendfailView = [[UIImageView alloc] initWithImage:[UIImage xo_imageNamedFromChatBundle:@"message_sendFail"]];
-        _sendfailView.size = self.sendingView.size;
+        _sendfailView.contentMode = UIViewContentModeCenter;
+        _sendfailView.size = CGSizeMake(30, 30);
         [_sendfailView setUserInteractionEnabled:YES];
     }
     return _sendfailView;

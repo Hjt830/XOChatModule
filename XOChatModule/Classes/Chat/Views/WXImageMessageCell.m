@@ -112,7 +112,7 @@ static BOOL progressFinish = NO;
         float sendY = y + imageSize.height/2.0;
         [self.messageImageView setFrame:CGRectMake(x, y, imageSize.width, imageSize.height)];
         [self.messageBackgroundImageView setFrame:CGRectMake(x, y, imageSize.width, imageSize.height)];
-        [self.messageSendStatusImageView setCenter:CGPointMake(x - 20, sendY)];
+        [self.messageSendStatusImageView setCenter:CGPointMake(x - 30, sendY)];
         self.progressHud.bounds = CGRectMake(0, 0, imageSize.width, imageSize.height);
         self.progressHud.position = CGPointMake(imageSize.width/2.0, imageSize.height/2.0);
     }

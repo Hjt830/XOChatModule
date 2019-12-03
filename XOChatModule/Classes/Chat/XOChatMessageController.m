@@ -21,6 +21,7 @@
 #import "WXLocationMessageCell.h"
 #import "WXPromptMessageCell.h"
 
+#import "XOChatMarco.h"
 #import "TIMElem+XOExtension.h"
 #import "LGAudioKit.h"
 #import <SVProgressHUD/SVProgressHUD.h>
@@ -542,7 +543,7 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
         }
     }
     // 保存消息到本地
-    [self.conversation saveMessage:message sender:[self.conversation getReceiver] isReaded:YES];
+    [self.conversation saveMessage:message sender:[message sender] isReaded:YES];
     
     return indexpath;
 }
@@ -556,19 +557,45 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
         
         NSMutableArray <TIMMessage *>* mutArr = dict[MsgSectionListKey];
         __block BOOL needStop = NO;
+        __block BOOL deleteSection = NO;  // 是否需要删除整个分组
         [mutArr enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger subIdx, BOOL * _Nonnull subStop) {
            
-            if ([obj.msgId isEqualToString:message.msgId] && [obj.timestamp isEqual:message.timestamp]) {
-                [mutArr removeObject:obj];
-                NSIndexPath *indexpath = [NSIndexPath indexPathForRow:subIdx inSection:idx];
-                [self.tableView deleteRowsAtIndexPaths:@[indexpath] withRowAnimation:UITableViewRowAnimationAutomatic];
+            if ([obj.sender isEqualToString:message.sender] && obj.uniqueId == message.uniqueId) {
+                if (mutArr.count <= 1) {
+                    deleteSection = YES;    // 需要删除整个分组
+                }
+                else {
+                    deleteSection = NO;     // 不需要删除整个分组
+                    // 删除单条消息
+                    [mutArr removeObject:obj];
+                    NSIndexPath *indexpath = [NSIndexPath indexPathForRow:subIdx inSection:idx];
+                    [self.tableView deleteRowsAtIndexPaths:@[indexpath] withRowAnimation:UITableViewRowAnimationAutomatic];
+                }
                 
                 needStop = YES;
                 *subStop = YES;
             }
         }];
+        
+        // 删除消息分组
+        if (deleteSection) {
+            @synchronized (self) {
+                [self.dataSource removeObjectAtIndex:idx];
+            }
+            NSIndexSet *indexset = [NSIndexSet indexSetWithIndex:idx];
+            [self.tableView deleteSections:indexset withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
+        
         *stop = needStop;
     }];
+    
+    // 删除多媒体队列中的消息
+    if ([self.imageVideoList containsObject:message]) {
+        @synchronized (self) {
+            [self.imageVideoList removeObject:message];
+            [self.imageVideoKeyList removeObject:getMessageKey(message)];
+        }
+    }
 }
 
 // 更新消息
@@ -622,11 +649,6 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
                 [elem isKindOfClass:[TIMCustomElem class]])
             {
                 cell = [tableView dequeueReusableCellWithIdentifier:TextMessageCellID forIndexPath:indexPath];
-                if ([elem isKindOfClass:[TIMCustomElem class]]) {
-                    TIMCustomElem *customElem = (TIMCustomElem *)elem;
-                    NSString *text = [[NSString alloc] initWithData:customElem.data encoding:NSUTF8StringEncoding];
-                    NSLog(@"自定义消息 ============== %@", text);
-                }
             }
             else if ([elem isKindOfClass:[TIMImageElem class]]) {
                 cell = [tableView dequeueReusableCellWithIdentifier:ImageMessageCellID forIndexPath:indexPath];
@@ -649,6 +671,10 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
             else if ([elem isKindOfClass:[TIMGroupTipsElem class]] ||
                      [elem isKindOfClass:[TIMGroupTipsElemMemberInfo class]] ||
                      [elem isKindOfClass:[TIMGroupSystemElem class]])
+            {
+                cell = [tableView dequeueReusableCellWithIdentifier:PromptMessageCellID forIndexPath:indexPath];
+            }
+            else if ([elem isKindOfClass:[TIMCustomElem class]])
             {
                 cell = [tableView dequeueReusableCellWithIdentifier:PromptMessageCellID forIndexPath:indexPath];
             }
@@ -918,8 +944,12 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
 - (void)messageCellRevokeMessage:(WXMessageCell *)cell message:(TIMMessage *)message
 {
     [self.conversation revokeMessage:message succ:^{
-       
+        
+        // 删除消息
         [self deleteMessage:message];
+        // 发送撤回消息
+        [self sendRevokeCustomMessage];
+        
     } fail:^(int code, NSString *msg) {
         
     }];
@@ -927,12 +957,12 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
 // 删除消息
 - (void)messageCellDeleteMessage:(WXMessageCell *)cell message:(TIMMessage *)message
 {
-    [self.conversation deleteLocalMessage:^{
-        
+    if ([message remove]) {
         [self deleteMessage:message];
-    } fail:^(int code, NSString *msg) {
-        
-    }];
+    } else {
+        [SVProgressHUD showWithStatus:@"chat.message.delete.fail"];
+        [SVProgressHUD dismissWithDelay:1.5f];
+    }
 }
 // 点击了重发消息
 - (void)messageCellDidTapResendMessage:(WXMessageCell *)cell message:(TIMMessage *)message
@@ -946,7 +976,7 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
                 [cell sendFail];
             }];
             
-            if (result) {
+            if (result == 0) {
                 [cell sending];
             }
         }];
@@ -1173,28 +1203,22 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
         [self.imageVideoList enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             
             if ([obj elemCount] > 0) {
-                NSString *key = getMessageKey(obj);
                 TIMElem *elem = [obj getElem:0];
                 // 图片
                 if ([elem isKindOfClass:[TIMImageElem class]]) {
-                    TIMImageElem *imageElem = (TIMImageElem *)elem;
-                    if (imageElem.imageList.count > 0) {
-                        NSString *imagePath = [obj getImagePath];
-                        NSURL *thumbImageURL = [NSURL fileURLWithPath:[obj getThumbImagePath]];
-                        
-                        UIImageView * translateView = nil;
-                        if (idx == currentPage) {
-                            WXMessageCell *msgCell = [self.tableView cellForRowAtIndexPath:indexPath];
-                            if ([msgCell isKindOfClass:[WXImageMessageCell class]]) {
-                                translateView = ((WXImageMessageCell *)msgCell).messageImageView;
-                            }
-                        }
+                    NSString *imagePath = [obj getImagePath];
+                    NSURL *thumbImageURL = [NSURL fileURLWithPath:[obj getThumbImagePath]];
+                    
+                    if ([XOFM fileExistsAtPath:imagePath]) {
+                        NSIndexPath *index = [self findIndexPathWithSendingMessage:obj];
+                        WXMessageCell *msgCell = [self.tableView cellForRowAtIndexPath:index];
+                        UIImageView *translateView = (msgCell && [msgCell isKindOfClass:[WXImageMessageCell class]]) ? ((WXImageMessageCell *)msgCell).messageImageView : nil;
                         
                         YBIBImageData *imageData = [[YBIBImageData alloc] init];
                         imageData.imagePath = imagePath;
                         imageData.thumbURL = thumbImageURL;
                         imageData.projectiveView = translateView;
-                        imageData.extraData = key;
+                        imageData.extraData = index;
                         [sourceList addObject:imageData];
                     }
                 }
@@ -1203,19 +1227,16 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
                     NSData *data = [NSData dataWithContentsOfFile:[obj getThumbImagePath]];
                     UIImage *thumbImage = [UIImage imageWithData:data];
                     NSURL *videoURL = [NSURL fileURLWithPath:[obj getVideoPath]];
-                    UIImageView * translateView = nil;
-                    if (idx == currentPage) {
-                        WXMessageCell *msgCell = [self.tableView cellForRowAtIndexPath:indexPath];
-                        if ([msgCell isKindOfClass:[WXImageMessageCell class]]) {
-                            translateView = ((WXImageMessageCell *)msgCell).messageImageView;
-                        }
-                    }
+                    
+                    NSIndexPath *index = [self findIndexPathWithSendingMessage:obj];
+                    WXMessageCell *msgCell = [self.tableView cellForRowAtIndexPath:index];
+                    UIImageView *translateView = [msgCell isKindOfClass:[WXImageMessageCell class]] ? ((WXImageMessageCell *)msgCell).messageImageView : nil;
                     
                     YBIBVideoData *videoData = [[YBIBVideoData alloc] init];
                     videoData.videoURL = videoURL;
                     videoData.thumbImage = thumbImage;
                     videoData.projectiveView = translateView;
-                    videoData.extraData = key;
+                    videoData.extraData = index;
                     [sourceList addObject:videoData];
                 }
             }
@@ -1311,6 +1332,41 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
     [self.navigationController pushViewController:locationVC animated:YES];
 }
 
+#pragma mark ========================= 撤回消息 =========================
+
+- (void)sendRevokeCustomMessage
+{
+    TIMUserProfile *profile = [[TIMFriendshipManager sharedInstance] querySelfProfile];
+    // 发送撤回消息自定义消息
+    NSMutableDictionary *dict = @{XOCustomMessage_Key_Code: @(XOCustomMessage_Code_Revoke)}.mutableCopy;
+    if (!XOIsEmptyString(profile.nickname)) {
+        [dict setValue:profile.nickname forKey:XOCustomMessage_Key_OperaNick];
+    }
+    NSError *jsonError = nil;
+    NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:&jsonError];
+    if (!jsonError && data.length > 0) {
+        TIMCustomElem *elem = [[TIMCustomElem alloc] init];
+        elem.data = data;
+        TIMMessage *message = [[TIMMessage alloc] init];
+        int result = [message addElem:elem];
+        if (0 == result) {
+            @XOWeakify(self);
+            int sendMsg = [self.conversation sendMessage:message succ:^{
+                @XOStrongify(self);
+                [self sendSuccessMessage:message];
+            } fail:^(int code, NSString *msg) {
+                @XOStrongify(self);
+                [self sendFailMessage:message];
+            }];
+            
+            // 将消息显示出来
+            if(0 == sendMsg) {
+                [self sendingMessage:message];
+            }
+        }
+    }
+}
+
 #pragma mark ====================== UIDocumentInteractionControllerDelegate =======================
 
 - (UIViewController *)documentInteractionControllerViewControllerForPreview:(UIDocumentInteractionController *)controller
@@ -1342,15 +1398,22 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
  */
 - (void)yb_imageBrowser:(YBImageBrowser *)imageBrowser pageChanged:(NSInteger)page data:(id<YBIBDataProtocol>)data
 {
-//    NSIndexPath *indexPath = [self.imageVideoKeyList objectForKey:(NSString *)data];
-//    if (indexPath && indexPath.section < self.dataSource.count) {
-//        NSArray *arr = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey];
-//        if (indexPath.row < arr.count) {
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
-//            });
-//        }
-//    }
+    NSIndexPath *indexPath = nil;
+    if ([data isKindOfClass:[YBIBImageData class]]) {
+        indexPath = ((YBIBImageData *)data).extraData;
+    }
+    else if ([data isKindOfClass:[YBIBImageData class]]) {
+        indexPath = ((YBIBVideoData *)data).extraData;
+    }
+    
+    if (indexPath && indexPath.section < self.dataSource.count) {
+        NSArray *arr = [self.dataSource[indexPath.section] objectForKey:MsgSectionListKey];
+        if (indexPath.row < arr.count) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+            });
+        }
+    }
 }
 
 #pragma mark ========================= help =========================

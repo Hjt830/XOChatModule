@@ -79,7 +79,7 @@
     float y = self.avatarImageView.y;
     float x = self.avatarImageView.x + (self.message.isSelf ? - width - 5 : self.avatarImageView.width + 5);
     self.messageBackgroundImageView.frame = CGRectMake(x, y, width, height);
-    self.messageSendStatusImageView.center = CGPointMake(self.message.isSelf ? x - 20 : x + 20, y + height/2.0);
+    self.messageSendStatusImageView.center = CGPointMake(self.message.isSelf ? x - 30 : x + 30, y + height/2.0);
     
     self.audioAniImageView.size = CGSizeMake(20, 20);
     self.audioAniImageView.origin = CGPointMake(self.message.isSelf ? width - 44 : 20, (height - 20.0)/2.0);

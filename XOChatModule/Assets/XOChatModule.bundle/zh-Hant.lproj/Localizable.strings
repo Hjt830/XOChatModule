@@ -75,6 +75,8 @@
 "chat.message.delete"               = "刪除";
 "chat.message.forward.limit"        = "轉發消息一次不能超過9條";
 "chat.message.forward.send"         = "消息轉發";
+"chat.message.revoke.%@"            = "'%@' 撤回一條消息";
+"chat.message.delete.fail"          = "刪除消息失敗";
 
 "contact.addressbook"               = "通訊錄";
 "contact.friend"                    = "好友";

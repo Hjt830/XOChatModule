@@ -25,4 +25,23 @@ static float const FileHeight = 80.0f;          // 文件的高度
 static NSString * const OnlineServerIdentifier = @"user0";
 
 
+
+
+
+static NSString * const XOCustomMessage_Key_Code        = @"code";          // 自定义消息key -- code
+static NSString * const XOCustomMessage_Key_OperaUser   = @"operaUser";     // 自定义消息key -- 操作人identifier
+static NSString * const XOCustomMessage_Key_OperaNick   = @"operaNickname"; // 自定义消息key -- 操作人nickname
+
+typedef int XOCustomMessage_Code;  // 自定义消息类型
+
+static XOCustomMessage_Code const XOCustomMessage_Code_Revoke       = 1000; // 撤回消息
+static XOCustomMessage_Code const XOCustomMessage_Code_VoiceCall    = 2000; // 音频通话消息
+static XOCustomMessage_Code const XOCustomMessage_Code_VideoCall    = 3000; // 视频通话消息
+static XOCustomMessage_Code const XOCustomMessage_Code_Redpacket    = 4000; // 红包消息
+static XOCustomMessage_Code const XOCustomMessage_Code_Transfer     = 5000; // 转账消息
+
+
+
+
+
 #endif /* XOChatMarco_h */
