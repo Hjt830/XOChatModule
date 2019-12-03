@@ -211,7 +211,9 @@
 		547B455D0F03ECDBFE1D4EAAC439A86A /* UIViewController+XOExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = ACFA336E25D6A39426D08821D336C483 /* UIViewController+XOExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		548039CB736321926E5F94E31F1EF5E3 /* NSBundle+ChatModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 7927445F6FE4BDB154D34A56B35F593F /* NSBundle+ChatModule.m */; };
 		54EAE6D13EA5875001841B7FEDCF6D5A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C875703B65163492FC0C0A1BF30FFEA4 /* Foundation.framework */; };
-		55E41B2D238500930014EB75 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A56B605326D87968CC99371C13819F6 /* libmp3lame.a */; };
+		55AB615B2394B1000007B474 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A56B605326D87968CC99371C13819F6 /* libmp3lame.a */; };
+		55AB61622394BD240007B474 /* ForwardView.h in Headers */ = {isa = PBXBuildFile; fileRef = 55AB61602394BD240007B474 /* ForwardView.h */; };
+		55AB61632394BD240007B474 /* ForwardView.m in Sources */ = {isa = PBXBuildFile; fileRef = 55AB61612394BD240007B474 /* ForwardView.m */; };
 		55F00E6E9187A6FE610DAB51AC12258F /* NSDateFormatter+XOExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = A6A203ACB04E606F1018E4734F6B5A24 /* NSDateFormatter+XOExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		56D172C5AB1FD73311D0ED473BD6810D /* SDImageCacheConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD84AEDD2792B2A4827F9B7D9DCEAF2 /* SDImageCacheConfig.m */; };
 		56E083AFD9462B47206419E84065915B /* UIImage+ForceDecode.m in Sources */ = {isa = PBXBuildFile; fileRef = C23D636CE8BCF74A4F78E1649F038337 /* UIImage+ForceDecode.m */; };
@@ -1100,6 +1102,8 @@
 		53DC23F57A0FF6B4A49C8FDFE2BC2745 /* XOConversationListCell.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = XOConversationListCell.h; sourceTree = "<group>"; };
 		53E5DC66801CC93717B460F877EBFB58 /* FMDatabase.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FMDatabase.h; path = src/fmdb/FMDatabase.h; sourceTree = "<group>"; };
 		541F6EEB18D87D45518BCC921FCB3F71 /* TIMGroupManager+Ext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "TIMGroupManager+Ext.h"; path = "ImSDK.framework/Headers/TIMGroupManager+Ext.h"; sourceTree = "<group>"; };
+		55AB61602394BD240007B474 /* ForwardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForwardView.h; sourceTree = "<group>"; };
+		55AB61612394BD240007B474 /* ForwardView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ForwardView.m; sourceTree = "<group>"; };
 		55EF7B3E2055748CBBDDD80A18BB62C1 /* ZXChatBoxView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ZXChatBoxView.m; sourceTree = "<group>"; };
 		561B15F910C4871DE0483BD166566952 /* XOConversationManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = XOConversationManager.m; sourceTree = "<group>"; };
 		561C0DC2B089816AA92EF3EA684F658C /* MJRefreshAutoGifFooter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshAutoGifFooter.h; path = MJRefresh/Custom/Footer/Auto/MJRefreshAutoGifFooter.h; sourceTree = "<group>"; };
@@ -1708,7 +1712,7 @@
 				AEA5E85EB14E05ED61FF42AB4F744624 /* XOBaseLib.framework in Frameworks */,
 				7D997264B2B8DBE883371559529D5A4F /* YBImageBrowser.framework in Frameworks */,
 				DFA4A08136BCE8662DF543A56A363848 /* YYModel.framework in Frameworks */,
-				55E41B2D238500930014EB75 /* libmp3lame.a in Frameworks */,
+				55AB615B2394B1000007B474 /* libmp3lame.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2678,6 +2682,8 @@
 				4CC286EFFD6E252816DAB90313D668A4 /* WXTextMessageCell.m */,
 				C9D71588F19A392C38406FDA43399734 /* WXVideoMessageCell.h */,
 				71FE416DD16C99868EA8A142AFDF21C5 /* WXVideoMessageCell.m */,
+				55AB61602394BD240007B474 /* ForwardView.h */,
+				55AB61612394BD240007B474 /* ForwardView.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2756,8 +2762,8 @@
 				AA79EFE7E67F06B16109A2BFE1691BF3 /* XOChatMessageController.m */,
 				D51336035BFC43C4A09F2A95024128F4 /* XOChatViewController.h */,
 				78B67F9009FC1D171ED3A80534ADE017 /* XOChatViewController.m */,
-				49D67D50485D27369C28CAF8D9B4227B /* Box */,
 				96172C2746CF7A744057D927CABBE9BD /* ViewControllers */,
+				49D67D50485D27369C28CAF8D9B4227B /* Box */,
 				9ED1D4AEF40AB06BB6A742D69AE1CB6B /* Views */,
 			);
 			name = Chat;
@@ -3237,6 +3243,7 @@
 				B68455B89CB4DB892F2A3D8CD80B3D86 /* LGAudioKit.h in Headers */,
 				32D87263240626964EA52F4038A57582 /* LGAudioPlayer.h in Headers */,
 				48171A7A6B4ADD5625D5D448E1903F2A /* LGSoundRecorder.h in Headers */,
+				55AB61622394BD240007B474 /* ForwardView.h in Headers */,
 				F2B9D5D4D3AE8F7B6F8B54FEDD5FCB85 /* NSBundle+ChatModule.h in Headers */,
 				657B572F771873DF5F9390862ED6BF1D /* TIMElem+XOExtension.h in Headers */,
 				C2704F2DE270F1C05E55E156E5F11915 /* TIMMessage+XOChatExtenstion.h in Headers */,
@@ -4358,6 +4365,7 @@
 				70CAE5E9F1B32222427FEB41863CEF74 /* WXVideoMessageCell.m in Sources */,
 				4EE43621C65A950280D94A2B641AD8F3 /* XOChatBoxViewController.m in Sources */,
 				BB677C8946FFEFA11853FFB8C6EC3AB6 /* XOChatClient.m in Sources */,
+				55AB61632394BD240007B474 /* ForwardView.m in Sources */,
 				1CD35F0F8707AC1BAA24099D00B69F73 /* XOChatMessageController.m in Sources */,
 				A6F60A8934AE7F32EC71A05F0AE6F275 /* XOChatModule-dummy.m in Sources */,
 				C4C687298B1F48188ADC6D514AF6E482 /* XOChatViewController.m in Sources */,

@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "TXIMSDK_iOS": [
-      "~> 4.4.627"
+      "~> 4.4.716"
     ],
     "XOBaseLib": [
       "~> 0.3.1"
