@@ -229,6 +229,14 @@ static XOChatClient *__chatClient = nil;
             [self scheduleDownloadTask:message];
         }
     }];
+    
+    // 保存消息到本地数据库
+    [msgs enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj isKindOfClass:[TIMMessage class]]) {
+            TIMMessage *message = (TIMMessage *)obj;
+            [message convertToImportedMsg];
+        }
+    }];
 }
 
 #pragma mark ========================= TIMUserStatusListener =========================

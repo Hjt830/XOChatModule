@@ -8,6 +8,7 @@
 
 #import "XOChatMessageController.h"
 #import "XOLocationViewController.h"
+#import "XOGroupSelectedController.h"
 #import "ZXChatHelper.h"
 
 #import "XOChatClient.h"
@@ -45,7 +46,7 @@ static NSString * const PromptMessageCellID     = @"PromptMessageCellID";
 static int const MessageTimeSpaceMinute = 5;        // 消息时间间隔时间 单位:分钟
 static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序列
 
-@interface XOChatMessageController () <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, XOChatClientProtocol, XOMessageDelegate, LGAudioPlayerDelegate, WXMessageCellDelegate, YBImageBrowserDelegate>
+@interface XOChatMessageController () <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, XOChatClientProtocol, XOMessageDelegate, LGAudioPlayerDelegate, WXMessageCellDelegate, YBImageBrowserDelegate, XOGroupSelectedDelegate>
 {
     UIEdgeInsets        _safeInset;
 }
@@ -540,6 +541,9 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
             [self.lock unlock];
         }
     }
+    // 保存消息到本地
+    [self.conversation saveMessage:message sender:[self.conversation getReceiver] isReaded:YES];
+    
     return indexpath;
 }
 
@@ -901,12 +905,53 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
         }
     }
 }
-// 长按了消息
-- (void)messageCellLongPressMessage:(WXMessageCell *)cell message:(TIMMessage *)message
-{}
+// 转发消息
+- (void)messageCellForwardMessage:(WXMessageCell *)cell message:(TIMMessage *)message
+{
+    XOGroupSelectedController *forwardVC = [[XOGroupSelectedController alloc] init];
+    forwardVC.memberType = SelectMemberType_Forward;
+    forwardVC.forwardMsg = message;
+    forwardVC.delegate = self;
+    [self.navigationController pushViewController:forwardVC animated:YES];
+}
+// 撤回消息
+- (void)messageCellRevokeMessage:(WXMessageCell *)cell message:(TIMMessage *)message
+{
+    [self.conversation revokeMessage:message succ:^{
+       
+        [self deleteMessage:message];
+    } fail:^(int code, NSString *msg) {
+        
+    }];
+}
+// 删除消息
+- (void)messageCellDeleteMessage:(WXMessageCell *)cell message:(TIMMessage *)message
+{
+    [self.conversation deleteLocalMessage:^{
+        
+        [self deleteMessage:message];
+    } fail:^(int code, NSString *msg) {
+        
+    }];
+}
 // 点击了重发消息
 - (void)messageCellDidTapResendMessage:(WXMessageCell *)cell message:(TIMMessage *)message
-{}
+{
+    [self showAlertWithTitle:nil message:XOChatLocalizedString(@"chat.message.resend") sureTitle:XOChatLocalizedString(@"sure") cancelTitle:XOChatLocalizedString(@"cancel") sureComplection:^{
+        
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            int result = [self.conversation sendMessage:message succ:^{
+                [cell sendSuccess];
+            } fail:^(int code, NSString *msg) {
+                [cell sendFail];
+            }];
+            
+            if (result) {
+                [cell sending];
+            }
+        }];
+    } cancelComplection:NULL];
+}
 
 #pragma mark =========================== LGAudioPlayerDelegate ===========================
 
@@ -938,6 +983,70 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
                 
             }
         }
+    }
+}
+
+#pragma mark ========================= XOGroupSelectedDelegate =========================
+
+- (void)groupSelectController:(XOGroupSelectedController *)selectController forwardMessage:(TIMMessage *)message toReceivers:(NSArray *)receivers
+{
+    if (message && receivers.count > 0) {
+        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+        queue.maxConcurrentOperationCount = 1;
+        
+        // 转发消息
+        __block NSBlockOperation *temp = nil;
+        [receivers enumerateObjectsUsingBlock:^(id _Nonnull user, NSUInteger idx, BOOL * _Nonnull stop) {
+            
+            NSBlockOperation *sendOperation = [NSBlockOperation blockOperationWithBlock:^{
+                
+                TIMConversation *conversation = nil;
+                if ([user isKindOfClass:[TIMUserProfile class]]) {
+                    TIMUserProfile *contact = (TIMUserProfile *)user;
+                    conversation = [[TIMManager sharedInstance] getConversation:TIM_C2C receiver:contact.identifier];
+                }
+                else if ([user isKindOfClass:[TIMGroupInfo class]]) {
+                    TIMGroupInfo *group = (TIMGroupInfo *)user;
+                    conversation = [[TIMManager sharedInstance] getConversation:TIM_GROUP receiver:group.group];
+                }
+                
+                if (conversation) {
+                    // 拷贝消息
+                    __block TIMMessage *copyMsg = [[TIMMessage alloc] init];
+                    if(0 == [copyMsg copyFrom:message]) {
+                        __block BOOL isCurrent = [[conversation getReceiver] isEqualToString:[self.conversation getReceiver]];
+                        // 发送
+                        int result = [conversation sendMessage:copyMsg succ:^{
+                            if (isCurrent) {
+                                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                    [self sendSuccessMessage:copyMsg];
+                                }];
+                            }
+                        } fail:^(int code, NSString *msg) {
+                            if (isCurrent) {
+                                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                    [self sendFailMessage:copyMsg];
+                                }];
+                            }
+                        }];
+                        
+                        if (result == 0 && isCurrent) {
+                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                [self sendingMessage:copyMsg];
+                            }];
+                        }
+                    }
+                }
+            }];
+            
+            if (temp) {
+                [sendOperation addDependency:temp];
+            }
+            temp = sendOperation;
+            
+            [queue addOperation:sendOperation];
+        }];
+        [queue waitUntilAllOperationsAreFinished];
     }
 }
 

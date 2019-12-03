@@ -12,11 +12,14 @@
 
 // 群成员最大人数
 static int const MaxGroupMemberCount = 500;
+// 最大转发数
+static int const MaxMsgForwardCount = 9;
 
-typedef NS_ENUM(NSInteger, GroupMemberType) {
-    GroupMemberType_Create  = 1001,  // 创建群
-    GroupMemberType_Add     = 1002,  // 添加群成员
-    GroupMemberType_Remove  = 1003,  // 剔除群成员
+typedef NS_ENUM(NSInteger, SelectMemberType) {
+    SelectMemberType_Create  = 1001,  // 创建群
+    SelectMemberType_Add     = 1002,  // 添加群成员
+    SelectMemberType_Remove  = 1003,  // 剔除群成员
+    SelectMemberType_Forward = 1004,  // 消息转发
 };
 
 
@@ -26,7 +29,9 @@ typedef NS_ENUM(NSInteger, GroupMemberType) {
 @optional
 
 // 选中成员的回调
-- (void)groupSelectController:(XOGroupSelectedController *)selectController selectMemberType:(GroupMemberType)memberType didSelectMember:(NSArray <TIMUserProfile *> *)selectMember;
+- (void)groupSelectController:(XOGroupSelectedController *)selectController selectMemberType:(SelectMemberType)memberType didSelectMember:(NSArray <TIMUserProfile *> *)selectMember;
+// 消息转发
+- (void)groupSelectController:(XOGroupSelectedController *)selectController forwardMessage:(TIMMessage *)message toReceivers:(NSArray *)receivers;
 
 @end
 
@@ -35,10 +40,12 @@ typedef NS_ENUM(NSInteger, GroupMemberType) {
 
 @property (nonatomic, weak) id  <XOGroupSelectedDelegate> delegate;
 
-@property (nonatomic, assign) GroupMemberType           memberType;             // 默认是创建群
+@property (nonatomic, assign) SelectMemberType             memberType;             // 默认是创建群
 
-@property (nonatomic, strong) TIMGroupInfo                *groupInfo;             // 群信息
+@property (nonatomic, strong) TIMGroupInfo                *groupInfo;              // 群信息
 @property (nonatomic, strong) NSArray     <TIMUserProfile *>* existGroupMembers;   // 添加|剔除 时的群成员列表
+
+@property (nonatomic, strong) TIMMessage                  *forwardMsg;             // 消息转发时的消息
 
 @end
 

@@ -41,6 +41,13 @@ NS_ASSUME_NONNULL_BEGIN
 // 删除置顶群
 - (BOOL)removeToppingListWithReceiverId:(NSString *)receiverId;
 
+
+// 添加好友
+- (void)addFriend:(NSString *)identifier;
+// 删除好友
+- (void)deleteFriend:(NSString *)identifier;
+
+
 /**
  *  @brief 添加|删除代理
  */

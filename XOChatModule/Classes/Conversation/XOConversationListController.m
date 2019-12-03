@@ -175,7 +175,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 - (void)groupChat
 {
     XOGroupSelectedController *groupVC = [[XOGroupSelectedController alloc] init];
-    groupVC.memberType = GroupMemberType_Create;
+    groupVC.memberType = SelectMemberType_Create;
     [self.navigationController pushViewController:groupVC animated:YES];
 }
 
@@ -633,7 +633,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
  */
 - (void)xoOnRevokeMessage:(TIMMessageLocator*)locator
 {
-    
+    NSLog(@"消息被撤回");
 }
 
 /**

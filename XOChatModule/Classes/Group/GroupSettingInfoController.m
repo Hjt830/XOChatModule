@@ -666,10 +666,10 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
     if (indexPath.item >= self.showMembers.count) {
         XOGroupSelectedController *selectVC = [[XOGroupSelectedController alloc] init];
         if (indexPath.item == self.showMembers.count) {// 添加群成员
-            selectVC.memberType = GroupMemberType_Add;
+            selectVC.memberType = SelectMemberType_Add;
         }
         else if (indexPath.item > self.showMembers.count) { // 剔除群成员
-            selectVC.memberType = GroupMemberType_Remove;
+            selectVC.memberType = SelectMemberType_Remove;
         }
         selectVC.existGroupMembers = self.groupMembers;
         selectVC.groupInfo = self.groupInfo;
@@ -699,7 +699,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
 #pragma mark ========================= XOGroupSelectedDelegate =========================
 
 // 选中成员的回调
-- (void)groupSelectController:(XOGroupSelectedController *)selectController selectMemberType:(GroupMemberType)memberType didSelectMember:(NSArray <TIMUserProfile *> *)selectMember
+- (void)groupSelectController:(XOGroupSelectedController *)selectController selectMemberType:(SelectMemberType)memberType didSelectMember:(NSArray <TIMUserProfile *> *)selectMember
 {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self loadGroupMember];

@@ -10,13 +10,15 @@
 #import "BMChineseSort.h"
 #import "UIImage+XOChatBundle.h"
 #import "UIImage+XOChatExtension.h"
+#import "ForwardView.h"
 //#import "NewPersonInfoViewController.h"
 //#import "GroupSelectMemberViewController.h"
 
 static NSString * const MemberTableViewCellID = @"MemberTableViewCellID";
 static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
+static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID";
 
-@interface XOGroupSelectedController () <UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
+@interface XOGroupSelectedController () <UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout, ForwardViewDelegate>
 {
     NSInteger page;
 }
@@ -44,7 +46,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
 {
     self = [super init];
     if (self) {
-        _memberType = GroupMemberType_Create;
+        _memberType = SelectMemberType_Create;
     }
     return self;
 }
@@ -91,12 +93,12 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
 - (void)initiliazation
 {
     // 添加 | 删除 已经在群中的成员的ID集合
-    if (GroupMemberType_Remove == self.memberType || GroupMemberType_Add == self.memberType) {
+    if (SelectMemberType_Remove == self.memberType || SelectMemberType_Add == self.memberType) {
         self.existGroupIds = [self.existGroupMembers valueForKey:@"identifier"];
     }
     
     // 创建群 | 添加群成员
-    if (GroupMemberType_Create == self.memberType || GroupMemberType_Add == self.memberType)
+    if (SelectMemberType_Create == self.memberType || SelectMemberType_Add == self.memberType || SelectMemberType_Forward == self.memberType)
     {
         [[XOChatClient shareClient].contactManager getAllContactsList:^(NSArray <TIMFriend *> * _Nullable friendList) {
             
@@ -126,7 +128,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
         }];
     }
     // 删除群成员
-    else if (GroupMemberType_Remove == self.memberType)
+    else if (SelectMemberType_Remove == self.memberType)
     {
         // 按照首字母排序
         BMChineseSortSetting.share.sortMode = 2; // 1或2
@@ -155,14 +157,17 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
         [self.delegate groupSelectController:self selectMemberType:self.memberType didSelectMember:self.addData];
     }
     
-    if (GroupMemberType_Create == self.memberType) {
+    if (SelectMemberType_Create == self.memberType) {
         [self createGroup];
     }
-    else if (GroupMemberType_Add == self.memberType) {
+    else if (SelectMemberType_Add == self.memberType) {
         [self addGroupMember];
     }
-    else if (GroupMemberType_Remove == self.memberType) {
+    else if (SelectMemberType_Remove == self.memberType) {
         [self removeGroupMember];
+    }
+    else if (SelectMemberType_Forward == self.memberType) {
+        [self forwardMessage];
     }
 }
 
@@ -334,6 +339,30 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
     }];
 }
 
+// 转发消息
+- (void)forwardMessage
+{
+    if (!XOIsEmptyArray(self.addData)) {
+        ForwardView *forwardView = [[ForwardView alloc] init];
+        forwardView.delegate = self;
+        [forwardView showInView:self.view withReceivers:self.addData message:self.forwardMsg delegate:self];
+    }
+}
+
+#pragma mark ========================= ForwardViewDelegate =========================
+
+- (void)forwardView:(ForwardView *)forwardView forwardMessage:(TIMMessage *)message toReceivers:(NSArray *)receivers
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(groupSelectController:forwardMessage:toReceivers:)]) {
+        [self.delegate groupSelectController:self forwardMessage:message toReceivers:receivers];
+    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.navigationController popViewControllerAnimated:YES];
+    });
+}
+
+- (void)forwardViewDidCancelForward:(ForwardView *)forwardView {}
+
 #pragma mark ========================= UITableViewDataSource & UITableViewDelegate =========================
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -351,7 +380,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
     cell.profile = friend;
     
     // 添加群成员时，已经在群里面的默认勾选
-    if (GroupMemberType_Add == self.memberType)
+    if (SelectMemberType_Add == self.memberType)
     {
         if ([self.existGroupIds containsObject:friend.identifier]) {
             cell.isLock = YES;
@@ -360,7 +389,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
         }
     }
     // 删除群成员时，群主默认勾选
-    else if (GroupMemberType_Remove == self.memberType) {
+    else if (SelectMemberType_Remove == self.memberType) {
         if ([friend.identifier isEqualToString:self.groupInfo.owner]) {
             cell.isLock = YES;
         } else {
@@ -383,16 +412,16 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
 {
     TIMUserProfile *profile = self.sortedModelArr[indexPath.section][indexPath.row];
     // 创建群
-    if (GroupMemberType_Create == self.memberType)
+    if (SelectMemberType_Create == self.memberType)
     {
-        if (self.addData.count > MaxGroupMemberCount) {
+        if (self.addData.count >= MaxGroupMemberCount) {
             [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"group.friend.limitMax")];
             [SVProgressHUD dismissWithDelay:2.0f];
             return;
         }
     }
     // 添加群成员时
-    else if (GroupMemberType_Add == self.memberType)
+    else if (SelectMemberType_Add == self.memberType)
     {
         // 已存在群成员不可选择
         if ([self.existGroupIds containsObject:profile.identifier]) {
@@ -407,10 +436,18 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
         }
     }
     // 删除群成员时
-    else if (GroupMemberType_Remove == self.memberType) {
+    else if (SelectMemberType_Remove == self.memberType) {
         // 群主不可选择
         if ([profile.identifier isEqualToString:self.groupInfo.owner]) {
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            return;
+        }
+    }
+    // 转发消息时
+    else if (SelectMemberType_Forward == self.memberType) {
+        if (self.addData.count > MaxMsgForwardCount) {
+            [SVProgressHUD showInfoWithStatus:XOChatLocalizedString(@"chat.message.forward.limit")];
+            [SVProgressHUD dismissWithDelay:2.0f];
             return;
         }
     }
@@ -436,7 +473,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
 {
     TIMUserProfile *profile = self.sortedModelArr[indexPath.section][indexPath.row];
     // 添加群成员时
-    if (GroupMemberType_Add == self.memberType)
+    if (SelectMemberType_Add == self.memberType)
     {
         // 已经在群中的成员不可反选
         if ([self.existGroupIds containsObject:profile.identifier]) {
@@ -445,7 +482,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
         }
     }
     // 删除群成员时
-    else if (GroupMemberType_Remove == self.memberType)
+    else if (SelectMemberType_Remove == self.memberType)
     {
         // 群主不可反选
         if ([profile.identifier isEqualToString:self.groupInfo.owner]) {
@@ -484,6 +521,10 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
     return 0.1;
+}
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    return [tableView dequeueReusableHeaderFooterViewWithIdentifier:MemberTableViewHeadFootID];
 }
 // 索引表
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
@@ -551,7 +592,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     // 创建群 | 添加群成员
-    if (GroupMemberType_Create == self.memberType || GroupMemberType_Add == self.memberType) {
+    if (SelectMemberType_Create == self.memberType || SelectMemberType_Add == self.memberType) {
         __weak XOGroupSelectedController *wself = self;
         self.tableView.mj_header = [MJRefreshHeader headerWithRefreshingBlock:^{
             __strong XOGroupSelectedController *sself = wself;
@@ -570,7 +611,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
 //{
 //    NSString *keyword = [searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 //    if (!XOIsEmptyString(keyword)) {
-//        if (GroupMemberType_Remove == self.memberType) {
+//        if (SelectMemberType_Remove == self.memberType) {
 //            __block NSMutableArray <NSDictionary *>* copyArr = @[].mutableCopy;
 //            [self.groupMembers enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
 //                NSString *realName = obj[@"realName"];
@@ -624,6 +665,7 @@ static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
         _tableView.backgroundColor = BG_TableColor;
         
         [_tableView registerClass:[MemberTableViewCell class] forCellReuseIdentifier:MemberTableViewCellID];
+        [_tableView registerClass:[UITableViewHeaderFooterView class] forHeaderFooterViewReuseIdentifier:MemberTableViewHeadFootID];
     }
     return _tableView;
 }

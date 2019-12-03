@@ -68,6 +68,14 @@
 "chat.location.navigation.message"  = "導航";
 "chat.message.reSend"               = "重發消息嗎?";
 
+"chat.message.copy"                 = "複製";
+"chat.message.forward"              = "轉發";
+"chat.message.revoke"               = "撤回";
+"chat.message.resend"               = "重發";
+"chat.message.delete"               = "刪除";
+"chat.message.forward.limit"        = "轉發消息一次不能超過9條";
+"chat.message.forward.send"         = "消息轉發";
+
 "contact.addressbook"               = "通訊錄";
 "contact.friend"                    = "好友";
 "contact.group"                     = "群組";

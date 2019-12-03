@@ -7,6 +7,7 @@
 //
 
 #import "XOContactManager.h"
+#import "XOChatClient.h"
 #import <fmdb/FMDB.h>
 #import <XOBaseLib/XOBaseLib.h>
 #import <GCDMulticastDelegate/GCDMulticastDelegate.h>
@@ -345,6 +346,42 @@ static XOContactManager * __contactManager = nil;
     NSString *path = [XOUserSettingDirectory() stringByAppendingPathComponent:@"toppingGroupList.plist"];
     return [NSURL fileURLWithPath:path];
 }
+
+
+// 添加好友
+- (void)addFriend:(NSString *)identifier
+{
+    if (!XOIsEmptyString(identifier)) {
+        TIMFriendRequest *request = [[TIMFriendRequest alloc] init];
+        request.identifier = identifier;
+        
+        [[TIMManager sharedInstance].friendshipManager addFriend:request succ:^(TIMFriendResult *result) {
+            
+            if (result && result.result_code == ERR_SUCC && !XOIsEmptyString(result.identifier)) {
+                [self asyncFriendList];
+            }
+            
+        } fail:^(int code, NSString *msg) {
+            
+        }];
+    }
+}
+
+// 删除好友
+- (void)deleteFriend:(NSString *)identifier
+{
+    if (!XOIsEmptyString(identifier)) {
+        TIMFriendRequest *request = [[TIMFriendRequest alloc] init];
+        request.identifier = identifier;
+        
+        [[TIMManager sharedInstance].friendshipManager deleteFriends:@[identifier] delType:TIM_FRIEND_DEL_BOTH succ:^(NSArray<TIMFriendResult *> *results) {
+             [self asyncFriendList];
+        } fail:^(int code, NSString *msg) {
+            
+        }];
+    }
+}
+
 
 @end
 

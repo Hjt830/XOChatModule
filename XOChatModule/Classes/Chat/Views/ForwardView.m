@@ -7,13 +7,15 @@
 //
 
 #import "ForwardView.h"
+#import "UIImage+XOChatBundle.h"
+#import "UIImage+XOChatExtension.h"
+#import "NSBundle+ChatModule.h"
 #import <SDWebImage/UIImageView+WebCache.h>
-#import "GroupManager.h"
 
 @interface ForwardView ()
 
-@property (nonatomic, strong) NSArray        <IMAUser *>*receivers;
-@property (nonatomic, strong) IMAMsg                    *message;
+@property (nonatomic, strong) NSArray                   *receivers;
+@property (nonatomic, strong) TIMMessage                *message;
 
 @property (nonatomic, strong) UIView                    *maskView;
 @property (nonatomic, strong) ForwardContentView        *contentView;
@@ -32,7 +34,7 @@
 
 @implementation ForwardView
 
-- (void)showInView:(UIView *)view withReceivers:(NSArray <IMAUser *>*)receivers message:(IMAMsg *)message delegate:(id <ForwardViewDelegate>)delegate
+- (void)showInView:(UIView *)view withReceivers:(NSArray <TIMUserProfile *>*)receivers message:(TIMMessage *)message delegate:(id <ForwardViewDelegate>)delegate
 {
     [self setDelegate:delegate];
     [self showInView:view];
@@ -60,11 +62,13 @@
     [super layoutSubviews];
 
     self.maskView.frame = CGRectMake(0, 0, self.width, self.height);
-
+    TIMElem *elem = [self.message getElem:0];
+    
     CGFloat contentW = self.width - 60;
     int count = (contentW - 40)/50; // 一排最多放几个头像
     CGFloat receiverHeight = self.reveiverIconArr.count < count ? 95.0f : 140.0f;
-    CGFloat contentsHeight = (self.message.type == EIMAMSG_Text) ? 64 : 140; // 消息内容的高度
+    BOOL isText = [elem isKindOfClass:[TIMTextElem class]];
+    CGFloat contentsHeight = isText ? 64 : 140; // 消息内容的高度
     CGFloat contentH = receiverHeight + contentsHeight + 50;
     self.contentView.frame = CGRectMake(30, (self.height - contentH)/2.0, contentW, contentH);
     self.contentView.layer.cornerRadius = 8.0f;
@@ -88,12 +92,13 @@
         self.sendNameLabel.frame = CGRectZero;
     }
     
-    if (EIMAMSG_Text == self.message.type) {
+    if (isText) {
         self.contentLabel.frame = CGRectMake(20, receiverHeight + 10, contentW - 40, 44);
     }
-    else if (EIMAMSG_Image == self.message.type || EIMAMSG_Video == self.message.type) {
-        if (EIMAMSG_Image == self.message.type) {
-            TIMElem *elem = [_message.msg getElem:0];
+    else if ([elem isKindOfClass:[TIMImageElem class]] ||
+             [elem isKindOfClass:[TIMVideoElem class]])
+    {
+        if ([elem isKindOfClass:[TIMImageElem class]]) {
             TIMImage *timImage = [((TIMImageElem *)elem).imageList firstObject];
             CGFloat imageW = 120 * (timImage.width * 1.0/timImage.height * 1.0);
             self.contentImageView.frame = CGRectMake((contentW - imageW)/2.0, receiverHeight + 10, imageW, 120);
@@ -116,7 +121,7 @@
 - (void)showInView:(UIView *)view
 {
     [view addSubview:self];
-    self.frame = CGRectMake(0, -SCREEN_HEIGHT, view.width, view.height);
+    self.frame = CGRectMake(0, -self.height, view.width, view.height);
     [UIView animateWithDuration:0.25 animations:^{
         self.frame = CGRectMake(0, 0, view.width, view.height);
     }];
@@ -129,7 +134,7 @@
     self.contentImageView.image = nil;
 
     __block CGRect rect = self.frame;
-    rect.origin.y = SCREEN_HEIGHT;
+    rect.origin.y = self.height;
     [UIView animateWithDuration:0.25 animations:^{
         self.frame = rect;
     } completion:^(BOOL finished) {
@@ -139,29 +144,26 @@
 
 #pragma mark ========================= setter =========================
 
-- (void)setReceivers:(NSArray <IMAUser *>*)receivers
+- (void)setReceivers:(NSArray *)receivers
 {
     _receivers = receivers;
     
-    [receivers enumerateObjectsUsingBlock:^(IMAUser * _Nonnull user, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([user isC2CType]) {
-            [self setName:[user showTitle]];
-            [[SDWebImageManager sharedManager] loadImageWithURL:[user showIconUrl] options:0 progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
+    [receivers enumerateObjectsUsingBlock:^(id _Nonnull user, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([user isKindOfClass:[TIMUserProfile class]]) {
+            TIMUserProfile *contact = (TIMUserProfile *)user;
+            [self setName:contact.nickname];
+            NSURL *url = [NSURL URLWithString:contact.faceURL];
+            [[SDWebImageManager sharedManager] loadImageWithURL:url options:0 progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [self setImage:image];
                 }];
             }];
         }
-        else if ([user isGroupType]) {
-            [[GroupManager shareManager] getGroupInfoModel:user.userId complection:^(BOOL finish, XOGroupInfoModel * _Nullable infoModel) {
-                if (finish) {
-                    [self setName:[user showTitle]];
-                    [[GroupManager shareManager] getGroupAvatarWithGroupId:user.userId Picture:[user showIconUrl].absoluteString complection:^(BOOL result, UIImage * _Nullable image) {
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            [self setImage:image];
-                        }];
-                    }];
-                }
+        else if ([user isKindOfClass:[TIMGroupInfo class]]) {
+            TIMGroupInfo *group = (TIMGroupInfo *)user;
+            [self setName:group.groupName];
+            [UIImage combineGroupImageWithGroupId:group.group complection:^(UIImage * _Nonnull image) {
+                [self setImage:image];
             }];
         }
     }];
@@ -188,7 +190,7 @@
     if (image) {
         imageView.image = image;
     } else {
-        imageView.image = [UIImage imageNamed:@"default_avatar"];
+        imageView.image = [UIImage xo_imageNamedFromChatBundle:@"default_avatar"];
     }
     [self.contentView addSubview:imageView];
     @synchronized (self) {
@@ -197,29 +199,31 @@
     [self setNeedsLayout];
 }
 
-- (void)setMessage:(IMAMsg *)message
+- (void)setMessage:(TIMMessage *)message
 {
     _message = message;
     
-    if (EIMAMSG_Text == self.message.type) {
+    TIMElem *elem = [self.message getElem:0];
+    
+    if ([elem isKindOfClass:[TIMTextElem class]]) {
         self.contentView.isImage = NO;
         self.contentImageView.hidden = YES;
         self.contentLabel.hidden = NO;
         [self.contentView addSubview:self.contentLabel];
         
-        if ([message.msg elemCount] > 0) {
-            TIMTextElem *textElem = (TIMTextElem *)[message.msg getElem:0];
+        if ([message elemCount] > 0) {
+            TIMTextElem *textElem = (TIMTextElem *)[message getElem:0];
             self.contentLabel.text = textElem.text;
         }
     }
-    else if (EIMAMSG_Image == self.message.type) {
+    else if ([elem isKindOfClass:[TIMImageElem class]]) {
         self.contentView.isImage = YES;
         self.contentImageView.hidden = NO;
         self.contentLabel.hidden = YES;
         [self.contentView addSubview:self.contentImageView];
         
-        if ([message.msg elemCount] > 0) {
-            TIMImageElem *imageElem = (TIMImageElem *)[message.msg getElem:0];
+        if ([message elemCount] > 0) {
+            TIMImageElem *imageElem = (TIMImageElem *)[message getElem:0];
             if (imageElem.imageList.count > 0) {
                 TIMImage *timImage = imageElem.imageList[0];
                 [[SDWebImageManager sharedManager] loadImageWithURL:[NSURL URLWithString:timImage.url] options:0 progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
@@ -230,14 +234,14 @@
             }
         }
     }
-    else if (EIMAMSG_Video == self.message.type) {
+    else if ([elem isKindOfClass:[TIMVideoElem class]]) {
         self.contentView.isImage = YES;
         self.contentImageView.hidden = NO;
         self.contentLabel.hidden = YES;
         [self.contentView addSubview:self.contentImageView];
         
-        if ([message.msg elemCount] > 0) {
-            TIMVideoElem *videoElem = (TIMVideoElem *)[message.msg getElem:0];
+        if ([message elemCount] > 0) {
+            TIMVideoElem *videoElem = (TIMVideoElem *)[message getElem:0];
             __block NSString *path = nil;
             if (!XOIsEmptyString(videoElem.snapshotPath)) {
                 path = [NSTemporaryDirectory() stringByAppendingPathComponent:videoElem.snapshotPath.lastPathComponent];
@@ -271,8 +275,8 @@
 {
     [self dismissAnimation];
 
-    if (self.delegate && [self.delegate respondsToSelector:@selector(forwardToSomeOneDidSure:)]) {
-        [self.delegate forwardToSomeOneDidSure:self];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(forwardView:forwardMessage:toReceivers:)]) {
+        [self.delegate forwardView:self forwardMessage:self.message toReceivers:self.receivers];
     }
 }
 
@@ -280,8 +284,8 @@
 {
     [self dismissAnimation];
 
-    if (self.delegate && [self.delegate respondsToSelector:@selector(forwardToSomeOneDidCancel:)]) {
-        [self.delegate forwardToSomeOneDidCancel:self];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(forwardViewDidCancelForward:)]) {
+        [self.delegate forwardViewDidCancelForward:self];
     }
 }
 
@@ -324,7 +328,7 @@
         _sendLabel.textColor = [UIColor blackColor];
         _sendLabel.textAlignment = NSTextAlignmentLeft;
         _sendLabel.font = [UIFont boldSystemFontOfSize:15.0];
-        _sendLabel.text = NSLocalizedString(@"msg.forward.send", nil);
+        _sendLabel.text = XOChatLocalizedString(@"chat.message.forward.send");
     }
     return _sendLabel;
 }
@@ -358,7 +362,7 @@
         _contentImageView = [[UIImageView alloc] init];
         _contentImageView.contentMode = UIViewContentModeScaleAspectFill;
         _contentImageView.clipsToBounds = YES;
-        _contentImageView.image = [UIImage imageNamed:@"default_image"];
+        _contentImageView.image = [UIImage xo_imageNamedFromChatBundle:@"default_image"];
     }
     return _contentImageView;
 }
@@ -367,10 +371,10 @@
 {
     if (!_cancelBtn) {
         _cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_cancelBtn setTitle:NSLocalizedString(@"live.cancel", nil) forState:UIControlStateNormal];
-        [_cancelBtn setTitleColor:kBlackColor forState:UIControlStateNormal];
-        [_cancelBtn setBackgroundImage:[UIImage imageWithColor:[UIColor whiteColor]] forState:UIControlStateNormal];
-        [_cancelBtn setBackgroundImage:[UIImage imageWithColor:RGB(220, 220, 220)] forState:UIControlStateHighlighted];
+        [_cancelBtn setTitle:XOLocalizedString(@"cancel") forState:UIControlStateNormal];
+        [_cancelBtn setTitleColor:[UIColor darkTextColor] forState:UIControlStateNormal];
+        [_cancelBtn setBackgroundImage:[UIImage XO_imageWithColor:[UIColor whiteColor] size:CGSizeMake(20, 20)] forState:UIControlStateNormal];
+        [_cancelBtn setBackgroundImage:[UIImage XO_imageWithColor:RGB(220, 220, 220) size:CGSizeMake(20, 20)] forState:UIControlStateHighlighted];
         [_cancelBtn addTarget:self action:@selector(cancel:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _cancelBtn;
@@ -380,10 +384,10 @@
 {
     if (!_sureBtn) {
         _sureBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_sureBtn setTitle:NSLocalizedString(@"live.ok", nil) forState:UIControlStateNormal];
-        [_sureBtn setTitleColor:mainPurpleColor forState:UIControlStateNormal];
-        [_sureBtn setBackgroundImage:[UIImage imageWithColor:[UIColor whiteColor]] forState:UIControlStateNormal];
-        [_sureBtn setBackgroundImage:[UIImage imageWithColor:RGB(220, 220, 220)] forState:UIControlStateHighlighted];
+        [_sureBtn setTitle:XOLocalizedString(@"sure") forState:UIControlStateNormal];
+        [_sureBtn setTitleColor:AppTinColor forState:UIControlStateNormal];
+        [_sureBtn setBackgroundImage:[UIImage XO_imageWithColor:[UIColor whiteColor] size:CGSizeMake(20, 20)] forState:UIControlStateNormal];
+        [_sureBtn setBackgroundImage:[UIImage XO_imageWithColor:RGB(220, 220, 220) size:CGSizeMake(20, 20)] forState:UIControlStateHighlighted];
         [_sureBtn addTarget:self action:@selector(sure:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _sureBtn;

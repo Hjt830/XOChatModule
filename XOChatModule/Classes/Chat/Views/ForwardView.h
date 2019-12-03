@@ -6,7 +6,8 @@
 //  Copyright © 2019 xinchidao. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <XOBaseLib/XOBaseLib.h>
+#import <ImSDK/ImSDK.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,8 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ForwardViewDelegate <NSObject>
 
 @optional
-- (void)forwardToSomeOneDidSure:(ForwardView *)forwardView;
-- (void)forwardToSomeOneDidCancel:(ForwardView *)forwardView;
+- (void)forwardView:(ForwardView *)forwardView forwardMessage:(TIMMessage *)message toReceivers:(NSArray *)receivers;
+- (void)forwardViewDidCancelForward:(ForwardView *)forwardView;
 
 @end
 
@@ -23,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id   <ForwardViewDelegate> delegate;
 
-- (void)showInView:(UIView *)view withReceivers:(NSArray <IMAUser *>*)receivers message:(IMAMsg *)message delegate:(id <ForwardViewDelegate>)delegate;
+- (void)showInView:(UIView *)view withReceivers:(NSArray *)receivers message:(TIMMessage *)message delegate:(id <ForwardViewDelegate>)delegate;
 
 @end
 

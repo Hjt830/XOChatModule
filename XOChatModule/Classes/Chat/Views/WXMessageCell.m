@@ -7,6 +7,7 @@
 //
 
 #import "WXMessageCell.h"
+#import "NSBundle+ChatModule.h"
 
 static float const kDefaultMargin = 8.0f;
 
@@ -77,7 +78,7 @@ static float const kDefaultMargin = 8.0f;
             [self.avatarImageView sd_setImageWithURL:[NSURL URLWithString:profile.faceURL] placeholderImage:[UIImage xo_imageNamedFromChatBundle:@"default_avatar"]];
         } else {
             [[TIMManager sharedInstance].friendshipManager getSelfProfile:^(TIMUserProfile *profile) {
-                [self.avatarImageView sd_setImageWithURL:[NSURL URLWithString:profile.faceURL] placeholderImage:[UIImage imageNamed:@"default_avatar"]];
+                [self.avatarImageView sd_setImageWithURL:[NSURL URLWithString:profile.faceURL] placeholderImage:[UIImage xo_imageNamedFromChatBundle:@"default_avatar"]];
             } fail:^(int code, NSString *msg) {
                 NSLog(@"获取个人头像失败 ------------ code: %d  msg: %@", code, msg);
             }];
@@ -308,9 +309,7 @@ static float const kDefaultMargin = 8.0f;
 }
 - (void)longPressMessage:(UILongPressGestureRecognizer *)tap
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(messageCellLongPressMessage:message:)]) {
-        [self.delegate messageCellLongPressMessage:self message:self.message];
-    }
+    [self showMenu];
 }
 - (void)tapReSendMsg:(UITapGestureRecognizer *)tap
 {
@@ -318,6 +317,121 @@ static float const kDefaultMargin = 8.0f;
         [self.delegate messageCellDidTapResendMessage:self message:self.message];
     }
 }
+
+#pragma mark ========================= 长按消息 =========================
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (void)showMenu
+{
+    NSArray <UIMenuItem *>*showMenus = [self showMenuItems];
+    UIMenuController *menu = [UIMenuController sharedMenuController];
+    if (showMenus.count > 0 && !menu.menuVisible)
+    {
+        [self becomeFirstResponder];
+        [menu setMenuItems:showMenus];
+        [menu setArrowDirection:UIMenuControllerArrowDefault];
+        [menu setTargetRect:self.messageBackgroundImageView.frame inView:self.contentView];
+        [menu setMenuVisible:YES animated:YES];
+        [menu update];
+    }
+}
+
+- (NSArray <UIMenuItem *>* )showMenuItems
+{
+    if ([self.message elemCount] <= 0) {
+        return nil;
+    }
+    else {
+        NSMutableArray *array = [NSMutableArray array];
+        TIMElem *elem = [self.message getElem:0];
+        
+        // 文本消息才能复制
+        if ([elem isKindOfClass:[TIMTextElem class]]) {
+            UIMenuItem *copyItem = [[UIMenuItem alloc] initWithTitle:XOChatLocalizedString(@"chat.message.copy") action:@selector(copyItem:)];
+            [array addObject:copyItem];
+        }
+        // 文本、图片、文件、表情、位置、视频可以转发
+        if ([elem isKindOfClass:[TIMTextElem class]] ||
+            [elem isKindOfClass:[TIMImageElem class]] ||
+            [elem isKindOfClass:[TIMFileElem class]] ||
+            [elem isKindOfClass:[TIMFaceElem class]] ||
+            [elem isKindOfClass:[TIMLocationElem class]] ||
+            [elem isKindOfClass:[TIMVideoElem class]])
+        {
+            UIMenuItem *forwardItem = [[UIMenuItem alloc] initWithTitle:XOChatLocalizedString(@"chat.message.forward") action:@selector(forwardItem:)];
+            [array addObject:forwardItem];
+        }
+        // 撤回 (自己发送的消息, 2分钟内可以撤回)
+        if (self.message.isSelf) {
+            NSTimeInterval msgTime = [self.message.timestamp timeIntervalSince1970];
+            NSTimeInterval currentTime = [[NSDate date] timeIntervalSince1970];
+            NSTimeInterval difference = currentTime - msgTime;
+            if (difference <= 2 * 60) { // 2分钟内可以撤销
+                UIMenuItem *revokeItem = [[UIMenuItem alloc] initWithTitle:XOChatLocalizedString(@"chat.message.revoke") action:@selector(revokeMsg:)];
+                [array addObject:revokeItem];
+            }
+        }
+        // 删除
+        UIMenuItem *deleteItem = [[UIMenuItem alloc] initWithTitle:XOChatLocalizedString(@"chat.message.delete") action:@selector(deleteItem:)];
+        [array addObject:deleteItem];
+        
+        return array;
+    }
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+    if ((action == @selector(deleteItem:)) ||
+        (action == @selector(copyItem:))   ||
+        (action == @selector(forwardItem:) ||
+        (action == @selector(revokeMsg:)))
+    ) {
+        return YES;
+    }
+    
+    return NO;
+}
+
+#pragma mark ========================= touch event =========================
+
+- (void)copyItem:(id)sender
+{
+    if ([self.message elemCount] > 0) {
+        TIMElem *elem = [self.message getElem:0];
+        if ([elem isKindOfClass:[TIMTextElem class]]) {
+            TIMTextElem *textElem = (TIMTextElem *)elem;
+            if (!XOIsEmptyString(textElem.text)) {
+                [[UIPasteboard generalPasteboard] setString:textElem.text];
+            }
+        }
+    }
+}
+
+- (void)forwardItem:(id)sender
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(messageCellForwardMessage:message:)]) {
+        [self.delegate messageCellForwardMessage:self message:self.message];
+    }
+}
+
+- (void)revokeMsg:(UIMenuItem *)item
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(messageCellRevokeMessage:message:)]) {
+        [self.delegate messageCellRevokeMessage:self message:self.message];
+    }
+}
+
+- (void)deleteItem:(id)sender
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(messageCellDeleteMessage:message:)]) {
+        [self.delegate messageCellDeleteMessage:self message:self.message];
+    }
+}
+
 
 //改变与图片的颜色
 - (UIImage *)image:(UIImage *)image ChangeColor:(UIColor*)color

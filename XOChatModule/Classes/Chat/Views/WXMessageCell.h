@@ -22,10 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)messageCellLongPressAvatar:(WXMessageCell *)cell message:(TIMMessage *)message;
 // 点击了消息
 - (void)messageCellDidTapMessage:(WXMessageCell *)cell message:(TIMMessage *)message;
-// 长按了消息
-- (void)messageCellLongPressMessage:(WXMessageCell *)cell message:(TIMMessage *)message;
 // 点击了重发消息
 - (void)messageCellDidTapResendMessage:(WXMessageCell *)cell message:(TIMMessage *)message;
+// 转发消息
+- (void)messageCellForwardMessage:(WXMessageCell *)cell message:(TIMMessage *)message;
+// 撤回消息
+- (void)messageCellRevokeMessage:(WXMessageCell *)cell message:(TIMMessage *)message;
+// 删除消息
+- (void)messageCellDeleteMessage:(WXMessageCell *)cell message:(TIMMessage *)message;
 
 @end
 

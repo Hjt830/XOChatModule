@@ -68,6 +68,14 @@
 "chat.location.navigation.message"  = "Navigation";
 "chat.message.reSend"               = "Resend the message?";
 
+"chat.message.copy"                 = "Copy";
+"chat.message.forward"              = "Forward";
+"chat.message.revoke"               = "Revoke";
+"chat.message.resend"               = "Resend";
+"chat.message.delete"               = "Delete";
+"chat.message.forward.limit"        = "No more than 9 messages can be forwarded at a time";
+"chat.message.forward.send"         = "Message forward";
+
 "contact.addressbook"               = "Address Book";
 "contact.friend"                    = "Friend";
 "contact.group"                     = "Group";
