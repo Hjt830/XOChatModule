@@ -99,9 +99,9 @@
     self.hiddenProjectiveView = nil;
     [self showStatusBar];
     [self.containerView removeFromSuperview];
-    _containerView = nil;
+    self.containerView = nil;
     [self.collectionView removeFromSuperview];
-    _collectionView = nil;
+    self.collectionView = nil;
     [self.dataMediator clear];
     [self.rotationHandler clear];
 }

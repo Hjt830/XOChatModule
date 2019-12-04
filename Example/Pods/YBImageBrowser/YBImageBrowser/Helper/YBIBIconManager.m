@@ -34,7 +34,7 @@ static NSString *_NSStringByAppendingNameScale(NSString *string, CGFloat scale) 
 
 @implementation UIImage (YBImageBrowser)
 
-+ (instancetype)ybib_imageNamed:(NSString *)name bundle:(NSBundle *)bundle {
++ (instancetype _Nullable)ybib_imageNamed:(NSString *)name bundle:(NSBundle *)bundle {
     if (name.length == 0) return nil;
     if ([name hasSuffix:@"/"]) return nil;
     

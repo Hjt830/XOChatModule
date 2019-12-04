@@ -515,7 +515,8 @@ static XOChatClient *__chatClient = nil;
     if (imageElem.imageList.count > 0) {
         
         TIMImage *timImage = [imageElem.imageList objectAtIndex:0];
-        if (!XOIsEmptyString(timImage.url)) {
+        NSString *imageUrl = timImage.url;
+        if (!XOIsEmptyString(imageUrl)) {
             
             // 下载缩略图
             TIMImage *timImage = nil;
@@ -546,7 +547,7 @@ static XOChatClient *__chatClient = nil;
                 }
             }
             else {
-                NSURL *imageURL = [NSURL URLWithString:timImage.url];
+                NSURL *imageURL = [NSURL URLWithString:imageUrl];
                 __block NSString *imagePath = [message getImagePath];
                 
                 NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:imageURL];

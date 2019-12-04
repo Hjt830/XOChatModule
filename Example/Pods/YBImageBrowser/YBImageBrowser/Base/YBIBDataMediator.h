@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)numberOfCells;
 
-- (id<YBIBDataProtocol>)dataForCellAtIndex:(NSInteger)index;
+- (id<YBIBDataProtocol> _Nullable)dataForCellAtIndex:(NSInteger)index;
 
 - (void)clear;
 

@@ -71,9 +71,6 @@
     NSComparisonResult res = NSOrderedDescending;
     if ([self isEqualToString:s]){
         //相同
-        if ([str isEqualToString:s]) {
-            res = NSOrderedSame;
-        }
         res = b ? NSOrderedAscending : NSOrderedDescending;
     }else if ([str isEqualToString:s]){
         res = b ? NSOrderedDescending : NSOrderedAscending;

@@ -17,7 +17,7 @@ static void *YBIBOriginAlphaKey = &YBIBOriginAlphaKey;
 }
 - (CGFloat)ybib_originAlpha {
     NSNumber *alpha = objc_getAssociatedObject(self, YBIBOriginAlphaKey);
-    return alpha ? alpha.floatValue : 1;
+    return alpha != nil ? alpha.floatValue : 1;
 }
 
 @end

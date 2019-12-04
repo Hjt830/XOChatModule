@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'XOChatModule'
-  s.version          = '0.0.4'
+  s.version          = '0.0.5'
   s.summary          = 'XXOOGO项目的聊天模块'
 
 # This description is used to generate tags and improve search results.
@@ -47,7 +47,7 @@ Pod::Spec.new do |s|
 
   s.frameworks = 'UIKit', 'Foundation', 'CoreLocation'
   s.dependency 'TXIMSDK_iOS', '~> 4.4.627'
-  s.dependency 'XOBaseLib', '~> 0.3.1'
+  s.dependency 'XOBaseLib', '~> 0.3.3'
   s.dependency 'TZImagePickerController', '~> 3.2.1'
   s.dependency 'GCDMulticastDelegate', '~> 1.0.0'
   s.dependency 'SVProgressHUD', '~> 2.2.5'

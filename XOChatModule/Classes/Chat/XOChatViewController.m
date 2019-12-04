@@ -35,7 +35,7 @@
 {
     [super viewDidLoad];
     self.navigationController.navigationBar.translucent = NO;
-    [self.view setBackgroundColor:BG_TableColor];
+    [self.view setBackgroundColor:[UIColor groupTableViewColor]];
     [self setHidesBottomBarWhenPushed:YES];
     
     // 聊天对象的userId或者groupId

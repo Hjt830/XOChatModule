@@ -89,7 +89,7 @@ static NSString *SearchContactCellID = @"SearchContactCellID";  // 联系人cell
         return cell;
     }
     
-    return nil;
+    return [tableView dequeueReusableCellWithIdentifier:SearchContactCellID forIndexPath:indexPath];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
@@ -157,7 +157,7 @@ static NSString *SearchContactCellID = @"SearchContactCellID";  // 联系人cell
 // 搜索好友
 - (void)searchContactWith:(NSString *)keyword
 {
-    keyword = [NSString stringWithFormat:@"*%@*", keyword];
+//    keyword = [NSString stringWithFormat:@"*%@*", keyword];
 //    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"nick LIKE %@ OR nickPinyin LIKE %@ OR remark LIKE %@ or remarkPinyin LIKE %@", keyword, keyword, keyword, keyword];
 //    [[XOContactCoreDataStorage getInstance] getContactListAsyncWith:predicate result:^(BOOL finish, NSArray<XOContact *> * _Nullable contactList) {
 //        if (self.dataSource.count > 0) {
@@ -172,7 +172,7 @@ static NSString *SearchContactCellID = @"SearchContactCellID";  // 联系人cell
 // 搜索群组
 - (void)searchGroupWith:(NSString *)keyword
 {
-    keyword = [NSString stringWithFormat:@"*%@*", keyword];
+//    keyword = [NSString stringWithFormat:@"*%@*", keyword];
 //    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"groupName LIKE %@ OR groupNamePinyin LIKE %@", keyword, keyword, keyword];
 //    [[XOGroupCoreDataStorage getInstance] getGroupListAsyncWith:predicate result:^(BOOL finish, NSArray<XOContact *> * _Nullable groupList) {
 //        if (self.dataSource.count > 0) {

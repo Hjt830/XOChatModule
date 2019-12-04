@@ -11,18 +11,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TIMMessage (XOChatExtenstion)
 
-- (NSString *)getThumbImageName;
-- (NSString *)getThumbImagePath;
+- (NSString * _Nullable)getThumbImageName;
+- (NSString * _Nullable)getThumbImagePath;
 
-- (NSString *)getImageName;
-- (NSString *)getImagePath;
+- (NSString * _Nullable)getImageName;
+- (NSString * _Nullable)getImagePath;
 
-- (NSString *)getVideoName;
-- (NSString *)getVideoPath;
+- (NSString * _Nullable)getVideoName;
+- (NSString * _Nullable)getVideoPath;
 
-- (NSString *)getSoundPath;
+- (NSString * _Nullable)getSoundPath;
 
-- (NSString *)getFilePath;
+- (NSString * _Nullable)getFilePath;
 
 @end
 

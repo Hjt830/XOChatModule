@@ -30,7 +30,7 @@
     return _browser.dataSource ? [_browser.dataSource yb_numberOfCellsInImageBrowser:_browser] : _browser.dataSourceArray.count;
 }
 
-- (id<YBIBDataProtocol>)dataForCellAtIndex:(NSInteger)index {
+- (id<YBIBDataProtocol> _Nullable)dataForCellAtIndex:(NSInteger)index {
     if (index < 0 || index > self.numberOfCells - 1) return nil;
     
     id<YBIBDataProtocol> data = [_dataCache objectForKey:@(index)];

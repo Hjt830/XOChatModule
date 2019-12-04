@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TIMElem (XOExtension)
 
-- (NSString *)getTextFromMessage;
+- (NSString * _Nullable)getTextFromMessage;
 
 @end
 

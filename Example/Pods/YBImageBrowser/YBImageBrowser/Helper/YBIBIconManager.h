@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param bundle 资源对象
  @return 图片实例
  */
-+ (instancetype)ybib_imageNamed:(NSString *)name bundle:(NSBundle *)bundle;
++ (instancetype _Nullable)ybib_imageNamed:(NSString *)name bundle:(NSBundle *)bundle;
 
 @end
 

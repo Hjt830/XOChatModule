@@ -27,17 +27,17 @@
 "conversation.top.title"        = "Top";
 "conversation.unTop.title"      = "Unpin";
 
-"conversation.message.image" = "[Picture]";
-"conversation.message.video" = "[Video]";
-"conversation.message.sound" = "[Voice]";
-"conversation.message.file" = "[File]";
-"conversation.message.face" = "[Expression]";
+"conversation.message.image"    = "[Picture]";
+"conversation.message.video"    = "[Video]";
+"conversation.message.sound"    = "[Voice]";
+"conversation.message.file"     = "[File]";
+"conversation.message.face"     = "[Expression]";
 "conversation.message.location" = "[Location]";
 "conversation.message.redPacket"= "[Red envelope]";
 "conversation.message.transfer" = "[Transfer]";
-"conversation.message.carte" = "[Business card]";
-"conversation.message.aCall" = "[Voice Call]";
-"conversation.message.vCall" = "[Video Call]";
+"conversation.message.carte"    = "[Business card]";
+"conversation.message.aCall"    = "[Voice Call]";
+"conversation.message.vCall"    = "[Video Call]";
 
 "chat.more.album"       = "Album";
 "chat.more.camera"      = "Camera";

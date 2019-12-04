@@ -162,9 +162,10 @@
         r = R/2.0;
     } else if (count == 3) {
         r = 0.0f;
-    } else if (count >= 4) {
+    } else {
         r = R/(1.0 + sqrt(2.0));
     }
+    NSLog(@"r: %f", r);
     
     for (int i = 0; i < count; i++) {
         UIImage *image = [imageList[i] circleImage];
@@ -172,6 +173,12 @@
         
         if (count == 2) {
             r = R/2.0;
+            if (0 == i) {
+                rect = CGRectMake(0, r, r, r);
+            }
+            else if (1 == i) {
+                rect = CGRectMake(R, r, r, r);
+            }
         }
         else if (count == 3) {
             r = R / (1.0 + 2.0 * sqrt(3.0)/3.0);
@@ -183,7 +190,7 @@
                 rect = CGRectMake(R - r, 2 * R - 2 * r, 2 * r, 2 * r);
             }
         }
-        else if (count >= 4) {
+        else {
             r = R/(1.0 + sqrt(2.0));
             if (i == 0) {
                 rect = CGRectMake(R - r, 0, 2 * r, 2 * r);

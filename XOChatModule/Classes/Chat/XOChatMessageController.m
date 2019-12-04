@@ -1536,7 +1536,6 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
     {
         float sizew = ImageWidth;  // 图片的宽度
         float sizeh = ImageHeight;  // 图片的高度
-        size = CGSizeZero;
         
         if ([elem isKindOfClass:[TIMImageElem class]]) {
             TIMImageElem *imageElem = (TIMImageElem *)elem;

@@ -11,7 +11,7 @@
 
 @implementation TIMMessage (XOChatExtenstion)
 
-- (NSString *)getThumbImageName
+- (NSString * _Nullable)getThumbImageName
 {
     NSString *thumbImageName = nil;
     
@@ -64,7 +64,7 @@
     return thumbImageName;
 }
 
-- (NSString *)getThumbImagePath
+- (NSString * _Nullable)getThumbImagePath
 {
     NSString *thumbImagePath = nil;
     if ([self elemCount] > 0)
@@ -80,7 +80,7 @@
     return thumbImagePath;
 }
 
-- (NSString *)getImageName
+- (NSString * _Nullable)getImageName
 {
     NSString *imageName = nil;
     
@@ -113,7 +113,7 @@
     return imageName;
 }
 
-- (NSString *)getImagePath
+- (NSString * _Nullable)getImagePath
 {
     NSString *imagePath = nil;
     if ([self elemCount] > 0)
@@ -129,7 +129,7 @@
     return imagePath;
 }
 
-- (NSString *)getVideoName
+- (NSString * _Nullable)getVideoName
 {
     NSString *videoName = nil;
     
@@ -158,7 +158,7 @@
     }
     return videoName;
 }
-- (NSString *)getVideoPath
+- (NSString * _Nullable)getVideoPath
 {
     NSString *videoPath = nil;
     if ([self elemCount] > 0)
@@ -171,7 +171,7 @@
     return videoPath;
 }
 
-- (NSString *)getSoundPath
+- (NSString * _Nullable)getSoundPath
 {
     NSString *soundPath = nil;
     if ([self elemCount] > 0)
@@ -198,7 +198,7 @@
     return soundPath;
 }
 
-- (NSString *)getFilePath
+- (NSString * _Nullable)getFilePath
 {
     NSString *filePath = nil;
     if ([self elemCount] > 0)
@@ -226,7 +226,7 @@
 }
 
 // 获取图片的格式
-- (NSString *)getImageFormat
+- (NSString * _Nonnull)getImageFormat
 {
     NSString *format = @"jpg";
     

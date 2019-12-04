@@ -553,17 +553,22 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
                 else if ([name isEqualToString:ContactProfileTableName]) createSQL = CreateContactProfileTableSql();
                 else if ([name isEqualToString:GroupTableName]) createSQL = CreateGroupTableSql();
                 
-                BOOL res = [db executeStatements:createSQL];
-                if (res) {
-                    NSLog(@"%s  %@ 创建成功", __func__, name);
-                    if (complection) complection (0, nil);
+                if (!XOIsEmptyString(createSQL)) {
+                    BOOL res = [db executeStatements:createSQL];
+                    if (res) {
+                        NSLog(@"%s  %@ 创建成功", __func__, name);
+                        if (complection) complection (0, nil);
+                    }
+                    else {
+                        NSLog(@"%s  %@ 创建失败", __func__, name);
+                        if (complection) {
+                            NSError *error = [NSError errorWithDomain:@"表创建失败" code:0 userInfo:nil];
+                            complection (-1, error);
+                        }
+                    }
                 }
                 else {
-                    NSLog(@"%s  %@ 创建失败", __func__, name);
-                    if (complection) {
-                        NSError *error = [NSError errorWithDomain:@"表创建失败" code:0 userInfo:nil];
-                        complection (-1, error);
-                    }
+                    NSLog(@"name is empty");
                 }
             }
         }];
