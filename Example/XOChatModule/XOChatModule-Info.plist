@@ -66,5 +66,11 @@
 	</array>
 	<key>UISupportsDocumentBrowser</key>
 	<true/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>iosamap</string>
+		<string>baidumap</string>
+		<string>comgooglemaps</string>
+	</array>
 </dict>
 </plist>

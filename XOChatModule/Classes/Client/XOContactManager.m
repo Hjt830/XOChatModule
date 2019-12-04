@@ -430,7 +430,7 @@ FOUNDATION_EXTERN_INLINE NSString * InsertContactProfileSql(TIMUserProfile *prof
 
 // 插入群SQL
 FOUNDATION_EXTERN_INLINE NSString * InsertGroupSql(TIMGroupInfo *group) {
-    return [NSString stringWithFormat:@"INSERT INTO %@ (groupId, groupName, owner, groupType, createTime, lastInfoTime, lastMsgTime, maxMemberNum, memberNum, addOpt, notification, introduction, faceURL, onlineMemberNum, isSearchable, isMemberVisible, allShutup) VALUES ('%@', '%@', '%@', '%@', %u, %u, %u, %u, %u, %ld, '%@', '%@', '%@', %u, %ld, %ld, %d)", GroupTableName, group.group, group.groupName, group.owner, group.groupType, (unsigned int)group.createTime, (unsigned int)group.lastInfoTime, (unsigned int)group.lastMsgTime, (unsigned int)group.maxMemberNum, (unsigned int)group.memberNum, group.addOpt, [group.notification URLEncodedString], [group.introduction URLEncodedString], [group.faceURL URLEncodedString], (unsigned int)group.onlineMemberNum, group.isSearchable, group.isMemberVisible, group.allShutup];
+    return [NSString stringWithFormat:@"INSERT INTO %@ (groupId, groupName, owner, groupType, createTime, lastInfoTime, lastMsgTime, maxMemberNum, memberNum, addOpt, notification, introduction, faceURL, onlineMemberNum, isSearchable, isMemberVisible, allShutup) VALUES ('%@', '%@', '%@', '%@', %u, %u, %u, %u, %u, %ld, '%@', '%@', '%@', %u, %ld, %ld, %d)", GroupTableName, group.group, [group.groupName URLEncodedString], group.owner, group.groupType, (unsigned int)group.createTime, (unsigned int)group.lastInfoTime, (unsigned int)group.lastMsgTime, (unsigned int)group.maxMemberNum, (unsigned int)group.memberNum, group.addOpt, [group.notification URLEncodedString], [group.introduction URLEncodedString], [group.faceURL URLEncodedString], (unsigned int)group.onlineMemberNum, group.isSearchable, group.isMemberVisible, group.allShutup];
 }
 
 // 更新联系人SQL
@@ -755,6 +755,116 @@ FOUNDATION_EXTERN_INLINE NSString * UpdateGroupSql(TIMGroupInfo *group) {
             complection (mutArr);
         }
     }];
+}
+
+#pragma mark 模糊查询
+
+/**
+ * @brief 根据关键字查询联系人
+ */
+- (void)getContactWithKeyword:(NSString * _Nullable)keyword handler:(void(^ _Nullable)(NSArray <TIMFriend *>* _Nullable contactList))complection
+{
+    if (XOIsEmptyString(keyword)) {
+        if (complection) {
+            complection(nil);
+        }
+    }
+    else {
+        [self.DBQueue inDatabase:^(FMDatabase *db) {
+            
+            NSString * sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE nickname Like '%%%@%%'", ContactProfileTableName, [keyword URLEncodedString]];
+            FMResultSet * rs = [db executeQuery:sql];
+            
+            NSMutableArray <TIMFriend *>* friendList = [NSMutableArray array];
+            // 遍历结果集
+            if (rs.columnCount > 0) {
+                while ([rs next]) {
+                    TIMUserProfile *profile = [[TIMUserProfile alloc] init];
+                    profile.identifier  = [rs stringForColumn:@"identifier"];
+                    profile.nickname    = [[rs stringForColumn:@"nickname"] URLDecodedString];
+                    profile.allowType   = [rs longForColumn:@"allowType"];
+                    profile.faceURL     = [[rs stringForColumn:@"faceURL"] URLDecodedString];
+                    profile.selfSignature = [[rs stringForColumn:@"selfSignature"] dataUsingEncoding:NSUTF8StringEncoding];
+                    profile.gender      = [rs longForColumn:@"gender"];
+                    profile.birthday    = [rs intForColumn:@"birthday"];
+                    profile.language    = [rs intForColumn:@"language"];
+                    profile.level       = [rs intForColumn:@"level"];
+                    profile.role        = [rs intForColumn:@"role"];
+                    
+                    // 查询指定联系人信息
+                    NSString * profileSql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE identifier = '%@'", ContactTableName, profile.identifier];
+                    FMResultSet * friendRS = [db executeQuery:profileSql];
+                    while ([friendRS next]) {
+                        TIMFriend *friend = [[TIMFriend alloc] init];
+                        friend.identifier   = [friendRS stringForColumn:@"identifier"];
+                        friend.remark       = [[friendRS stringForColumn:@"remark"] URLDecodedString];
+                        friend.addWording   = [friendRS stringForColumn:@"addWording"];
+                        friend.addSource    = [friendRS stringForColumn:@"addSource"];
+                        friend.addTime      = [friendRS unsignedLongLongIntForColumn:@"addTime"];
+                        friend.profile      = profile;
+                        [friendList addObject:friend];
+                        break;
+                    }
+                }
+                
+                if (complection) complection (friendList);
+            }
+            else {
+                if (complection) complection (nil);
+            }
+        }];
+    }
+}
+
+/**
+ * @brief 根据关键字查询群组
+ */
+- (void)getGroupWithKeyword:(NSString * _Nullable)keyword handler:(void(^ _Nullable)(NSArray <TIMGroupInfo *>* _Nullable groupList))complection
+{
+    if (XOIsEmptyString(keyword)) {
+        if (complection) {
+            complection(nil);
+        }
+    }
+    else {
+        [self.DBQueue inDatabase:^(FMDatabase *db) {
+            
+            NSString * sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE groupName Like '%%%@%%'", GroupTableName, [keyword URLEncodedString]];
+            FMResultSet * rs = [db executeQuery:sql];
+            
+            NSMutableArray <TIMGroupInfo *>* groupList = [NSMutableArray array];
+            // 遍历结果集
+            if (rs.columnCount > 0) {
+                while ([rs next]) {
+                    TIMGroupInfo *group = [[TIMGroupInfo alloc] init];
+                    group.group             = [rs stringForColumn:@"groupId"];
+                    group.groupName         = [[rs stringForColumn:@"groupName"] URLDecodedString];
+                    group.owner             = [rs stringForColumn:@"owner"];
+                    group.groupType         = [rs stringForColumn:@"groupType"];
+                    group.createTime        = [rs intForColumn:@"createTime"];
+                    group.lastInfoTime      = [rs intForColumn:@"lastInfoTime"];
+                    group.lastMsgTime       = [rs intForColumn:@"lastMsgTime"];
+                    group.maxMemberNum      = [rs intForColumn:@"maxMemberNum"];
+                    group.memberNum         = [rs intForColumn:@"memberNum"];
+                    group.addOpt            = [rs intForColumn:@"addOpt"];
+                    group.notification      = [[rs stringForColumn:@"notification"] URLDecodedString];
+                    group.introduction      = [[rs stringForColumn:@"introduction"] URLDecodedString];
+                    group.faceURL           = [[rs stringForColumn:@"faceURL"] URLDecodedString];
+                    group.onlineMemberNum   = [rs intForColumn:@"onlineMemberNum"];
+                    group.isSearchable      = [rs intForColumn:@"isSearchable"];
+                    group.isMemberVisible   = [rs intForColumn:@"isMemberVisible"];
+                    group.allShutup         = [rs intForColumn:@"allShutup"];
+                    
+                    [groupList addObject:group];
+                }
+                
+                if (complection) complection (groupList);
+            }
+            else {
+                if (complection) complection (nil);
+            }
+        }];
+    }
 }
 
 #pragma mark 增加

@@ -761,7 +761,7 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 {
     if (!_nameLabel) {
         _nameLabel = [[UILabel alloc] init];
-        _nameLabel.textColor = [UIColor darkTextColor];
+        _nameLabel.textColor = [UIColor XOTextColor];
         _nameLabel.font = [UIFont systemFontOfSize:17.0f];
         _nameLabel.textAlignment = NSTextAlignmentLeft;
     }

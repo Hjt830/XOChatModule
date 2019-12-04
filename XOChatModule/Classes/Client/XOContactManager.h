@@ -149,6 +149,18 @@ extern XOTableName const GroupTableName;
  */
 - (void)getAllGroupsList:(void(^ _Nullable)(NSArray <TIMGroupInfo *> * _Nullable groupList))complection;
 
+#pragma mark 模糊查询
+
+/**
+ * @brief 根据关键字查询联系人
+ */
+- (void)getContactWithKeyword:(NSString * _Nullable)keyword handler:(void(^ _Nullable)(NSArray <TIMFriend *>* _Nullable contactList))complection;
+
+/**
+ * @brief 根据关键字查询群组
+ */
+- (void)getGroupWithKeyword:(NSString * _Nullable)keyword handler:(void(^ _Nullable)(NSArray <TIMGroupInfo *>* _Nullable groupList))complection;
+
 #pragma mark 增加
 
 // 插入联系人

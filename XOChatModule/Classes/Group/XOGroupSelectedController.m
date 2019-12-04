@@ -11,21 +11,16 @@
 #import "UIImage+XOChatBundle.h"
 #import "UIImage+XOChatExtension.h"
 #import "ForwardView.h"
-//#import "NewPersonInfoViewController.h"
-//#import "GroupSelectMemberViewController.h"
 
 static NSString * const MemberTableViewCellID = @"MemberTableViewCellID";
 static NSString * const GroupMemberIconCellID = @"GroupMemberIconCellID";
 static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID";
 
-@interface XOGroupSelectedController () <UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout, ForwardViewDelegate>
+@interface XOGroupSelectedController () <UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ForwardViewDelegate>
 {
     NSInteger page;
 }
 
-@property (nonatomic, strong) UIView            *headView;
-@property (nonatomic, strong) UIScrollView      *scrollView;
-@property (nonatomic, strong) UISearchBar       *searchbar;
 @property (nonatomic, strong) UIButton          *sureBtn;
 @property (nonatomic, strong) UIBarButtonItem   *okBBI;
 @property (nonatomic, strong) UITableView       *tableView;
@@ -69,23 +64,19 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
     
     if (self.addData.count > 0) {
         self.collectionView.frame = CGRectMake(10, 10, self.view.width - 20, 60);
-        self.headView.frame = CGRectMake(0, 0, self.view.width, 10 + 60 + 56);
         NSString *title = [NSString stringWithFormat:@"%@(%ld)", XOLocalizedString(@"sure"), (long)self.addData.count];
         [self.sureBtn setTitle:title forState:UIControlStateNormal];
+        self.tableView.frame = CGRectMake(0, 80, self.view.width, self.view.height - 80);
     } else {
         self.collectionView.frame = CGRectZero;
-        self.headView.frame = CGRectMake(0, 0, self.view.width, 56);
         [self.sureBtn setTitle:XOLocalizedString(@"sure") forState:UIControlStateNormal];
+        self.tableView.frame = self.view.bounds;
     }
-    self.searchbar.frame = CGRectMake(10, self.collectionView.bottom + 10, self.view.width - 20, 36);
-    self.tableView.frame = CGRectMake(0, self.headView.bottom, self.view.width, self.view.height - self.headView.height);
 }
 
 - (void)setupSubView
 {
-    [self. self.headView addSubview:self.collectionView];
-    [self. self.headView addSubview:self.searchbar];
-    [self.view addSubview:self. self.headView];
+    [self.view addSubview:self.collectionView];
     [self.view addSubview:self.tableView];
     self.navigationItem.rightBarButtonItem = self.okBBI;
 }
@@ -152,7 +143,6 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
 
 - (void)sureClick
 {
-    [self endEdit];
     if (self.delegate && [self.delegate respondsToSelector:@selector(groupSelectController:selectMemberType:didSelectMember:)]) {
         [self.delegate groupSelectController:self selectMemberType:self.memberType didSelectMember:self.addData];
     }
@@ -468,8 +458,6 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
             [self refreshRightBBIStatus];
         }];
     }
-    
-    [self endEdit];
 }
 // 反选
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -507,8 +495,6 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
             [self refreshRightBBIStatus];
         }];
     }
-    
-    [self endEdit];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -547,13 +533,6 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:index] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-    if ([self.searchbar isFirstResponder]) {
-        [self.searchbar resignFirstResponder];
-    }
-}
-
 #pragma mark ========================= UICollectionViewDataSource & UICollectionViewDelegate =========================
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -581,63 +560,6 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
     [self.collectionView reloadData];
     [self.tableView reloadData];
     [self.view setNeedsLayout];
-    
-    [self endEdit];
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
-    [self endEdit];
-}
-
-#pragma mark ========================= UISearchBarDelegate =========================
-
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
-    // 创建群 | 添加群成员
-    if (SelectMemberType_Create == self.memberType || SelectMemberType_Add == self.memberType) {
-        __weak XOGroupSelectedController *wself = self;
-        self.tableView.mj_header = [MJRefreshHeader headerWithRefreshingBlock:^{
-            __strong XOGroupSelectedController *sself = wself;
-            sself->page = 1;
-            [sself.tableView.mj_footer resetNoMoreData];
-        }];
-        [self.tableView.mj_header beginRefreshing];
-        self.tableView.mj_footer = [MJRefreshAutoFooter footerWithRefreshingBlock:^{
-            __strong XOGroupSelectedController *sself = wself;
-            sself->page += 1;
-        }];
-    }
-}
-
-//- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-//{
-//    NSString *keyword = [searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-//    if (!XOIsEmptyString(keyword)) {
-//        if (SelectMemberType_Remove == self.memberType) {
-//            __block NSMutableArray <NSDictionary *>* copyArr = @[].mutableCopy;
-//            [self.groupMembers enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//                NSString *realName = obj[@"realName"];
-//                if ([realName containsString:keyword]) {
-//                    [copyArr addObject:obj];
-//                }
-//            }];
-//
-//            [self sortRemoveListWithArray:copyArr];
-//        }
-//    }
-//    else {
-//        [self sortRemoveListWithArray:self.groupMembers];
-//    }
-//}
-
-#pragma mark ========================= help =========================
-
-- (void)endEdit
-{
-    if ([self.searchbar isFirstResponder]) {
-        [self.searchbar resignFirstResponder];
-    }
 }
 
 #pragma mark ========================= lazy load =========================
@@ -664,7 +586,7 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
         _tableView.dataSource = self;
         _tableView.allowsMultipleSelection = YES;
         _tableView.tableFooterView = [[UIView alloc] init];
-        _tableView.sectionIndexColor = [UIColor darkTextColor]; //设置默认时索引值颜色
+        _tableView.sectionIndexColor = [UIColor XOTextColor]; //设置默认时索引值颜色
         _tableView.backgroundColor = BG_TableColor;
         
         [_tableView registerClass:[MemberTableViewCell class] forCellReuseIdentifier:MemberTableViewCellID];
@@ -687,31 +609,6 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
         [_collectionView registerClass:[GroupMemberIconCell class] forCellWithReuseIdentifier:GroupMemberIconCellID];
     }
     return _collectionView;
-}
-
-- (UIView *)headView
-{
-    if (!_headView) {
-        _headView = [[UIView alloc] init];
-        _headView.backgroundColor = [UIColor XOWhiteColor];
-    }
-    return _headView;
-}
-
-- (UISearchBar *)searchbar
-{
-    if (!_searchbar) {
-        _searchbar = [[UISearchBar alloc] init];
-        _searchbar.barStyle = UIBarStyleDefault;
-        _searchbar.translucent = YES;
-        _searchbar.delegate = self;
-        _searchbar.barTintColor = [UIColor groupTableViewColor];
-        _searchbar.backgroundImage = [[UIImage alloc] init];
-        _searchbar.tintColor = AppTinColor;
-        UIImage *image = [[UIImage xo_imageNamedFromChatBundle:@"search_background"] XO_imageWithTintColor:RGB(230, 230, 230)];
-        [_searchbar setSearchFieldBackgroundImage:image forState:UIControlStateNormal];
-    }
-    return _searchbar;
 }
 
 - (NSMutableArray <TIMUserProfile *>*)addData

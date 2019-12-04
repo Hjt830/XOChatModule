@@ -7,13 +7,17 @@
 
 #import "XOSearchResultListController.h"
 #import "XOContactListViewController.h"
+#import "XOChatClient.h"
+#import "NSBundle+ChatModule.h"
 
 static NSString *SearchContactCellID = @"SearchContactCellID";  // 联系人cell
 
 @interface XOSearchResultListController () <UITableViewDataSource, UITableViewDelegate>
 
-@property (nonatomic, strong) UITableView                   *tableView;  // 搜索结果列表
-@property (nonatomic, strong) NSMutableArray    <NSArray *> *dataSource; // 数据源
+@property (nonatomic, strong) UITableView                         *tableView;  // 搜索结果列表
+@property (nonatomic, strong) NSMutableArray          <NSArray *> *dataSource; // 数据源
+@property (nonatomic, strong) NSMutableArray        <TIMFriend *> *contactList; // 数据源
+@property (nonatomic, strong) NSMutableArray     <TIMGroupInfo *> *groupList; // 数据源
 
 @end
 
@@ -22,7 +26,7 @@ static NSString *SearchContactCellID = @"SearchContactCellID";  // 联系人cell
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = BG_TableColor;
+    self.view.backgroundColor = [UIColor groupTableViewColor];
     
     [self.view addSubview:self.tableView];
 }
@@ -54,6 +58,22 @@ static NSString *SearchContactCellID = @"SearchContactCellID";  // 联系人cell
         _dataSource = [NSMutableArray array];
     }
     return _dataSource;
+}
+
+- (NSMutableArray <TIMFriend *>*)contactList
+{
+    if (!_contactList) {
+        _contactList = [NSMutableArray array];
+    }
+    return _contactList;
+}
+
+- (NSMutableArray<TIMGroupInfo *> *)groupList
+{
+    if (!_groupList) {
+        _groupList = [NSMutableArray array];
+    }
+    return _groupList;
 }
 
 #pragma mark ====================== UITableViewDataSource =======================
@@ -98,9 +118,9 @@ static NSString *SearchContactCellID = @"SearchContactCellID";  // 联系人cell
     NSArray *array = self.dataSource[section];
     if (!XOIsEmptyArray(array)) {
         id object = array[0];
-        if ([object isKindOfClass:[TIMFriend class]]) title = @"联系人";
+        if ([object isKindOfClass:[TIMFriend class]]) title = XOChatLocalizedString(@"contact.friend");
         // 群组
-        else if ([object isKindOfClass:[TIMGroupInfo class]]) title = @"群聊";
+        else if ([object isKindOfClass:[TIMGroupInfo class]]) title = XOChatLocalizedString(@"contact.group");
     }
     return title;
 }
@@ -121,13 +141,12 @@ static NSString *SearchContactCellID = @"SearchContactCellID";  // 联系人cell
 
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
-    NSString *keyword = [searchController.searchBar.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *keyword = searchController.searchBar.text;
     if (XOIsEmptyString(keyword)) {
         return;
     }
     
     [self.dataSource removeAllObjects];
-    keyword = [NSString stringWithFormat:@"%@", [keyword pinyinString]];
     
     // 联系人页面搜索（可查联系人,群组）
     if (XOSearchTypeContact == self.searchType) {
@@ -157,31 +176,40 @@ static NSString *SearchContactCellID = @"SearchContactCellID";  // 联系人cell
 // 搜索好友
 - (void)searchContactWith:(NSString *)keyword
 {
-//    keyword = [NSString stringWithFormat:@"*%@*", keyword];
-//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"nick LIKE %@ OR nickPinyin LIKE %@ OR remark LIKE %@ or remarkPinyin LIKE %@", keyword, keyword, keyword, keyword];
-//    [[XOContactCoreDataStorage getInstance] getContactListAsyncWith:predicate result:^(BOOL finish, NSArray<XOContact *> * _Nullable contactList) {
-//        if (self.dataSource.count > 0) {
-//            [self.dataSource insertObject:contactList atIndex:0];
-//        } else {
-//            [self.dataSource addObject:contactList];
-//        }
-//        [self.tableView reloadData];
-//    }];
+    [[XOChatClient shareClient].contactManager getContactWithKeyword:keyword handler:^(NSArray<TIMFriend *> * _Nullable contactList) {
+        
+        @synchronized (self.contactList) {
+            if (!XOIsEmptyArray(self.contactList)) {
+                [self.contactList removeAllObjects];
+            }
+            [self.contactList addObjectsFromArray:contactList];
+            if (![self.dataSource containsObject:self.contactList]) {
+                [self.dataSource addObject:self.contactList];
+            }
+        }
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.tableView reloadData];
+        }];
+    }];
 }
 
 // 搜索群组
 - (void)searchGroupWith:(NSString *)keyword
 {
-//    keyword = [NSString stringWithFormat:@"*%@*", keyword];
-//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"groupName LIKE %@ OR groupNamePinyin LIKE %@", keyword, keyword, keyword];
-//    [[XOGroupCoreDataStorage getInstance] getGroupListAsyncWith:predicate result:^(BOOL finish, NSArray<XOContact *> * _Nullable groupList) {
-//        if (self.dataSource.count > 0) {
-//            [self.dataSource insertObject:groupList atIndex:1];
-//        } else {
-//            [self.dataSource addObject:groupList];
-//        }
-//        [self.tableView reloadData];
-//    }];
+    [[XOChatClient shareClient].contactManager getGroupWithKeyword:keyword handler:^(NSArray<TIMGroupInfo *> * _Nullable groupList) {
+        @synchronized (self.dataSource) {
+            if (!XOIsEmptyArray(self.groupList)) {
+                [self.groupList removeAllObjects];
+            }
+            [self.groupList addObjectsFromArray:groupList];
+            if (![self.dataSource containsObject:self.groupList]) {
+                [self.dataSource addObject:self.groupList];
+            }
+        }
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.tableView reloadData];
+        }];
+    }];
 }
 
 // 搜索会话

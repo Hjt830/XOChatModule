@@ -737,12 +737,12 @@ static NSTimeInterval audioRecordTime = 0.0f;
 
 - (void)pickLocation
 {
-    XOLocationViewController *locationVC = [[XOLocationViewController alloc] init];
-    locationVC.delegate = self;
-    locationVC.locationType = XOLocationTypeSend;
-    XOBaseNavigationController *nav = [[XOBaseNavigationController alloc] initWithRootViewController:locationVC];
-    nav.modalPresentationStyle = UIModalPresentationFullScreen;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        XOLocationViewController *locationVC = [[XOLocationViewController alloc] init];
+        locationVC.delegate = self;
+        locationVC.locationType = XOLocationTypeSend;
+        XOBaseNavigationController *nav = [[XOBaseNavigationController alloc] initWithRootViewController:locationVC];
+        nav.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.parentViewController.navigationController presentViewController:nav animated:YES completion:NULL];
     }];
 }

@@ -38,6 +38,13 @@ static NSString *ContactCellID = @"ContactCellID";
 
 @implementation XOContactListViewController
 
+- (void)dealloc
+{
+    if (self.searchController.active) {
+        self.searchController.active = NO;
+    }
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -61,6 +68,8 @@ static NSString *ContactCellID = @"ContactCellID";
     self.tableHeaderView.frame = CGRectMake(0, 0, self.view.width, searBarHeight);
     self.tableView.frame = CGRectMake(0, 0, self.view.width, self.view.height);
     self.tableView.tableHeaderView = self.tableHeaderView;
+    CGFloat resultTop = [UIApplication sharedApplication].statusBarFrame.size.height + self.navigationController.navigationBar.height + searBarHeight;
+    self.resultController.view.frame = CGRectMake(0, resultTop, self.view.width, self.view.height - resultTop);
 }
 
 - (void)setupUI
@@ -89,7 +98,7 @@ static NSString *ContactCellID = @"ContactCellID";
         tableView.sectionHeaderHeight = 30.0f;
         tableView.sectionFooterHeight = 0.0f;
         tableView.multipleTouchEnabled = NO;
-        [tableView setSectionIndexColor:[UIColor darkGrayColor]];
+        [tableView setSectionIndexColor:[UIColor XOTextColor]];
         [tableView setSectionIndexBackgroundColor:[UIColor clearColor]];
         _tableView = tableView;
         
@@ -133,8 +142,9 @@ static NSString *ContactCellID = @"ContactCellID";
         _searchController = [[UISearchController alloc] initWithSearchResultsController:self.resultController];
         _searchController.searchResultsUpdater = self.resultController;
         _searchController.delegate = self;
-        _searchController.dimsBackgroundDuringPresentation = YES;
-        _searchController.view.backgroundColor = RGBA(220, 220, 220, 0.5);
+        _searchController.dimsBackgroundDuringPresentation = NO;
+        _searchController.hidesNavigationBarDuringPresentation = NO;
+        _searchController.view.backgroundColor = [UIColor clearColor];
 
         UISearchBar *searchBar = _searchController.searchBar;
         searchBar.barStyle = UIBarStyleDefault;
@@ -176,7 +186,7 @@ static NSString *ContactCellID = @"ContactCellID";
                 }];
             }
         }];
-        self.contactNumLabel.text = [NSString stringWithFormat:@"%lu%@", (unsigned long)friendList.count, XOChatLocalizedString(@"contact.groupNum")];
+        self.contactNumLabel.text = [NSString stringWithFormat:@"%lu%@", (unsigned long)friendList.count, XOChatLocalizedString(@"contact.contactNum")];
     }];
 }
 
@@ -295,9 +305,6 @@ static NSString *ContactCellID = @"ContactCellID";
     self.searchController.active = NO;
     [self.searchController.searchBar resignFirstResponder];
     
-//    WXContactDetailViewController * otherDetail = [[WXContactDetailViewController alloc] init];
-//    otherDetail.kUser = [self.fetchedResultController objectAtIndexPath:indexPath];
-//    [self.navigationController pushViewController:otherDetail animated:YES];
     if (0 == indexPath.section) {
         XOGroupListViewController *groupListVC = [[XOGroupListViewController alloc] init];
         [self.navigationController pushViewController:groupListVC animated:YES];
@@ -379,32 +386,58 @@ static NSString *ContactCellID = @"ContactCellID";
     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:index] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 }
 
+#pragma mark ========================= UISearchControllerDelegate =========================
+
+- (void)didPresentSearchController:(UISearchController *)searchController
+{
+    [self.tabBarController.tabBar setHidden:YES];
+}
+
+- (void)didDismissSearchController:(UISearchController *)searchController
+{
+    [self.tabBarController.tabBar setHidden:NO];
+}
+
 #pragma mark ====================== UISearchBarDelegate =======================
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-    [self.tabBarController.tabBar setHidden:YES];
+    
 }
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-    [self.tabBarController.tabBar setHidden:NO];
+    
 }
 
 #pragma mark ====================== WXSearchResultDelegate =======================
 
 - (void)XOSearchList:(XOSearchResultListController *)search didSelectContact:(id)object
 {
-    if ([object isKindOfClass:[TIMFriend class]]) {
-//        XOContactDetailViewController * otherDetail = [[XOContactDetailViewController alloc] init];
-//        otherDetail.kUser = (TIMFriend *)object;
-//        [self.navigationController pushViewController:otherDetail animated:YES];
-    }
+    self.searchController.active = NO;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.26 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if ([object isKindOfClass:[TIMFriend class]]) {
+            XOChatViewController *chatVC = [[XOChatViewController alloc] init];
+            TIMFriend *contact = (TIMFriend *)object;
+            chatVC.chatType = TIM_C2C;
+            chatVC.conversation = [[TIMManager sharedInstance] getConversation:TIM_C2C receiver:contact.identifier];
+            [self.navigationController pushViewController:chatVC animated:YES];
+        }
+        else if ([object isKindOfClass:[TIMGroupInfo class]]) {
+            XOChatViewController *chatVC = [[XOChatViewController alloc] init];
+            TIMGroupInfo *group = (TIMGroupInfo *)object;
+            chatVC.chatType = TIM_GROUP;
+            chatVC.conversation = [[TIMManager sharedInstance] getConversation:TIM_GROUP receiver:group.group];
+            [self.navigationController pushViewController:chatVC animated:YES];
+        }
+    });
 }
 
-- (void)WXSearchListDidScrollTable:(XOSearchResultListController *)search
+- (void)XOSearchListDidScrollTable:(XOSearchResultListController *)search
 {
-    [self.searchController.searchBar resignFirstResponder];
-    [self.searchController resignFirstResponder];
+    if ([self.searchController.searchBar isFirstResponder]) {
+        [self.searchController.searchBar resignFirstResponder];
+        [self.searchController resignFirstResponder];
+    }
 }
 
 #pragma mark ====================== 字体改变 =======================

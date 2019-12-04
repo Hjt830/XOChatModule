@@ -795,7 +795,8 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
 {
     [msgs enumerateObjectsUsingBlock:^(TIMMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
         
-        BOOL isChattingMsg = [message.sender isEqualToString:[self.conversation getReceiver]];
+        TIMConversation * conv = [message getConversation];
+        BOOL isChattingMsg = (([conv getType] == [self.conversation getType]) && [[conv getReceiver] isEqualToString:[self.conversation getReceiver]]);
         BOOL isSystemMsg = [[message getElem:0] isKindOfClass:[TIMGroupTipsElem class]];
         if (isChattingMsg || isSystemMsg) {
             BOOL filter = [self filterMessage:message];

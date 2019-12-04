@@ -37,6 +37,12 @@ static NSString *ContactCellID = @"ContactCellID";
 
 @implementation XOGroupListViewController
 
+- (void)dealloc
+{
+    if (self.searchController.active) {
+        self.searchController.active = NO;
+    }
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -61,6 +67,8 @@ static NSString *ContactCellID = @"ContactCellID";
     self.tableHeaderView.frame = CGRectMake(0, 0, self.view.width, searBarHeight);
     self.tableView.frame = CGRectMake(0, 0, self.view.width, self.view.height);
     self.tableView.tableHeaderView = self.tableHeaderView;
+    CGFloat resultTop = [UIApplication sharedApplication].statusBarFrame.size.height + self.navigationController.navigationBar.height + searBarHeight;
+    self.resultController.view.frame = CGRectMake(0, resultTop, self.view.width, self.view.height - resultTop);
 }
 
 - (void)setupUI
@@ -132,8 +140,9 @@ static NSString *ContactCellID = @"ContactCellID";
         _searchController = [[UISearchController alloc] initWithSearchResultsController:self.resultController];
         _searchController.searchResultsUpdater = self.resultController;
         _searchController.delegate = self;
-        _searchController.dimsBackgroundDuringPresentation = YES;
-        _searchController.view.backgroundColor = RGBA(220, 220, 220, 0.5);
+        _searchController.dimsBackgroundDuringPresentation = NO;
+        _searchController.hidesNavigationBarDuringPresentation = NO;
+        _searchController.view.backgroundColor = [UIColor clearColor];
 
         UISearchBar *searchBar = _searchController.searchBar;
         searchBar.barStyle = UIBarStyleDefault;
@@ -153,7 +162,7 @@ static NSString *ContactCellID = @"ContactCellID";
     if (!_resultController) {
         _resultController = [[XOSearchResultListController alloc] init];
         _resultController.delegate = self;
-        _resultController.searchType = XOSearchTypeContact;
+        _resultController.searchType = XOSearchTypeGroup;
     }
     return _resultController;
 }
@@ -175,7 +184,7 @@ static NSString *ContactCellID = @"ContactCellID";
                 }];
             }
         }];
-        self.contactNumLabel.text = [NSString stringWithFormat:@"%lu%@", (unsigned long)groupList.count, XOChatLocalizedString(@"contact.contactNum")];
+        self.contactNumLabel.text = [NSString stringWithFormat:@"%lu%@", (unsigned long)groupList.count, XOChatLocalizedString(@"contact.groupNum")];
     }];
 }
 
@@ -258,19 +267,24 @@ static NSString *ContactCellID = @"ContactCellID";
 
 - (void)XOSearchList:(XOSearchResultListController *)search didSelectContact:(id)object
 {
-    if ([object isKindOfClass:[TIMGroupInfo class]]) {
-//        TIMGroupInfo *group = (TIMGroupInfo *)object;
-//        XOChatViewController *chatVC = [[XOChatViewController alloc] init];
-//        chatVC.chatType = HTChatTypeGroup;
-//        chatVC.chatterId = group.groupId;
-//        [self.navigationController pushViewController:chatVC animated:YES];
-    }
+    self.searchController.active = NO;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.26 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if ([object isKindOfClass:[TIMGroupInfo class]]) {
+            XOChatViewController *chatVC = [[XOChatViewController alloc] init];
+            TIMGroupInfo *group = (TIMGroupInfo *)object;
+            chatVC.chatType = TIM_GROUP;
+            chatVC.conversation = [[TIMManager sharedInstance] getConversation:TIM_GROUP receiver:group.group];
+            [self.navigationController pushViewController:chatVC animated:YES];
+        }
+    });
 }
 
-- (void)WXSearchListDidScrollTable:(XOSearchResultListController *)search
+- (void)XOSearchListDidScrollTable:(XOSearchResultListController *)search
 {
-    [self.searchController.searchBar resignFirstResponder];
-    [self.searchController resignFirstResponder];
+    if ([self.searchController.searchBar isFirstResponder]) {
+        [self.searchController.searchBar resignFirstResponder];
+        [self.searchController resignFirstResponder];
+    }
 }
 
 #pragma mark ====================== 字体改变 =======================

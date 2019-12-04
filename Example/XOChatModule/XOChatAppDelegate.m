@@ -37,7 +37,7 @@
 // 13225252525
 #define Token           @"0db1788e4d7e44adb7ccd8dfd6dfdf6c"
 #define TIM_UserId      @"fddd69261dc44ebe928bc81ebc5bf1a7"
-#define TIM_UserSig     @"eJw1kF1PwjAYhf-LbjHalnVbTbgoZCEknUgU9K7p10ahzNkVGRr-u3Nht8-znpyc9yd6ZS-3omms5iLwqdfRYwSiuwGbrrHecFEG43uMMEEAjNJqUwdb2kGVWuuEoARqFcdGGoIyqTJopMKyhCK9ZVpb9cdFvl2s8vqbLa7xRUlBl764oDfPkGtMmLDnuV2fiBD73boi2klqc3qAT*7d486158kX*9yvugBVkdXHebuherdRlXuAyxbQA5iNZfrIh2F9JYwBQEkKEnSTwZ7MP8cpJCkieFwllPo414GHa2OGT-z*ASD8WMY_"
+#define TIM_UserSig     @"eJw1kNtOg0AURf*FZ2PnysXEBwuaNpUgtFZ9IswFHAjjOJ2GtsZ-Fwk9j2vtk51zfrzd8-a2MkaJsnIltsK784B3M2F5MsrKsqqdtCNGNEIAXKUSUjtVq0nVQgg-Qj4UnBDJZIRCxkMoGaeshlUw7xxUM4bTx9d4nccUr1a7gnXtMpHDwmw2J14sDnFuyF7XfnbEfbfHjNgWD*uGJR*2XbrLRQepbR9C1zc5K3T6vR0ce0ry7JOd38B7*5I199cy0ZXTYWMlJAAgPwA*mqVTvfznNKCEwnFmXnH*ddSudGcjp0-8-gEJ2Vj-"
 #define NickName        @"13225252525"
 #define Avatar          @"http://192.168.1.180:9000/xxoogo/9c7041d2f6bd44f89a5befccb629e553.jpg"
 
