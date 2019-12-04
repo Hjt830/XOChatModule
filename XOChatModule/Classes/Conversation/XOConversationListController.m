@@ -234,12 +234,15 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
         // 将置顶的会话放在前面
         __block NSArray *toppingArr = [XOContactManager defaultManager].toppingArray;
         if (toppingArr.count > 0) {
+            // 收集置顶的会话
+            __block NSMutableArray *arr = [NSMutableArray array];
             [self.dataSource enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(TIMConversation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 if ([toppingArr containsObject:[obj getReceiver]]) {
                     [self.toppingArr addObject:obj];
-                    [self.dataSource removeObject:obj];
+                    [arr addObject:obj];
                 }
             }];
+            [self.dataSource removeObjectsInArray:arr];
             // 按时间排序
             [self.dataSource sortUsingComparator:^NSComparisonResult(TIMConversation * _Nonnull obj1, TIMConversation * _Nonnull obj2) {
                 return [[[obj2 getLastMsg] timestamp] compare:[[obj1 getLastMsg] timestamp]];

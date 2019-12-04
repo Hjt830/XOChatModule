@@ -140,10 +140,10 @@ static NSString *ContactCellID = @"ContactCellID";
         searchBar.translucent = YES;
         searchBar.delegate = self;
         searchBar.barTintColor = [UIColor groupTableViewColor];
-        searchBar.backgroundImage = nil;
+        searchBar.backgroundImage = [[UIImage alloc] init];
         searchBar.tintColor = AppTinColor;
-        UIImage *image = [UIImage xo_imageNamedFromChatBundle:@"search_background"];
-        [searchBar setBackgroundImage:[image XO_imageWithTintColor:BG_TableColor]];
+        UIImage *image = [[UIImage xo_imageNamedFromChatBundle:@"search_background"] XO_imageWithTintColor:RGB(230, 230, 230)];
+        [searchBar setSearchFieldBackgroundImage:image forState:UIControlStateNormal];
     }
     return _searchController;
 }

@@ -141,10 +141,10 @@ static NSString *ContactCellID = @"ContactCellID";
         searchBar.translucent = YES;
         searchBar.delegate = self;
         searchBar.barTintColor = [UIColor groupTableViewColor];
-        searchBar.backgroundImage = nil;
+        searchBar.backgroundImage = [[UIImage alloc] init];
         searchBar.tintColor = AppTinColor;
-        UIImage *image = [UIImage xo_imageNamedFromChatBundle:@"search_background"];
-        [searchBar setBackgroundImage:[image XO_imageWithTintColor:BG_TableColor]];
+        UIImage *image = [[UIImage xo_imageNamedFromChatBundle:@"search_background"] XO_imageWithTintColor:RGB(230, 230, 230)];
+        [searchBar setSearchFieldBackgroundImage:image forState:UIControlStateNormal];
     }
     return _searchController;
 }
@@ -261,7 +261,7 @@ static NSString *ContactCellID = @"ContactCellID";
     if (0 == indexPath.section) {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:TableViewCell forIndexPath:indexPath];
         cell.textLabel.text = XOChatLocalizedString(@"contact.group");
-        cell.textLabel.font = XOSystemFont(15.0f);
+        cell.textLabel.font = [UIFont boldSystemFontOfSize:15.0f];
         cell.textLabel.textColor = [UIColor XOTextColor];
         return cell;
     }
@@ -454,6 +454,7 @@ static NSString *ContactCellID = @"ContactCellID";
     _iconImageView = [UIImageView new];
     _iconImageView.clipsToBounds = YES;
     _iconImageView.userInteractionEnabled = YES;
+    _iconImageView.backgroundColor = RGBA(221, 222, 224, 1);
     [self.contentView addSubview:_iconImageView];
     
     CGRect bounds = CGRectMake(0, 0, 44, 44);
@@ -497,20 +498,19 @@ static NSString *ContactCellID = @"ContactCellID";
         
         _nameLabel.text = !XOIsEmptyString(group.groupName) ? group.groupName : @"";
         if (!XOIsEmptyString(group.faceURL)) {
-            @XOWeakify(self);
             [_iconImageView sd_setImageWithURL:[NSURL URLWithString:group.faceURL] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-                @XOStrongify(self);
                 if (image) {
-                    [UIImage combineGroupImageWithGroupId:group.group complection:^(UIImage * _Nonnull image) {
-                        self->_iconImageView.image = image;
-                    }];
-                }
-                else {
+                    self->_iconImageView.image = image;
+                } else {
                     self->_iconImageView.image = [UIImage groupDefaultImageAvatar];
                 }
             }];
         } else {
-            _iconImageView.image = [UIImage groupDefaultImageAvatar];
+            [UIImage combineGroupImageWithGroupId:group.group complection:^(UIImage * _Nonnull image) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self->_iconImageView.image = image;
+                });
+            }];
         }
     }
     else {

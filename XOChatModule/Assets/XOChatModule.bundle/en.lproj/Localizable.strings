@@ -27,15 +27,15 @@
 "conversation.top.title"        = "Top";
 "conversation.unTop.title"      = "Unpin";
 
-"conversation.message.image" = "[picture]";
-"conversation.message.video" = "[video]";
-"conversation.message.sound" = "[voice]";
-"conversation.message.file" = "[file]";
-"conversation.message.face" = "[expression]";
-"conversation.message.location" = "[location]";
-"conversation.message.redPacket"= "[red envelope]";
-"conversation.message.transfer" = "[transfer]";
-"conversation.message.carte" = "[business card]";
+"conversation.message.image" = "[Picture]";
+"conversation.message.video" = "[Video]";
+"conversation.message.sound" = "[Voice]";
+"conversation.message.file" = "[File]";
+"conversation.message.face" = "[Expression]";
+"conversation.message.location" = "[Location]";
+"conversation.message.redPacket"= "[Red envelope]";
+"conversation.message.transfer" = "[Transfer]";
+"conversation.message.carte" = "[Business card]";
 "conversation.message.aCall" = "[Voice Call]";
 "conversation.message.vCall" = "[Video Call]";
 
@@ -71,7 +71,6 @@
 "chat.message.copy"                 = "Copy";
 "chat.message.forward"              = "Forward";
 "chat.message.revoke"               = "Revoke";
-"chat.message.resend"               = "Resend";
 "chat.message.delete"               = "Delete";
 "chat.message.forward.limit"        = "No more than 9 messages can be forwarded at a time";
 "chat.message.forward.send"         = "Message forward";
@@ -97,7 +96,7 @@
 "group.search.placeholder"          = "nickname";
 
 "group.setting.title"               = "Group Info";
-"group.setting.griupname"           = "Group Name";
+"group.setting.groupname"           = "Group Name";
 "group.setting.notification"        = "Group Notification";
 "group.setting.groupname.empty"     = "group name is empty";
 "group.setting.notification.empty"  = "group notification is empty";
@@ -110,12 +109,11 @@
 "group.setting.exit"                = "Exit";
 "group.setting.disband"             = "Disband";
 
-"group.tip.invite.%@.%@"         = "'%@' invite '%@' to join group";
-"group.tip.exit.%@"              = "'%@' exit group";
-"group.tip.kickout.%@.%@"        = "'%@' kick '%@' out of group";
-"group.tip.adminSet.%@.%@"          = "'%@' set '%@' as a group administrator";
-"group.tip.adminCancel.%@.%@"       = "'%@' canceled '%@' group administrator status";
-
+"group.tip.invite.%@.%@"                    = "'%@' invite '%@' to join group";
+"group.tip.exit.%@"                         = "'%@' exit group";
+"group.tip.kickout.%@.%@"                   = "'%@' kick '%@' out of group";
+"group.tip.adminSet.%@.%@"                  = "'%@' set '%@' as a group administrator";
+"group.tip.adminCancel.%@.%@"               = "'%@' canceled '%@' group administrator status";
 "group.tip.changeGroupName.%@.%@"           = "'%@' change group name to '%@'";
 "group.tip.changeGroupIntroduce.%@.%@"      = "'%@' change group introduce to '%@'";
 "group.tip.changeGroupNotification.%@.%@"   = "'%@' change group notification to '%@'";

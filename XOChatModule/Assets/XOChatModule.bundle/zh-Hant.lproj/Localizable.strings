@@ -71,7 +71,6 @@
 "chat.message.copy"                 = "複製";
 "chat.message.forward"              = "轉發";
 "chat.message.revoke"               = "撤回";
-"chat.message.resend"               = "重發";
 "chat.message.delete"               = "刪除";
 "chat.message.forward.limit"        = "轉發消息一次不能超過9條";
 "chat.message.forward.send"         = "消息轉發";
@@ -110,11 +109,11 @@
 "group.setting.exit"                = "退出";
 "group.setting.disband"             = "解散";
 
-"group.tip.invite.%@.%@"         = "'%@' 邀請 '%@' 加入群聊";
-"group.tip.exit.%@"              = "'%@' 退出群聊";
-"group.tip.kickout.%@.%@"        = "'%@' 將 '%@' 踢出群聊";
-"group.tip.adminSet.%@.%@"          = "'%@' 將 '%@' 設置為群管理員";
-"group.tip.adminCancel.%@.%@"       = "'%@' 取消了 '%@' 群管理員身份";
+"group.tip.invite.%@.%@"                    = "'%@' 邀請 '%@' 加入群聊";
+"group.tip.exit.%@"                         = "'%@' 退出群聊";
+"group.tip.kickout.%@.%@"                   = "'%@' 將 '%@' 踢出群聊";
+"group.tip.adminSet.%@.%@"                  = "'%@' 將 '%@' 設置為群管理員";
+"group.tip.adminCancel.%@.%@"               = "'%@' 取消了 '%@' 群管理員身份";
 "group.tip.changeGroupName.%@.%@"           = "'%@' 修改群名稱為 '%@'";
 "group.tip.changeGroupIntroduce.%@.%@"      = "'%@' 修改群簡介為 '%@'";
 "group.tip.changeGroupNotification.%@.%@"   = "'%@' 修改群公告為 '%@'";

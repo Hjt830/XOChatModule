@@ -24,6 +24,7 @@
 #import "XOChatMarco.h"
 #import "TIMElem+XOExtension.h"
 #import "LGAudioKit.h"
+#import "YBIBCopywriter.h"
 #import <SVProgressHUD/SVProgressHUD.h>
 #import <YBImageBrowser/YBIBVideoData.h>
 #import <FLAnimatedImage/FLAnimatedImage.h>
@@ -77,6 +78,7 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
         self.earliestMsg = nil;
         [[XOChatClient shareClient] addDelegate:self delegateQueue:dispatch_get_main_queue()];
         [[XOChatClient shareClient].messageManager addDelegate:self delegateQueue:dispatch_get_main_queue()];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(languageDidChange:) name:XOLanguageDidChangeNotification object:nil];
     }
     return self;
 }
@@ -85,6 +87,7 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
 {
     [[XOChatClient shareClient] removeDelegate:self];
     [[XOChatClient shareClient].messageManager removeDelegate:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:XOLanguageDidChangeNotification object:nil];
     NSLog(@"%s", __func__);
 }
 
@@ -100,6 +103,8 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
     [self loadMessages];
     // 设置录音播放代理
     [LGAudioPlayer sharePlayer].delegate = self;
+    // 设置YBI的语言
+    [self languageDidChange:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -542,8 +547,6 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
             [self.lock unlock];
         }
     }
-    // 保存消息到本地
-    [self.conversation saveMessage:message sender:[message sender] isReaded:YES];
     
     return indexpath;
 }
@@ -645,8 +648,7 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
             TIMElem *elem = [message getElem:0];
             
             WXMessageCell *cell = nil;
-            if ([elem isKindOfClass:[TIMTextElem class]] ||
-                [elem isKindOfClass:[TIMCustomElem class]])
+            if ([elem isKindOfClass:[TIMTextElem class]])
             {
                 cell = [tableView dequeueReusableCellWithIdentifier:TextMessageCellID forIndexPath:indexPath];
             }
@@ -1509,19 +1511,13 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
     CGFloat height = 56.0f;
     
     // 文字消息
-    if ([elem isKindOfClass:[TIMTextElem class]] ||
-        [elem isKindOfClass:[TIMCustomElem class]])
+    if ([elem isKindOfClass:[TIMTextElem class]])
     {
         UILabel *label = [[UILabel alloc] init];
         [label setNumberOfLines:0];
         [label setFont:[UIFont systemFontOfSize:16.0f]];
         // 筛选 emoji
-        NSString *messageStr = @"";
-        if ([elem isKindOfClass:[TIMTextElem class]]) messageStr = ((TIMTextElem *)elem).text;
-        else {
-            NSData *data = ((TIMCustomElem *)elem).data;
-            messageStr = (data.length > 0) ? [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] : @"";
-        }
+        NSString *messageStr = ((TIMTextElem *)elem).text;
         NSMutableAttributedString *text = [ZXChatHelper formatMessageString:messageStr].mutableCopy;
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
         paragraphStyle.lineSpacing = 3; // 调整行间距
@@ -1631,7 +1627,11 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
         CGFloat height = [text boundingRectWithSize:CGSizeMake(self.view.width - 30, MAXFLOAT) options:0|1 context:nil].size.height;
         size = CGSizeMake(self.view.width - 30, height + 20);
     }
-    
+    else if ([elem isKindOfClass:[TIMCustomElem class]]) {
+        NSString *text = [elem getTextFromMessage];
+        CGFloat height = [text boundingRectWithSize:CGSizeMake(self.view.width - 30, MAXFLOAT) options:0|1 attributes:@{NSFontAttributeName: XOSystemFont(13.0f)} context:nil].size.height;
+        size = CGSizeMake(self.view.width - 30, height + 20);
+    }
     // 3、保存到缓存中
     NSValue *sizeValue = [NSValue valueWithCGSize:size];
     [self.cellSizeDict setValue:sizeValue forKey:uniqueKey];
@@ -1639,6 +1639,17 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
     return size;
 }
 
+#pragma mark ========================= noti =========================
+
+- (void)languageDidChange:(NSNotification *)noti
+{
+    NSString *language = [XOSettingManager defaultManager].language;
+    if ([language isEqualToString:XOLanguageNameZh_Hans] || [language isEqualToString:XOLanguageNameZh_Hant]) {
+        [[YBIBCopywriter sharedCopywriter] setType:YBIBCopywriterTypeSimplifiedChinese];
+    } else {
+        [[YBIBCopywriter sharedCopywriter] setType:YBIBCopywriterTypeEnglish];
+    }
+}
 
 @end
 

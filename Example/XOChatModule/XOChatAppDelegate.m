@@ -51,7 +51,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [[XOSettingManager defaultManager] setAppLanguage:XOLanguageNameZh_Hant];
+    [[XOSettingManager defaultManager] setAppLanguage:XOLanguageNameEn];
     
     NSString *str = XOLocalizedString(@"NSDateCategory.text8");
     NSLog(@"str: %@", str);

@@ -58,7 +58,6 @@
     _nameLabel.font = [UIFont boldSystemFontOfSize:fontSize];
     _nameLabel.textColor = [UIColor XOTextColor];
     
-    
     _timeLabel = [UILabel new];
     _timeLabel.font = [UIFont systemFontOfSize:12];
     _timeLabel.textColor = [UIColor lightGrayColor];
@@ -195,7 +194,6 @@
         }];
         
         if (!XOIsEmptyString(groupInfo.faceURL)) {
-            [_iconImageView sd_setImageWithURL:[NSURL URLWithString:groupInfo.faceURL] placeholderImage:[UIImage xo_imageNamedFromChatBundle:@"default_avatar"]];
             [_iconImageView sd_setImageWithURL:[NSURL URLWithString:groupInfo.faceURL] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
                 if (image) {
                     self.iconImageView.image = image;

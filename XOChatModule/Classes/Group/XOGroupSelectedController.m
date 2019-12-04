@@ -706,11 +706,10 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
         _searchbar.translucent = YES;
         _searchbar.delegate = self;
         _searchbar.barTintColor = [UIColor groupTableViewColor];
-        _searchbar.backgroundImage = nil;
+        _searchbar.backgroundImage = [[UIImage alloc] init];
         _searchbar.tintColor = AppTinColor;
-        _searchbar.placeholder = XOChatLocalizedString(@"group.search.placeholder");
-        UIImage *image = [UIImage xo_imageNamedFromChatBundle:@"search_background"];
-        [_searchbar setSearchFieldBackgroundImage:[image XO_imageWithTintColor:BG_TableColor] forState:UIControlStateNormal];
+        UIImage *image = [[UIImage xo_imageNamedFromChatBundle:@"search_background"] XO_imageWithTintColor:RGB(230, 230, 230)];
+        [_searchbar setSearchFieldBackgroundImage:image forState:UIControlStateNormal];
     }
     return _searchbar;
 }
