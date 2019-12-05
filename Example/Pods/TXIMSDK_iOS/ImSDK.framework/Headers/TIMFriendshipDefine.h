@@ -11,7 +11,6 @@
 
 #import "ImSDK.h"
 
-@class TIMFriendMetaInfo;
 @class TIMFriendPendencyResponse;
 @class TIMFriendPendencyItem;
 @class TIMFriendFutureMeta;
@@ -29,7 +28,7 @@ typedef NS_ENUM(NSInteger, TIMFriendStatus) {
      *  操作成功
      */
     TIM_FRIEND_STATUS_SUCC                              = 0,
-    
+
     /**
      *  请求参数错误，请根据错误描述检查请求是否正确
      */
@@ -54,7 +53,7 @@ typedef NS_ENUM(NSInteger, TIMFriendStatus) {
      *  关系链字段中包含敏感词
      */
     TIM_FRIEND_DIRTY_WORD                                   = 30005,
-    
+
     /**
      *  服务器内部错误，请重试
      */
@@ -74,12 +73,12 @@ typedef NS_ENUM(NSInteger, TIMFriendStatus) {
      *  后台禁止该用户发起加好友请求
      */
     TIM_ADD_FRIEND_FORBIDEN                                 = 30009,
-    
+
     /**
      *  自己的好友数已达系统上限
      */
     TIM_ADD_FRIEND_STATUS_SELF_FRIEND_FULL                  = 30010,
-    
+
     /**
      * 分组已达系统上限
      */
@@ -89,47 +88,47 @@ typedef NS_ENUM(NSInteger, TIMFriendStatus) {
      * 未决数已达系统上限。
      */
     TIM_PENDENCY_STATUS_FULL                                = 30012,
-    
+
     /**
      * 黑名单数已达系统上限
      */
     TIM_ADD_BLACKLIST_STATUS_FULL                           = 30013,
-    
+
     /**
      *  对方的好友数已达系统上限
      */
     TIM_ADD_FRIEND_STATUS_THEIR_FRIEND_FULL                 = 30014,
-    
+
     /**
      *  被加好友在自己的黑名单中
      */
     TIM_ADD_FRIEND_STATUS_IN_SELF_BLACK_LIST                = 30515,
-    
+
     /**
      *  被加好友设置为禁止加好友
      */
     TIM_ADD_FRIEND_STATUS_FRIEND_SIDE_FORBID_ADD            = 30516,
-    
+
     /**
      *  已被被添加好友设置为黑名单
      */
     TIM_ADD_FRIEND_STATUS_IN_OTHER_SIDE_BLACK_LIST          = 30525,
-    
+
     /**
      *  等待好友审核同意
      */
     TIM_ADD_FRIEND_STATUS_PENDING                           = 30539,
-    
+
     /**
      *  添加好友请求被安全策略打击，请勿频繁发起添加好友请求
      */
     TIM_ADD_FRIEND_STATUS_SENSITIVE                         = 30540,
-    
+
     /**
      *  对方没有申请过好友
      */
     TIM_RESPONSE_FRIEND_STATUS_NO_REQ                       = 30614,
-    
+
     /**
      *  删除好友请求被安全策略打击，请勿频繁发起删除好友请求
      */
@@ -141,7 +140,7 @@ typedef NS_ENUM(NSInteger, TIMDelFriendType) {
      *  删除单向好友
      */
     TIM_FRIEND_DEL_SINGLE               = 1,
-    
+
     /**
      *  删除双向好友
      */
@@ -153,12 +152,12 @@ typedef NS_ENUM(NSInteger, TIMPendencyType) {
      *  别人发给我的
      */
     TIM_PENDENCY_COME_IN                    = 1,
-    
+
     /**
      *  我发给别人的
      */
     TIM_PENDENCY_SEND_OUT                   = 2,
-    
+
     /**
      * 别人发给我的 和 我发给别人的。仅拉取时有效
      */
@@ -173,17 +172,17 @@ typedef NS_ENUM(NSInteger, TIMFutureFriendType) {
      *  收到的未决请求
      */
     TIM_FUTURE_FRIEND_PENDENCY_IN_TYPE              = 0x1,
-    
+
     /**
      *  发出去的未决请求
      */
     TIM_FUTURE_FRIEND_PENDENCY_OUT_TYPE             = 0x2,
-    
+
     /**
      *  推荐好友
      */
     TIM_FUTURE_FRIEND_RECOMMEND_TYPE                = 0x4,
-    
+
     /**
      *  已决好友
      */
@@ -198,7 +197,7 @@ typedef NS_ENUM(NSInteger, TIMPageDirectionType) {
      *  向上翻页
      */
     TIM_PAGE_DIRECTION_UP_TYPE            = 1,
-    
+
     /**
      *  向下翻页
      */
@@ -246,27 +245,32 @@ typedef NS_ENUM(NSInteger, TIMFriendResponseType) {
      *  同意加好友（建立单向好友）
      */
     TIM_FRIEND_RESPONSE_AGREE                       = 0,
-    
+
     /**
      *  同意加好友并加对方为好友（建立双向好友）
      */
     TIM_FRIEND_RESPONSE_AGREE_AND_ADD               = 1,
-    
+
     /**
      *  拒绝对方好友请求
      */
     TIM_FRIEND_RESPONSE_REJECT                      = 2,
 };
 
-#pragma mark - block回调
-
 /**
- * 获取好友列表回调
- *
- *  @param meta 好友元信息
- *  @param friends 好友列表 TIMUserProfile* 数组，只包含需要的字段
+ *  好友检查类型
  */
-typedef void (^TIMGetFriendListByPageSucc)(TIMFriendMetaInfo * meta, NSArray * friends);
+typedef NS_ENUM(NSInteger,TIMFriendAddType) {
+    /**
+     *  单向好友
+     */
+    TIM_FRIEND_ADD_TYPE_SINGLE     = 1,
+    /**
+     *  互为好友
+     */
+    TIM_FRIEND_ADD_TYPE_BOTH       = 2,
+};
+#pragma mark - block回调
 
 /**
  * 获取未决请求列表成功
@@ -329,6 +333,11 @@ typedef void (^TIMFriendCheckSucc)(NSArray* results);
  *  分组
  */
 @property (nonatomic,strong) NSString* group;
+
+/**
+ *  加好友方式 (可选)
+ */
+@property (nonatomic,assign) TIMFriendAddType addType;
 
 @end
 
@@ -408,7 +417,8 @@ typedef void (^TIMFriendCheckSucc)(NSArray* results);
 @property(nonatomic,assign) uint64_t timestamp;
 
 /**
- * 每页的数量，即本次请求最多返回都个数据
+ * 每页的数量，即本次请求最多返回多个数据，最大不超过 100，设置太大一次请求回包的时间会过长。默认值100
+ * 注意：后台最多只保存100条未决
  */
 @property(nonatomic,assign) uint64_t numPerPage;
 
@@ -443,32 +453,6 @@ typedef void (^TIMFriendCheckSucc)(NSArray* results);
  * 未决数据
  */
 @property NSArray<TIMFriendPendencyItem *> * pendencies;
-
-@end
-
-
-
-/**
- * 好友元信息
- */
-@interface TIMFriendMetaInfo : TIMCodingModel
-
-/**
- * 时间戳，需要保存，下次拉取时传入，增量更新使用
- */
-@property(nonatomic,assign) uint64_t timestamp;
-/**
- * 序列号，需要保存，下次拉取时传入，增量更新使用
- */
-@property(nonatomic,assign) uint64_t infoSeq;
-/**
- * 分页信息，无需保存，返回为0时结束，非0时传入再次拉取，第一次拉取时传0
- */
-@property(nonatomic,assign) uint64_t nextSeq;
-/**
- * 覆盖：为TRUE时需要重设timestamp, infoSeq, nextSeq为0，清除客户端存储，重新拉取资料
- */
-@property(nonatomic,assign) BOOL recover;
 
 @end
 

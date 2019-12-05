@@ -46,7 +46,7 @@ Pod::Spec.new do |s|
 #  s.xcconfig = { 'USER_HEADER_SEARCH_PATHS' => 'XOChatModule/Classes/Lib/AMap/*/*/Headers/*.{h}'}
 
   s.frameworks = 'UIKit', 'Foundation', 'CoreLocation'
-  s.dependency 'TXIMSDK_iOS', '~> 4.4.627'
+  s.dependency 'TXIMSDK_iOS', '~> 4.6.1'
   s.dependency 'XOBaseLib', '~> 0.3.3'
   s.dependency 'TZImagePickerController', '~> 3.2.1'
   s.dependency 'GCDMulticastDelegate', '~> 1.0.0'
