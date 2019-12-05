@@ -130,6 +130,18 @@ static XOChatClient *__chatClient = nil;
  */
 - (void)loginWith:(TIMLoginParam * _Nonnull)param successBlock:(TIMLoginSucc _Nullable)success failBlock:(TIMFail _Nullable)fail
 {
+    [[TIMManager sharedInstance] autoLogin:param.identifier succ:^{
+        
+    } fail:^(int code, NSString *msg) {
+        
+        if (code == ERR_NO_PREVIOUS_LOGIN) {
+            
+        }
+        else {
+            
+        }
+    }];
+    
     [[TIMManager sharedInstance] login:param succ:^{
         
         NSLog(@"=================================");
@@ -157,7 +169,7 @@ static XOChatClient *__chatClient = nil;
         
         
         // 初始化存储 仅查看历史消息时使用
-        [[TIMManager sharedInstance] initStorage:param succ:^{
+        [[TIMManager sharedInstance] initStorage:param.identifier succ:^{
             
             NSLog(@"初始化存储, 可查看历史消息");
             
@@ -166,6 +178,67 @@ static XOChatClient *__chatClient = nil;
             NSLog(@"初始化存储失败, 不可查看历史消息");
         }];
     }];
+}
+
+/** @brief 自动登录腾讯云IM
+ *  @param success 登录成功的回调
+ *  @param fail 登录失败的回调
+ */
+- (void)autoLoginWith:(TIMLoginParam * _Nonnull)param successBlock:(TIMLoginSucc _Nullable)success failBlock:(TIMFail _Nullable)fail
+{
+    [[TIMManager sharedInstance] autoLogin:param.identifier succ:^{
+        
+        NSLog(@"=================================");
+        NSLog(@"========== 腾讯云自动登录成功 =========");
+        NSLog(@"=================================\n");
+        
+        if (success) {success();}
+        
+        // 延迟两秒，等待数据库初始化完成
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            // 获取好友列表
+            [[XOContactManager defaultManager] asyncFriendList];
+            
+            // 获取群列表
+            [[XOContactManager defaultManager] asyncGroupList];
+        });
+        
+    } fail:^(int code, NSString *msg) {
+        
+        // 自动登录时，并没有登录过该用户
+        if (code == ERR_NO_PREVIOUS_LOGIN) {
+            // 调用登录接口重新登录
+            [self loginWith:param successBlock:success failBlock:fail];
+        }
+        else {
+            NSLog(@"=================================");
+            NSLog(@"====== 腾讯云自动登录失败 code: %d  msg: %@ ======", code, msg);
+            NSLog(@"=================================\n");
+            
+            if (fail) {
+                fail (code, msg);
+            }
+            
+            // 初始化存储 仅查看历史消息时使用
+            [[TIMManager sharedInstance] initStorage:param.identifier succ:^{
+                
+                NSLog(@"初始化存储, 可查看历史消息");
+                
+            } fail:^(int code, NSString *msg) {
+                
+                NSLog(@"初始化存储失败, 不可查看历史消息");
+            }];
+        }
+    }];
+}
+
+/** @brief 登出腾讯云IM
+ *  @param success 登出成功的回调
+ *  @param fail 登出失败的回调
+ */
+- (void)loginOut:(TIMLoginSucc _Nullable)success failBlock:(TIMFail _Nullable)fail
+{
+    [[TIMManager sharedInstance] logout:success fail:fail];
 }
 
 #pragma mark ========================= TIMMessageListener =========================

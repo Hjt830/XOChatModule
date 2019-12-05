@@ -58,6 +58,17 @@ FOUNDATION_STATIC_INLINE NSString * getMessageKey(TIMMessage *message) {
  */
 - (void)loginWith:(TIMLoginParam * _Nonnull)param successBlock:(TIMLoginSucc _Nullable)success failBlock:(TIMFail _Nullable)fail;
 
+/** @brief 自动登录腾讯云IM
+ *  @param success 登录成功的回调
+ *  @param fail 登录失败的回调
+ */
+- (void)autoLoginWith:(TIMLoginParam * _Nonnull)param successBlock:(TIMLoginSucc _Nullable)success failBlock:(TIMFail _Nullable)fail;
+
+/** @brief 登出腾讯云IM
+ *  @param success 登出成功的回调
+ *  @param fail 登出失败的回调
+ */
+- (void)loginOut:(TIMLoginSucc _Nullable)success failBlock:(TIMFail _Nullable)fail;
 
 /**
  *  @brief 添加|删除代理

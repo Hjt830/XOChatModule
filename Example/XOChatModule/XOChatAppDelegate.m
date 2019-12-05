@@ -72,7 +72,7 @@
     TIMLoginParam *loginParam = [[TIMLoginParam alloc] init];
     loginParam.identifier = TIM_UserId;
     loginParam.userSig = TIM_UserSig;
-    loginParam.appidAt3rd = TIM_UserId;
+    loginParam.appidAt3rd = TXTIMAppID;
     [[XOChatClient shareClient] loginWith:loginParam successBlock:^{
         
         [[XOSettingManager defaultManager] loginIn];
