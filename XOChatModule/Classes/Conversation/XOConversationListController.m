@@ -82,22 +82,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 {
     [super viewWillAppear:animated];
     
-    for (int i = 0; i < 2; i++) {
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-        button.frame = CGRectMake(0, 0, 56, 44);
-        [button setTitleColor:[UIColor XOTextColor] forState:UIControlStateNormal];
-        if (0 == i) {
-            [button setTitle:XOChatLocalizedString(@"contact.addressbook") forState:UIControlStateNormal];
-            [button addTarget:self action:@selector(contactList) forControlEvents:UIControlEventTouchUpInside];
-            UIBarButtonItem *bbi = [[UIBarButtonItem alloc] initWithCustomView:button];
-            self.navigationItem.leftBarButtonItem = bbi;
-        } else {
-            [button setImage:[UIImage xo_imageNamedFromChatBundle:@"conversation_createGroup"] forState:UIControlStateNormal];
-            [button addTarget:self action:@selector(groupChat) forControlEvents:UIControlEventTouchUpInside];
-            UIBarButtonItem *bbi = [[UIBarButtonItem alloc] initWithCustomView:button];
-            self.navigationItem.rightBarButtonItem = bbi;
-        }
-    }
+    [self setupNavigationItems];
     
     [self loadUnreadCount];
 }
@@ -138,6 +123,42 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 {
     [super viewSafeAreaInsetsDidChange];
     _safeInset = self.view.safeAreaInsets;
+}
+
+- (void)setupNavigationItems
+{
+    BOOL showAddressBook = YES;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(conversationListControllerShouldShowAddressBook)]) {
+        showAddressBook = [self.delegate conversationListControllerShouldShowAddressBook:self];
+    }
+    if (showAddressBook) {
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        button.frame = CGRectMake(0, 0, 56, 44);
+        [button setTitleColor:[UIColor XOTextColor] forState:UIControlStateNormal];
+        [button setTitle:XOChatLocalizedString(@"contact.addressbook") forState:UIControlStateNormal];
+        [button addTarget:self action:@selector(contactList) forControlEvents:UIControlEventTouchUpInside];
+        UIBarButtonItem *bbi = [[UIBarButtonItem alloc] initWithCustomView:button];
+        self.navigationItem.leftBarButtonItem = bbi;
+    }
+    
+    BOOL showCreateGroup = YES;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(conversationListControllerShouldShowCreateGroup:)]) {
+        showCreateGroup = [self.delegate conversationListControllerShouldShowCreateGroup:self];
+    }
+    if (showCreateGroup) {
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        button.frame = CGRectMake(0, 0, 56, 44);
+        [button setTitleColor:[UIColor XOTextColor] forState:UIControlStateNormal];
+    }
+    for (int i = 0; i < 2; i++) {
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        button.frame = CGRectMake(0, 0, 56, 44);
+        [button setTitleColor:[UIColor XOTextColor] forState:UIControlStateNormal];
+        [button setImage:[UIImage xo_imageNamedFromChatBundle:@"conversation_createGroup"] forState:UIControlStateNormal];
+        [button addTarget:self action:@selector(groupChat) forControlEvents:UIControlEventTouchUpInside];
+        UIBarButtonItem *bbi = [[UIBarButtonItem alloc] initWithCustomView:button];
+        self.navigationItem.rightBarButtonItem = bbi;
+    }
 }
 
 /**
