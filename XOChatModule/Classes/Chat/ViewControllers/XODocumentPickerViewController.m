@@ -27,7 +27,7 @@
     
     NSDictionary *attributes = [[UIBarButtonItem appearance] titleTextAttributesForState:UIControlStateNormal];
     self.originColor = [attributes valueForKey:NSForegroundColorAttributeName];
-    [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: AppTinColor} forState:UIControlStateNormal];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: AppTintColor} forState:UIControlStateNormal];
 }
 
 - (void)viewWillDisappear:(BOOL)animated

@@ -143,7 +143,7 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
 {
     UIButton *cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
     [cancelButton setTitle:XOChatLocalizedString(@"chat.cancel") forState:UIControlStateNormal];
-    [cancelButton setTitleColor:AppTinColor forState:UIControlStateNormal];
+    [cancelButton setTitleColor:AppTintColor forState:UIControlStateNormal];
     cancelButton.titleLabel.font = [UIFont systemFontOfSize:18];
     [cancelButton addTarget:self action:@selector(cancelPick) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem.enabled = NO;
@@ -155,7 +155,7 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
     
     UIButton *sendButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
     [sendButton setTitle:XOChatLocalizedString(@"chat.location.send") forState:UIControlStateNormal];
-    [sendButton setTitleColor:AppTinColor forState:UIControlStateNormal];
+    [sendButton setTitleColor:AppTintColor forState:UIControlStateNormal];
     sendButton.titleLabel.font = [UIFont systemFontOfSize:18];
     [sendButton addTarget:self action:@selector(sendLocation) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem.enabled = NO;
@@ -195,7 +195,7 @@ static NSString * const PointReuseIndentifier = @"pointReuseIndentifier";
         bar.barStyle = UIBarStyleDefault;
         bar.translucent = YES;
         bar.barTintColor = BG_TableColor;
-        bar.tintColor = AppTinColor;
+        bar.tintColor = AppTintColor;
         UIImageView *view = [[[bar.subviews objectAtIndex:0] subviews] firstObject];
         view.layer.borderColor = RGBOF(0xdddddd).CGColor;
         view.layer.borderWidth = 0.7;

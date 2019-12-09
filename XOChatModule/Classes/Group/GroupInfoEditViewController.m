@@ -81,7 +81,7 @@
         UIButton *ringhtBBI = [UIButton buttonWithType:UIButtonTypeCustom];
         ringhtBBI.bounds = CGRectMake(0, 0, 44, 44);
         [ringhtBBI setTitle:XOLocalizedString(@"sure") forState:UIControlStateNormal];
-        [ringhtBBI setTitleColor:AppTinColor forState:UIControlStateNormal];
+        [ringhtBBI setTitleColor:AppTintColor forState:UIControlStateNormal];
         [ringhtBBI addTarget:self action:@selector(rightBBIClick:) forControlEvents:UIControlEventTouchUpInside];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:ringhtBBI];
     }

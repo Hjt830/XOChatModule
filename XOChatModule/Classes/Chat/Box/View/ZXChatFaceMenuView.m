@@ -141,7 +141,7 @@
         [_sendButton setTitle:XOChatLocalizedString(@"chat.keyboard.send") forState:UIControlStateNormal];
         [_sendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_sendButton.titleLabel setFont:[UIFont systemFontOfSize:15.0f]];
-        [_sendButton setBackgroundColor:AppTinColor];
+        [_sendButton setBackgroundColor:AppTintColor];
         _sendButton.tag = -2;
         [_sendButton addTarget:self action:@selector(buttonDown:) forControlEvents:UIControlEventTouchDown];
     }

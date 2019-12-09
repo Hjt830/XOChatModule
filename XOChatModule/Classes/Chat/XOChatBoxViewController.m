@@ -614,11 +614,11 @@ static NSTimeInterval audioRecordTime = 0.0f;
             self.TZImagePicker.maxImagesCount = 9;
             self.TZImagePicker.videoMaximumDuration = 15;
             // 2. 在这里设置imagePickerVc的外观
-            self.TZImagePicker.iconThemeColor = AppTinColor;
-            self.TZImagePicker.navigationBar.barTintColor = AppTinColor;
+            self.TZImagePicker.iconThemeColor = AppTintColor;
+            self.TZImagePicker.navigationBar.barTintColor = AppTintColor;
             self.TZImagePicker.navigationBar.tintColor = [UIColor whiteColor];
             self.TZImagePicker.oKButtonTitleColorDisabled = MainPurpleLightColor;
-            self.TZImagePicker.oKButtonTitleColorNormal = AppTinColor;
+            self.TZImagePicker.oKButtonTitleColorNormal = AppTintColor;
             // 3. 设置是否可以选择视频/图片/原图
             self.TZImagePicker.allowPickingOriginalPhoto = YES;
             // 4. 照片排列按修改时间升序
@@ -652,7 +652,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
             self.imagePicker = [[UIImagePickerController alloc] init];
             self.imagePicker.modalPresentationStyle = UIModalPresentationOverFullScreen;
             self.imagePicker.delegate = self;
-            self.imagePicker.navigationBar.barTintColor = AppTinColor;
+            self.imagePicker.navigationBar.barTintColor = AppTintColor;
             self.imagePicker.navigationBar.tintColor = [UIColor whiteColor];
         }
         
@@ -678,7 +678,7 @@ static NSTimeInterval audioRecordTime = 0.0f;
             self.imagePicker = [[UIImagePickerController alloc] init];
             self.imagePicker.modalPresentationStyle = UIModalPresentationOverFullScreen;
             self.imagePicker.delegate = self;
-            self.imagePicker.navigationBar.barTintColor = AppTinColor;
+            self.imagePicker.navigationBar.barTintColor = AppTintColor;
             self.imagePicker.navigationBar.tintColor = [UIColor whiteColor];
         }
         self.imagePicker.mediaTypes = @[(__bridge NSString *)kUTTypeMovie];

@@ -90,7 +90,7 @@ static float const kDefaultMargin = 8.0f;
          比如下面方法中的拉伸区域：UIEdgeInsetsMake(28, 20, 15, 20)
          */
         UIEdgeInsets senderInset = UIEdgeInsetsMake(kDefaultMargin/2, kDefaultMargin/2, kDefaultMargin/2, kDefaultMargin + 1);
-        self.messageBackgroundImageView.image = [[[UIImage xo_imageNamedFromChatBundle:@"message_sender_background_normal"] XO_imageWithTintColor:AppTinColor] resizableImageWithCapInsets:senderInset resizingMode:UIImageResizingModeStretch];
+        self.messageBackgroundImageView.image = [[[UIImage xo_imageNamedFromChatBundle:@"message_sender_background_normal"] XO_imageWithTintColor:AppTintColor] resizableImageWithCapInsets:senderInset resizingMode:UIImageResizingModeStretch];
         [self.messageSendStatusImageView setHidden:NO];
         
         if (TIM_MSG_STATUS_SEND_FAIL == message.status) {

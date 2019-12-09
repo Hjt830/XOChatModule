@@ -152,7 +152,7 @@ static NSString *ContactCellID = @"ContactCellID";
         searchBar.delegate = self;
         searchBar.barTintColor = [UIColor groupTableViewColor];
         searchBar.backgroundImage = [[UIImage alloc] init];
-        searchBar.tintColor = AppTinColor;
+        searchBar.tintColor = AppTintColor;
         UIImage *image = [[UIImage xo_imageNamedFromChatBundle:@"search_background"] XO_imageWithTintColor:RGB(230, 230, 230)];
         [searchBar setSearchFieldBackgroundImage:image forState:UIControlStateNormal];
     }

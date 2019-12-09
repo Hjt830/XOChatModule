@@ -1378,8 +1378,8 @@ static int const MessageAudioPlayIndex = 1000;    // 语音消息播放基础序
 }
 - (void)documentInteractionControllerWillBeginPreview:(UIDocumentInteractionController *)controller
 {
-    [[UINavigationBar appearance] setTintColor:AppTinColor];
-    [[UINavigationBar appearance] setBarTintColor:AppTinColor];
+    [[UINavigationBar appearance] setTintColor:AppTintColor];
+    [[UINavigationBar appearance] setBarTintColor:AppTintColor];
     [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor blackColor],
                                                            NSFontAttributeName: [UIFont boldSystemFontOfSize:19.0f]}];
 }

@@ -402,7 +402,7 @@
     if (!_sureBtn) {
         _sureBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [_sureBtn setTitle:XOLocalizedString(@"sure") forState:UIControlStateNormal];
-        [_sureBtn setTitleColor:AppTinColor forState:UIControlStateNormal];
+        [_sureBtn setTitleColor:AppTintColor forState:UIControlStateNormal];
         [_sureBtn setBackgroundImage:[UIImage XO_imageWithColor:[UIColor whiteColor] size:CGSizeMake(20, 20)] forState:UIControlStateNormal];
         [_sureBtn setBackgroundImage:[UIImage XO_imageWithColor:RGB(220, 220, 220) size:CGSizeMake(20, 20)] forState:UIControlStateHighlighted];
         [_sureBtn addTarget:self action:@selector(sure:) forControlEvents:UIControlEventTouchUpInside];

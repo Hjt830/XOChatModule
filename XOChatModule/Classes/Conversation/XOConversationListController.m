@@ -128,7 +128,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 - (void)setupNavigationItems
 {
     BOOL showAddressBook = YES;
-    if (self.delegate && [self.delegate respondsToSelector:@selector(conversationListControllerShouldShowAddressBook)]) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(conversationListControllerShouldShowAddressBook:)]) {
         showAddressBook = [self.delegate conversationListControllerShouldShowAddressBook:self];
     }
     if (showAddressBook) {
@@ -148,12 +148,6 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
     if (showCreateGroup) {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.frame = CGRectMake(0, 0, 56, 44);
-        [button setTitleColor:[UIColor XOTextColor] forState:UIControlStateNormal];
-    }
-    for (int i = 0; i < 2; i++) {
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-        button.frame = CGRectMake(0, 0, 56, 44);
-        [button setTitleColor:[UIColor XOTextColor] forState:UIControlStateNormal];
         [button setImage:[UIImage xo_imageNamedFromChatBundle:@"conversation_createGroup"] forState:UIControlStateNormal];
         [button addTarget:self action:@selector(groupChat) forControlEvents:UIControlEventTouchUpInside];
         UIBarButtonItem *bbi = [[UIBarButtonItem alloc] initWithCustomView:button];
@@ -477,7 +471,11 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
         _systemView = [[UIView alloc] init];
         _systemView.backgroundColor = [UIColor XOWhiteColor];
         CALayer *imageLayer = [CALayer layer];
-        imageLayer.contents = (__bridge id)[UIImage xo_imageNamedFromChatBundle:@"message_systemmessage"].CGImage;
+        if (AppType_package_A == [XOBaseConfig defaultConfig].appType) {
+            imageLayer.contents = (__bridge id)[UIImage xo_imageNamedFromChatBundle:@"message_system_A"].CGImage;
+        } else {
+            imageLayer.contents = (__bridge id)[UIImage xo_imageNamedFromChatBundle:@"message_system_B"].CGImage;
+        }
         imageLayer.frame = CGRectMake(Margin, 7, 50.0, 50.0);
         imageLayer.masksToBounds = YES;
         imageLayer.cornerRadius = 25.0f;
@@ -502,7 +500,11 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
         [_onlineChatView addGestureRecognizer:tap];
         
         CALayer *imageLayer = [CALayer layer];
-        imageLayer.contents = (__bridge id)[UIImage xo_imageNamedFromChatBundle:@"message_groupmessage"].CGImage;
+        if (AppType_package_A == [XOBaseConfig defaultConfig].appType) {
+            imageLayer.contents = (__bridge id)[UIImage xo_imageNamedFromChatBundle:@"message_service_A"].CGImage;
+        } else {
+            imageLayer.contents = (__bridge id)[UIImage xo_imageNamedFromChatBundle:@"message_service_B"].CGImage;
+        }
         imageLayer.frame = CGRectMake(Margin, 7, 50.0, 50.0);
         imageLayer.masksToBounds = YES;
         imageLayer.cornerRadius = 25.0f;

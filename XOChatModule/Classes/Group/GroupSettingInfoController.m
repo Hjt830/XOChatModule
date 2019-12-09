@@ -816,7 +816,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
         if (!_switchBtn) {
             _switchBtn = [[UISwitch alloc] init];
             [_switchBtn addTarget:self action:@selector(switchOn:) forControlEvents:UIControlEventValueChanged];
-            _switchBtn.onTintColor = AppTinColor;
+            _switchBtn.onTintColor = AppTintColor;
             [self.contentView addSubview:_switchBtn];
         }
     }
@@ -835,7 +835,7 @@ static NSString * const GroupMemberSettingIconCellID    = @"GroupMemberSettingIc
     }
     
     if (sender.isOn) {
-        _switchBtn.tintColor = AppTinColor;
+        _switchBtn.tintColor = AppTintColor;
     } else {
         _switchBtn.tintColor = [UIColor lightGrayColor];
     }

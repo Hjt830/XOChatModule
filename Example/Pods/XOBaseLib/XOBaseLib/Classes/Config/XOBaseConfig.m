@@ -46,21 +46,12 @@ static XOBaseConfig *__baseConfig = nil;
     }
 }
 
-- (void)setAppTintColor:(UIColor *)appTintColor
-{
-    if (appTintColor) {
-        [[NSUserDefaults standardUserDefaults] setObject:appTintColor forKey:@"XOAppTintColor"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
 - (UIColor *)appTintColor
 {
-    UIColor *color = [[NSUserDefaults standardUserDefaults] objectForKey:@"XOAppTintColor"];
-    if (color) {
-        return color;
+    if (self.appType == AppType_package_A) {
+        return RGBOF(0x7C4DFF);
     }
-    return RGBOF(0x7c4dff);
+    return RGBOF(0xFD20AC);
 }
 
 @end

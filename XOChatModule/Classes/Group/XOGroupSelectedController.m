@@ -571,7 +571,7 @@ static NSString * const MemberTableViewHeadFootID = @"MemberTableViewHeadFootID"
         _sureBtn.bounds = CGRectMake(0, 0, 64, 44);
         _sureBtn.enabled = NO;
         [_sureBtn setTitle:NSLocalizedString(@"live.ok", nil) forState:UIControlStateNormal];
-        [_sureBtn setTitleColor:AppTinColor forState:UIControlStateNormal];
+        [_sureBtn setTitleColor:AppTintColor forState:UIControlStateNormal];
         [_sureBtn addTarget:self action:@selector(sureClick) forControlEvents:UIControlEventTouchUpInside];
         _okBBI = [[UIBarButtonItem alloc]initWithCustomView:_sureBtn];
     }
