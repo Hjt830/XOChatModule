@@ -73,7 +73,7 @@
     loginParam.identifier = TIM_UserId;
     loginParam.userSig = TIM_UserSig;
     loginParam.appidAt3rd = TXTIMAppID;
-    [[XOChatClient shareClient] loginWith:loginParam successBlock:^{
+    [[XOChatClient shareClient] autoLoginWith:loginParam successBlock:^{
         
         [[XOSettingManager defaultManager] loginIn];
         NSLog(@"============ 云通信登录成功 ================");

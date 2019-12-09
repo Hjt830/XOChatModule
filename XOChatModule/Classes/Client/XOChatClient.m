@@ -130,18 +130,6 @@ static XOChatClient *__chatClient = nil;
  */
 - (void)loginWith:(TIMLoginParam * _Nonnull)param successBlock:(TIMLoginSucc _Nullable)success failBlock:(TIMFail _Nullable)fail
 {
-    [[TIMManager sharedInstance] autoLogin:param.identifier succ:^{
-        
-    } fail:^(int code, NSString *msg) {
-        
-        if (code == ERR_NO_PREVIOUS_LOGIN) {
-            
-        }
-        else {
-            
-        }
-    }];
-    
     [[TIMManager sharedInstance] login:param succ:^{
         
         NSLog(@"=================================");

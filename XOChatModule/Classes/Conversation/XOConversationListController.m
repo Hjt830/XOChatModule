@@ -82,34 +82,6 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 {
     [super viewWillAppear:animated];
     
-    [self loadUnreadCount];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    self.title = @"Inbox";
-    self.view.backgroundColor = BG_TableColor;
-    
-    [self setupSubViews];
-    
-    [self loadUnreadCount];
-}
-
-- (void)setupSubViews
-{
-    [self.headerView addSubview:self.networkStateView];
-    [self.headerView addSubview:self.systemView];
-    [self.headerView addSubview:self.onlineChatView];
-    [self.view addSubview:self.headerView];
-    [self.view addSubview:self.tableView];
-    
     for (int i = 0; i < 2; i++) {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.frame = CGRectMake(0, 0, 56, 44);
@@ -126,6 +98,32 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
             self.navigationItem.rightBarButtonItem = bbi;
         }
     }
+    
+    [self loadUnreadCount];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    [self setupSubViews];
+    
+    [self loadUnreadCount];
+}
+
+- (void)setupSubViews
+{
+    [self.headerView addSubview:self.networkStateView];
+    [self.headerView addSubview:self.systemView];
+    [self.headerView addSubview:self.onlineChatView];
+    [self.view addSubview:self.headerView];
+    [self.view addSubview:self.tableView];
 }
 
 - (void)viewDidLayoutSubviews
@@ -574,7 +572,6 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         self.isDisConnect = NO;
-        self.title = @"Inbox";
         [self reloadHeaderView];
         [self loadConversation];
     }];
@@ -584,7 +581,6 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         self.isDisConnect = YES;
-        self.title = @"Inbox (unConnect)";
         [self reloadHeaderView];
     }];
 }
@@ -593,7 +589,6 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         self.isDisConnect = YES;
-        self.title = @"Inbox (unConnect)";
         [self reloadHeaderView];
     }];
 }
@@ -602,7 +597,6 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         self.isDisConnect = YES;
-        self.title = @"Inbox (connecting)";
         [self reloadHeaderView];
     }];
 }

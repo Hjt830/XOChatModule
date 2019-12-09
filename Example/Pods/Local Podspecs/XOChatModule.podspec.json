@@ -1,6 +1,6 @@
 {
   "name": "XOChatModule",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "summary": "XXOOGO项目的聊天模块",
   "description": "XXOOGO项目采用cocoapods做组件化架构，将不同的模块使用pod私有仓库管理，只需要在主项目中使用 pod 'XOChatModule' 即可导入模块使用",
   "homepage": "http://192.168.1.119/xxoogo_livechat/xochatmodule",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "http://192.168.1.119/xxoogo_livechat/xochatmodule.git",
-    "tag": "0.0.7"
+    "tag": "0.0.8"
   },
   "platforms": {
     "ios": "9.0"
@@ -39,7 +39,7 @@
       "~> 4.6.1"
     ],
     "XOBaseLib": [
-      "~> 0.3.3"
+      "~> 0.3.4"
     ],
     "TZImagePickerController": [
       "~> 3.2.1"

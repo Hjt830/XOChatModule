@@ -222,7 +222,7 @@
 		542C244704B1FC023F12A0BC873185CE /* SDImageAssetManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BF049A68A880B44C4F40A22C9F92165 /* SDImageAssetManager.m */; };
 		546739BB6115ED7926718AEA53EBCA35 /* TZImagePickerController-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E24349C7DCDEA7FD064AA3C7F3821525 /* TZImagePickerController-dummy.m */; };
 		5520EB0ED4A0CFE3F392D310A2B3538D /* ZXChatHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 33F33224DD531EE522700A9136BE9B0D /* ZXChatHelper.m */; };
-		55AB64D72398FF5A0007B474 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D3DE21184F29A1BEABAA1333B548C79 /* libmp3lame.a */; };
+		55CED501239DEE6200C072C8 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D3DE21184F29A1BEABAA1333B548C79 /* libmp3lame.a */; };
 		562B5F4C497A22535E59A785BB2C1173 /* YYModel-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 044F0E86965BEB493A6554A958C2DFE0 /* YYModel-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		56D172C5AB1FD73311D0ED473BD6810D /* SDImageCacheConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A05F45A93BC470C4D42841A0B3D995C /* SDImageCacheConfig.m */; };
 		56E083AFD9462B47206419E84065915B /* UIImage+ForceDecode.m in Sources */ = {isa = PBXBuildFile; fileRef = D91DD6016F917C9C137F5FBE93FF977E /* UIImage+ForceDecode.m */; };
@@ -1603,7 +1603,7 @@
 				CEFBC55E0C762BAEC1ACEA7DCD24F6B2 /* XOBaseLib.framework in Frameworks */,
 				797248E068A4C608817EAA1E4F48ED75 /* YBImageBrowser.framework in Frameworks */,
 				BFEF23C6BD2BFC71814CAA2A3FFBA6C0 /* YYModel.framework in Frameworks */,
-				55AB64D72398FF5A0007B474 /* libmp3lame.a in Frameworks */,
+				55CED501239DEE6200C072C8 /* libmp3lame.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
