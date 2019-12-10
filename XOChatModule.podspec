@@ -47,7 +47,7 @@ Pod::Spec.new do |s|
 
   s.frameworks = 'UIKit', 'Foundation', 'CoreLocation'
   s.dependency 'TXIMSDK_iOS', '~> 4.6.1'
-  s.dependency 'XOBaseLib', '~> 0.3.5'
+  s.dependency 'XOBaseLib', '~> 0.3.6'
   s.dependency 'TZImagePickerController', '~> 3.2.1'
   s.dependency 'GCDMulticastDelegate', '~> 1.0.0'
   s.dependency 'SVProgressHUD', '~> 2.2.5'

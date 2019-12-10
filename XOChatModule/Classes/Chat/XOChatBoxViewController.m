@@ -136,10 +136,10 @@ static NSTimeInterval audioRecordTime = 0.0f;
         _chatBoxMoreView = [[ZXChatBoxMoreView alloc] initWithFrame:CGRectMake(0, HEIGHT_TABBAR, SCREEN_WIDTH, HEIGHT_CHATBOXVIEW)];
         _chatBoxMoreView.delegate = self;
         if (TIM_C2C == self.chatType) { // 单聊
-            [_chatBoxMoreView setItems:[[NSMutableArray alloc] initWithObjects:albumItem, cameraItem, videoItem, fileItem, positionItem, CarteItem,  callItem,  redPacketItem, transferItem, nil]];
+            [_chatBoxMoreView setItems:[[NSMutableArray alloc] initWithObjects:albumItem, cameraItem, videoItem, /*fileItem, positionItem, CarteItem,  callItem,  redPacketItem, transferItem,*/ nil]];
         }
         else if (TIM_GROUP == self.chatType) { // 群聊
-            [_chatBoxMoreView setItems:[[NSMutableArray alloc] initWithObjects:albumItem, cameraItem, videoItem, fileItem, positionItem, CarteItem, callItem, redPacketItem, nil]];
+            [_chatBoxMoreView setItems:[[NSMutableArray alloc] initWithObjects:albumItem, cameraItem, videoItem, /*fileItem, positionItem, CarteItem, callItem, redPacketItem,*/ nil]];
         }
     }
     return _chatBoxMoreView;
