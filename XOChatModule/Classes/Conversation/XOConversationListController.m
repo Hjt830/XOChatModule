@@ -58,6 +58,8 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 {
     self = [super init];
     if (self) {
+        self.showAddressBook = YES;
+        self.showCreateGroup = YES;
         self.isDisConnect = NO; // 默认是连接状态
         _chatDelegate_queue = dispatch_queue_create("XOConversationList", DISPATCH_QUEUE_CONCURRENT);
         [[XOChatClient shareClient] addDelegate:self delegateQueue:_chatDelegate_queue];
@@ -127,11 +129,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
 
 - (void)setupNavigationItems
 {
-    BOOL showAddressBook = YES;
-    if (self.delegate && [self.delegate respondsToSelector:@selector(conversationListControllerShouldShowAddressBook:)]) {
-        showAddressBook = [self.delegate conversationListControllerShouldShowAddressBook:self];
-    }
-    if (showAddressBook) {
+    if (self.showAddressBook) {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.frame = CGRectMake(0, 0, 56, 44);
         [button setTitleColor:[UIColor XOTextColor] forState:UIControlStateNormal];
@@ -140,12 +138,7 @@ static NSString * const ConversationHeadFootID = @"ConversationHeadFootID";
         UIBarButtonItem *bbi = [[UIBarButtonItem alloc] initWithCustomView:button];
         self.navigationItem.leftBarButtonItem = bbi;
     }
-    
-    BOOL showCreateGroup = YES;
-    if (self.delegate && [self.delegate respondsToSelector:@selector(conversationListControllerShouldShowCreateGroup:)]) {
-        showCreateGroup = [self.delegate conversationListControllerShouldShowCreateGroup:self];
-    }
-    if (showCreateGroup) {
+    if (self.showCreateGroup) {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.frame = CGRectMake(0, 0, 56, 44);
         [button setImage:[UIImage xo_imageNamedFromChatBundle:@"conversation_createGroup"] forState:UIControlStateNormal];
