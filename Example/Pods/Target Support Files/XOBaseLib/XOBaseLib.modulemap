@@ -1,6 +1,0 @@
-framework module XOBaseLib {
-  umbrella header "XOBaseLib-umbrella.h"
-
-  export *
-  module * { export * }
-}

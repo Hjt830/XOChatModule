@@ -1,8 +1,5 @@
 use_frameworks!
 
-# 远程私有仓库 xxooSpecs
-source 'http://192.168.1.119/xxoogo_livechat/xxoospecs.git'
-
 # 远程公有仓库
 source 'https://github.com/CocoaPods/Specs.git'
 

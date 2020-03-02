@@ -44,7 +44,7 @@
 #import "XOContactManager.h"
 #import "XOConversationManager.h"
 #import "XOMessageManager.h"
-#import "XOContactListViewController.h"
+#import "LCContactListViewController.h"
 #import "XOGroupListViewController.h"
 #import "XOSearchResultListController.h"
 #import "XOConversationListCell.h"
