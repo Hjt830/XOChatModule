@@ -6,7 +6,6 @@
 //
 
 #import <XOBaseLib/XOBaseLib.h>
-#import <ImSDK/ImSDK.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

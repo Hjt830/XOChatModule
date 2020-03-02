@@ -28,7 +28,6 @@
 		0254EABA2D0AACFBFA5E2BAD753C5E2D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C875703B65163492FC0C0A1BF30FFEA4 /* Foundation.framework */; };
 		028557CF61C399EC5BDC8A32585F6F7E /* YBIBCopywriter.m in Sources */ = {isa = PBXBuildFile; fileRef = AD34FAEB4E6EFD3F94695E6E93DCBB63 /* YBIBCopywriter.m */; };
 		02F87F4D80E189217CDF1689EB967141 /* FLAnimatedImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 513FA7BAB322C8CAFAF258E5AB146E66 /* FLAnimatedImage.framework */; };
-		03645039B02E34686FB267EBC1AD2167 /* XOChatClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AED66C9867A48F8AB8855B9E30268F8 /* XOChatClient.m */; };
 		0370787809FDCBCB15C2D4DD22190732 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB571968F19A8774465D91A1B484381 /* FMDatabasePool.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		040B2E724A0C2D443890247DF7A988DF /* UIImage+MemoryCacheCost.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FFA98807DF57E4C55DA93AAEB5911F1 /* UIImage+MemoryCacheCost.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0436F6C9BEF923B753D80583B040E068 /* SDWebImageCacheSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 62A3883CFA731BF4E9AFB21F59831671 /* SDWebImageCacheSerializer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -222,6 +221,7 @@
 		542C244704B1FC023F12A0BC873185CE /* SDImageAssetManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BF049A68A880B44C4F40A22C9F92165 /* SDImageAssetManager.m */; };
 		546739BB6115ED7926718AEA53EBCA35 /* TZImagePickerController-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E24349C7DCDEA7FD064AA3C7F3821525 /* TZImagePickerController-dummy.m */; };
 		5520EB0ED4A0CFE3F392D310A2B3538D /* ZXChatHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 33F33224DD531EE522700A9136BE9B0D /* ZXChatHelper.m */; };
+		55CCA3F823B7301500740177 /* XOChatClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 55CCA3F723B7301500740177 /* XOChatClient.m */; };
 		55CED50D239F683A00C072C8 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D3DE21184F29A1BEABAA1333B548C79 /* libmp3lame.a */; };
 		562B5F4C497A22535E59A785BB2C1173 /* YYModel-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 044F0E86965BEB493A6554A958C2DFE0 /* YYModel-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		56D172C5AB1FD73311D0ED473BD6810D /* SDImageCacheConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A05F45A93BC470C4D42841A0B3D995C /* SDImageCacheConfig.m */; };
@@ -403,7 +403,6 @@
 		A7430343C3AD5D5897BBE81F7FE52979 /* XOFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 53CA692EA9F66A9FC4B433D45F5D1F33 /* XOFileManager.m */; };
 		A749635DFBBA18EEE7E27936C2BA05F6 /* NSData+ImageContentType.h in Headers */ = {isa = PBXBuildFile; fileRef = 97CD7D91ABAB59B7714AC237B865F41F /* NSData+ImageContentType.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7B257D75993F5C90FAEEB16780CC215 /* NSBundle+MJRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = 319E94C4F02A5FB810EEF9304EB1DA46 /* NSBundle+MJRefresh.m */; };
-		A858E684498EAF10F719C151CC3CE5F2 /* XOChatClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 8258EDA147C4174372578FF728A97474 /* XOChatClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A8F266741C653EAED3DD49D75DB9D5A8 /* MJRefreshConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 67090A784B22AF588D04BF62351B21E9 /* MJRefreshConfig.m */; };
 		A92CDCFE2DC0D002DE1F208C2FEAB545 /* FMDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D0B42D788202DCB34286FF3C39D654D /* FMDB.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A93BD560DD062BA5B515267570761CBE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FEFF913B7C6A3BDD78BF92013BA4169 /* Security.framework */; };
@@ -1091,6 +1090,8 @@
 		55031370B486B6770B0D88B22870E536 /* WXFileMessageCell.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = WXFileMessageCell.m; sourceTree = "<group>"; };
 		5509EB251505E0FB8BFA10E314C81FAE /* SDAsyncBlockOperation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDAsyncBlockOperation.m; path = SDWebImage/Private/SDAsyncBlockOperation.m; sourceTree = "<group>"; };
 		550E39D8555727E90D6F398AC3FB038D /* UIImage+Metadata.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Metadata.m"; path = "SDWebImage/Core/UIImage+Metadata.m"; sourceTree = "<group>"; };
+		55CCA3F623B7300C00740177 /* XOChatClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XOChatClient.h; sourceTree = "<group>"; };
+		55CCA3F723B7301500740177 /* XOChatClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XOChatClient.m; sourceTree = "<group>"; };
 		565EEA0A46B3B326A8F4357AAE214B80 /* TIMManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TIMManager.h; path = ImSDK.framework/Headers/TIMManager.h; sourceTree = "<group>"; };
 		5758BB41D158E1366E6806D106606BC0 /* TZImagePickerController.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TZImagePickerController.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57DE1ACA33D8D0E2AACD583E0E363F2F /* YYImage.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = YYImage.xcconfig; sourceTree = "<group>"; };
@@ -1202,7 +1203,6 @@
 		81273C2754997061F398828260B0243B /* XOGroupSelectedController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = XOGroupSelectedController.h; sourceTree = "<group>"; };
 		813FC470C864ABBC894761CB553C7A00 /* YBIBSheetView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YBIBSheetView.h; path = YBImageBrowser/ToolView/YBIBSheetView.h; sourceTree = "<group>"; };
 		8228AE3AC3F9CFAF378F96CD5EA5AA31 /* XOSearchResultListController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = XOSearchResultListController.m; sourceTree = "<group>"; };
-		8258EDA147C4174372578FF728A97474 /* XOChatClient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = XOChatClient.h; sourceTree = "<group>"; };
 		8334ACE5CADF79D920067549E0E16E1A /* UIActivityIndicatorView+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIActivityIndicatorView+AFNetworking.h"; path = "UIKit+AFNetworking/UIActivityIndicatorView+AFNetworking.h"; sourceTree = "<group>"; };
 		83C89086EDECA28AAA45F06DDFFBD951 /* NSObject+YYModel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSObject+YYModel.m"; path = "YYModel/NSObject+YYModel.m"; sourceTree = "<group>"; };
 		844FD7AE242AB3DD029D54EBCE1D047A /* SDImageTransformer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageTransformer.h; path = SDWebImage/Core/SDImageTransformer.h; sourceTree = "<group>"; };
@@ -1265,7 +1265,6 @@
 		994DAA5B982F5925587CD318DDD46487 /* FLAnimatedImageView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FLAnimatedImageView.h; path = FLAnimatedImage/FLAnimatedImageView.h; sourceTree = "<group>"; };
 		9A1378C8A62B7A34DACB7B26A3021AAF /* UIImage+XOChatExtension.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "UIImage+XOChatExtension.m"; sourceTree = "<group>"; };
 		9A9B03291A8349534E0413B2A46616F6 /* face_emoji.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = face_emoji.plist; path = XOChatModule/Assets/face_emoji.plist; sourceTree = "<group>"; };
-		9AED66C9867A48F8AB8855B9E30268F8 /* XOChatClient.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = XOChatClient.m; sourceTree = "<group>"; };
 		9B3D8E9DBAE06A61FE84A2F068C11051 /* GCDMulticastDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = GCDMulticastDelegate.h; sourceTree = "<group>"; };
 		9B5838A1A545A4D2DC94C6505435CAC7 /* FLAnimatedImage-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "FLAnimatedImage-dummy.m"; sourceTree = "<group>"; };
 		9B641E828F91598EEE340FD99DE91EE2 /* SDAnimatedImagePlayer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDAnimatedImagePlayer.m; path = SDWebImage/Core/SDAnimatedImagePlayer.m; sourceTree = "<group>"; };
@@ -2224,8 +2223,8 @@
 		28BA4E289092A0F3D93D12D01745440A /* Client */ = {
 			isa = PBXGroup;
 			children = (
-				8258EDA147C4174372578FF728A97474 /* XOChatClient.h */,
-				9AED66C9867A48F8AB8855B9E30268F8 /* XOChatClient.m */,
+				55CCA3F623B7300C00740177 /* XOChatClient.h */,
+				55CCA3F723B7301500740177 /* XOChatClient.m */,
 				5FEFCA77D3472529DFFF0A811BD490CF /* XOContactManager.h */,
 				098EB729449CC6B47F9ACEF02D1F2F75 /* XOContactManager.m */,
 				B79B9935A420619B05269D76D889F657 /* XOConversationManager.h */,
@@ -3418,7 +3417,6 @@
 				58A1596822E42F4821ED5877D735629B /* WXTextMessageCell.h in Headers */,
 				88166215221DAC867D159C78568C37C1 /* WXVideoMessageCell.h in Headers */,
 				A110D0BC721899A621EED2210139E7E6 /* XOChatBoxViewController.h in Headers */,
-				A858E684498EAF10F719C151CC3CE5F2 /* XOChatClient.h in Headers */,
 				8AB6F11CB71799278414B9D283329020 /* XOChatMarco.h in Headers */,
 				51DB8BE8967FB915F60F1B3E363D22C5 /* XOChatMessageController.h in Headers */,
 				B1FF61EA741713C916EAB352821AB356 /* XOChatModule-umbrella.h in Headers */,
@@ -4124,6 +4122,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55CCA3F823B7301500740177 /* XOChatClient.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4216,7 +4215,6 @@
 				DA0EF2F4955F87CD61528966903548E4 /* WXTextMessageCell.m in Sources */,
 				4512027B98D83F59BC07B67EE7445518 /* WXVideoMessageCell.m in Sources */,
 				0147E10B2C777E35475049C7118B2423 /* XOChatBoxViewController.m in Sources */,
-				03645039B02E34686FB267EBC1AD2167 /* XOChatClient.m in Sources */,
 				53515F39FDFCA37D1883A16980620F88 /* XOChatMessageController.m in Sources */,
 				FD3F2BC3A3576B617C83998878F16EE0 /* XOChatModule-dummy.m in Sources */,
 				F17EF42A7785A9F31D704B61E85EFF95 /* XOChatViewController.m in Sources */,

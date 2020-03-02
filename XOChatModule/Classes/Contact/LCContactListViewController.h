@@ -1,16 +1,15 @@
 //
-//  XOContactListViewController.h
+//  LCContactListViewController.h
 //  XOChatModule
 //
 //  Created by kenter on 2019/10/11.
 //
 
 #import <XOBaseLib/XOBaseLib.h>
-#import <ImSDK/ImSDK.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface XOContactListViewController : XOBaseViewController
+@interface LCContactListViewController : XOBaseViewController
 
 @end
 
@@ -21,8 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface XOContactListCell : UITableViewCell
 
-@property (nonatomic, strong) TIMFriend         *contact;
-@property (nonatomic, strong) TIMGroupInfo      *group;
+@property (nonatomic, strong) XOContact         *contact;
+@property (nonatomic, strong) EMGroup           *group;
 
 // 通用设置发生改变
 - (void)refreshGenralSetting;
